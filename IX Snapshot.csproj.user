@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files\Jeskola\Buzz\buzz_x64.exe</StartProgram>
+    <StartArguments>/nocr</StartArguments>
+    <StartWorkingDirectory>C:\Program Files\Jeskola\Buzz\</StartWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ReferencePath>C:\Program Files\Jeskola\Buzz\</ReferencePath>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,8 @@
+Slots
+
+Save/Load
+
+Checkboxes
+
+Styling of list items based on GotState and UseData
+Method of setting UseData from listbox

@@ -1,0 +1,14 @@
+Debug
+Release
+ipch
+obj
+Package
+
+*.sdf
+*.opensdf
+*.suo
+*.htm~
+*.html~
+*.css~
+
+.vs
