@@ -26,7 +26,6 @@ namespace Snapshot
         public GUI()
         {
             InitializeComponent();
-            DataContext = this;
         }
 
         public Machine Owner { get; set; }
@@ -42,16 +41,12 @@ namespace Snapshot
                 if (machine != null)
                 {
                     Owner = machine.ManagedMachine as Machine;
-                    States = Owner.States;
+                    DataContext = Owner.VM;
 
                     InitControl();
                 }
             }
         }
-
-        public ObservableCollection<MachineState> States { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private void InitControl()
         {

@@ -22,7 +22,11 @@ namespace Snapshot
     {
         IBuzzMachineHost host;
 
-    #region IBuzzMachine
+        public ObservableCollection<MachineState> States { get; set; }
+
+        public SnapshotVM VM { get; }
+
+        #region IBuzzMachine
 
         public Machine(IBuzzMachineHost host)
         {
@@ -34,6 +38,8 @@ namespace Snapshot
             {
                 States.Add(new MachineState(m));
             }
+
+            VM = new SnapshotVM(States);
 
             Global.Buzz.Song.MachineAdded += (m) => { OnMachineAdded(m); };
             Global.Buzz.Song.MachineRemoved += (m) => { OnMachineRemoved(m); };
@@ -88,15 +94,17 @@ namespace Snapshot
 
         private void OnMachineAdded(IMachine m)
         {
-            States.Add(new MachineState(m));
+            var s = new MachineState(m);
+            States.Add(s);
+            VM.AddState(s);
         }
 
         private void OnMachineRemoved(IMachine m)
         {
-            States.RemoveAt(States.FindIndex(x => x.Machine == m));
+            var s = States[States.FindIndex(x => x.Machine == m)];
+            States.Remove(s);
+            VM.RemoveState(s);
         }
-
-        public ObservableCollection<MachineState> States { get; set; }
 
         // Global params
         int m_slot;

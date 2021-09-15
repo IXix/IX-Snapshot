@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              xmlns:local="clr-namespace:Snapshot" d:DataContext="{d:DesignInstance Type=local:GUI}"
+             xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <Style TargetType="StackPanel">
@@ -28,7 +29,7 @@
             <Setter Property="Margin" Value="5,0" />
         </Style>
     </UserControl.Resources>
-    
+
     <Grid x:Name="MainGrid" MinWidth="200" MinHeight="200" Margin="0,0,0,8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -39,7 +40,42 @@
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <ListBox x:Name="MachineList" Grid.Row="0"  MinHeight="200" ItemsSource="{Binding States, Mode=OneWay}">
+            <TreeView x:Name="MachineList" Grid.Row="0"  MinHeight="200" ItemsSource="{Binding States}">
+                <TreeView.ItemContainerStyle>
+                    <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                        <Setter Property="FontWeight" Value="Normal" />
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="FontWeight" Value="Bold" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type local:MachineStateVM}" ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding MachineName}" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+
+                    <HierarchicalDataTemplate DataType="{x:Type local:MachinePropertyGroupVM}" ItemsSource="{Binding Children}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Type}" />
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+
+                    <DataTemplate DataType="{x:Type local:MachineParameterVM}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+            <!--<ListBox x:Name="MachineList" Grid.Row="0"  MinHeight="200" ItemsSource="{Binding States, Mode=OneWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
@@ -47,7 +83,7 @@
                         </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
-            </ListBox>
+            </ListBox>-->
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
