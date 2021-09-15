@@ -1,8 +1,18 @@
 Slots
 
-Save/Load
+Save/Load machine data to song
 
-Checkboxes
+Three state checkboxes on Machine and Groups
+	Checked if all children checked, unchecked if no children checked, indeterminate if some children checked
+
+Checkboxes to include/exclude params from store/restore
+
+Custom preset class to allow excluding unwanted parameters
+	Look at how BuzzGUI.Preset works.
+	Might be able to inherit from it and use a dictionary<param,bool> to control what gets stored , not sure.
+
+Automatic behaviour checkboxes
 
 Styling of list items based on GotState and UseData
+
 Method of setting UseData from listbox
