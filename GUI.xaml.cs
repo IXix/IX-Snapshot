@@ -108,45 +108,6 @@ namespace Snapshot
                 }
             }
         }
-
-        private void OnChecked(object sender, RoutedEventArgs e)
-        {
-            var chk = sender as CheckBox;
-            var state = chk.DataContext as MachineState;
-            state.Selected = true;
-        }
-
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            var chk = sender as CheckBox;
-            var state = chk.DataContext as MachineState;
-            state.Selected = false;
-        }
-
-        private void btnCapture_Click(object sender, RoutedEventArgs e)
-        {
-            Owner.Capture();
-        }
-
-        private void btnCaptureMissing_Click(object sender, RoutedEventArgs e)
-        {
-            Owner.CaptureMissing();
-        }
-
-        private void btnRestore_Click(object sender, RoutedEventArgs e)
-        {
-            Owner.Restore();
-        }
-
-        private void btnClear_Click(object sender, RoutedEventArgs e)
-        {
-            Owner.Clear();
-        }
-
-        private void btnPurge_Click(object sender, RoutedEventArgs e)
-        {
-            Owner.Purge();
-        }
     }
 }
 

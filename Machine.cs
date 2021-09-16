@@ -18,7 +18,7 @@ namespace Snapshot
     }
 
     [MachineDecl(Name = "IX Snapshot", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
-    public class Machine : IBuzzMachine, INotifyPropertyChanged
+    public class Machine : IBuzzMachine
     {
         IBuzzMachineHost host;
 
@@ -39,7 +39,7 @@ namespace Snapshot
                 States.Add(new MachineState(m));
             }
 
-            VM = new SnapshotVM(States);
+            VM = new SnapshotVM(this);
 
             Global.Buzz.Song.MachineAdded += (m) => { OnMachineAdded(m); };
             Global.Buzz.Song.MachineRemoved += (m) => { OnMachineRemoved(m); };
@@ -90,8 +90,9 @@ namespace Snapshot
             // FIXME - Remap stored states to correct machines using machineNameMap
         }
 
-    #endregion IBuzzMachine
+        #endregion IBuzzMachine
 
+        #region events
         private void OnMachineAdded(IMachine m)
         {
             var s = new MachineState(m);
@@ -105,7 +106,9 @@ namespace Snapshot
             States.Remove(s);
             VM.RemoveState(s);
         }
+        #endregion events
 
+        #region Global Parameters
         // Global params
         int m_slot;
         [ParameterDecl(IsStateless = false, MinValue = 1, MaxValue = 128, DefValue = 1, Description = "Active slot", Name = "Slot")]
@@ -118,8 +121,9 @@ namespace Snapshot
                 // FIXME: Do something useful
             }
         }
+        #endregion Global Parameters
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        #region Commands
 
         internal void Capture()
         {
@@ -165,5 +169,7 @@ namespace Snapshot
                     s.Clear();
             }
         }
+
+        #endregion Commands
     }
 }

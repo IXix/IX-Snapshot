@@ -1,9 +1,12 @@
 ﻿using BuzzGUI.Common;
 using BuzzGUI.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Windows.Data;
 
 namespace Snapshot
 {
@@ -24,6 +27,7 @@ namespace Snapshot
 
         bool _isExpanded;
         bool _isSelected;
+        bool? _isChecked;
 
         #endregion // Data
 
@@ -48,8 +52,6 @@ namespace Snapshot
 
         #region Presentation Members
 
-        #region Children
-
         /// <summary>
         /// Returns the logical child items of this object.
         /// </summary>
@@ -58,10 +60,6 @@ namespace Snapshot
             get { return _children; }
         }
 
-        #endregion // Children
-
-        #region HasLoadedChildren
-
         /// <summary>
         /// Returns true if this object's Children have not yet been populated.
         /// </summary>
@@ -69,10 +67,6 @@ namespace Snapshot
         {
             get { return this.Children.Count == 1 && this.Children[0] == DummyChild; }
         }
-
-        #endregion // HasLoadedChildren
-
-        #region IsExpanded
 
         /// <summary>
         /// Gets/sets whether the TreeViewItem 
@@ -102,10 +96,6 @@ namespace Snapshot
             }
         }
 
-        #endregion // IsExpanded
-
-        #region IsSelected
-
         /// <summary>
         /// Gets/sets whether the TreeViewItem 
         /// associated with this object is selected.
@@ -123,9 +113,22 @@ namespace Snapshot
             }
         }
 
-        #endregion // IsSelected
-
-        #region LoadChildren
+        /// <summary>
+        /// Gets/sets whether the TreeViewItem 
+        /// associated with this object is checked, unchecked or undetermined.
+        /// </summary>
+        public bool? IsChecked
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (value != _isChecked)
+                {
+                    _isChecked = value;
+                    this.OnPropertyChanged("IsChecked");
+                }
+            }
+        }
 
         /// <summary>
         /// Invoked when the child items need to be loaded on demand.
@@ -135,16 +138,10 @@ namespace Snapshot
         {
         }
 
-        #endregion // LoadChildren
-
-        #region Parent
-
         public TreeViewItemViewModel Parent
         {
             get { return _parent; }
         }
-
-        #endregion // Parent
 
         #endregion // Presentation Members
 
@@ -161,16 +158,45 @@ namespace Snapshot
         #endregion // INotifyPropertyChanged Members
     }
 
-    // Expose collection of machines
+    // Main interaction for GUI
     public class SnapshotVM
     {
-        public SnapshotVM(Collection<MachineState> states)
+        public SnapshotVM(Machine owner)
         {
+            Owner = owner;
             States = new ObservableCollection<MachineStateVM>(
-                (from state in states
+                (from state in Owner.States
                  select new MachineStateVM(state))
                 .ToList());
+
+            cmdCapture = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.Capture()
+            };
+            cmdCaptureMissing = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.CaptureMissing()
+            };
+            cmdRestore = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.Restore()
+            };
+            cmdClear = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.Clear()
+            };
+            cmdPurge = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.Purge()
+            };
         }
+
+        Machine Owner { get; set; }
 
         public void AddState(MachineState state)
         {
@@ -183,6 +209,14 @@ namespace Snapshot
         }
 
         public ObservableCollection<MachineStateVM> States { get; }
+
+        #region Commands
+        public SimpleCommand cmdCapture { get; private set; }
+        public SimpleCommand cmdCaptureMissing { get; private set; }
+        public SimpleCommand cmdRestore { get; private set; }
+        public SimpleCommand cmdClear { get; private set; }
+        public SimpleCommand cmdPurge { get; private set; }
+        #endregion Commands
     }
 
     // Machines
