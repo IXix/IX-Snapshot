@@ -13,7 +13,6 @@ namespace Snapshot
         public MachineState(IMachine m)
         {
             Machine = m;
-            Selected = false;
             UseData = true;
             m_gotState = false;
             m_preset = null;
@@ -24,9 +23,6 @@ namespace Snapshot
         private bool m_gotState;
         public bool GotState { get { return m_gotState; } }
 
-        // Selected in the listbox?
-        public bool Selected { get; set; }
-
         // Whether to include save data in the preset
         public bool UseData { get; set; }
 
@@ -35,6 +31,7 @@ namespace Snapshot
 
         public bool Capture()
         {
+            // Capture everything
             m_preset = new Preset(Machine, false, true);
             m_gotState = true;
             return m_gotState;
@@ -42,7 +39,9 @@ namespace Snapshot
 
         public bool Restore()
         {
-            m_preset.Apply(Machine, UseData);
+            // FIXME:
+            // We want to control what gets restored so Preset.Apply() won't work
+            //m_preset.Apply(Machine, UseData);
             return true;
         }
 

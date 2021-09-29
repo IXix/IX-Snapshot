@@ -3,9 +3,12 @@ using BuzzGUI.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 
 namespace Snapshot
@@ -119,12 +122,28 @@ namespace Snapshot
         /// </summary>
         public bool? IsChecked
         {
-            get { return _isSelected; }
+            get { return _isChecked; }
             set
             {
                 if (value != _isChecked)
                 {
-                    _isChecked = value;
+                    if(value != null)
+                    {
+                        _isChecked = value;
+                    }
+                    else
+                    {
+                        _isChecked = !_isChecked;
+                    }
+
+                    if (Children != null)
+                    {
+                        foreach (var child in Children)
+                        {
+                            child.IsChecked = (bool)_isChecked;
+                        }
+                    }
+
                     this.OnPropertyChanged("IsChecked");
                 }
             }
@@ -208,6 +227,42 @@ namespace Snapshot
             States.RemoveAt(States.FindIndex(x => x._state == state));
         }
 
+        internal void OnMachineCheckboxClick(object sender, RoutedEventArgs e)
+        {
+            // If checked, select all children
+            // If unchecked deselect all children
+            var chk = sender as CheckBox;
+            var item = chk.DataContext as TreeViewItemViewModel;
+            foreach(var child in item.Children)
+            {
+                child.IsSelected = item.IsSelected;
+            }
+        }
+
+        internal void OnGroupCheckboxClick(object sender, RoutedEventArgs e)
+        {
+            // FIXME
+            // Set to checked/unchecked if null, user can't set to indeterminate state
+            // Work up tree getting parents to check what check state they should have
+            throw new NotImplementedException();
+        }
+
+        internal void OnParameterCheckboxClick(object sender, RoutedEventArgs e)
+        {
+            // FIXME
+            // Set to checked/unchecked if null, user can't set to indeterminate state
+            // Work up tree getting parents to check what check state they should have
+            throw new NotImplementedException();
+        }
+
+        internal void OnAttributeCheckboxClick(object sender, RoutedEventArgs e)
+        {
+            // FIXME
+            // Set to checked/unchecked if null, user can't set to indeterminate state
+            // Work up tree getting parents to check what check state they should have
+            throw new NotImplementedException();
+        }
+
         public ObservableCollection<MachineStateVM> States { get; }
 
         #region Commands
@@ -216,6 +271,7 @@ namespace Snapshot
         public SimpleCommand cmdRestore { get; private set; }
         public SimpleCommand cmdClear { get; private set; }
         public SimpleCommand cmdPurge { get; private set; }
+        public SimpleCommand cmdTest { get; private set; }
         #endregion Commands
     }
 
@@ -225,9 +281,10 @@ namespace Snapshot
         public readonly MachineState _state;
 
         public MachineStateVM(MachineState state)
-            : base(null, true)
+            : base(null, false)
         {
             _state = state;
+            LoadChildren();
         }
 
         public string MachineName
@@ -248,9 +305,10 @@ namespace Snapshot
         readonly IParameterGroup _group;
 
         public MachinePropertyGroupVM(IParameterGroup group, MachineStateVM parentMachine)
-            : base(parentMachine, true)
+            : base(parentMachine, false)
         {
             _group = group;
+            LoadChildren();
         }
 
         public ParameterGroupType Type
@@ -265,7 +323,7 @@ namespace Snapshot
         }
     }
 
-    // Param/Attib
+    // Param
     public class MachineParameterVM : TreeViewItemViewModel
     {
         readonly IParameter _param;
@@ -279,6 +337,23 @@ namespace Snapshot
         public string Name
         {
             get { return _param.Name; }
+        }
+    }
+
+    // Attib
+    public class MachineAttributeVM : TreeViewItemViewModel
+    {
+        readonly IAttribute _attrib;
+
+        public MachineAttributeVM(IAttribute attrib, MachinePropertyGroupVM parentGroup)
+            : base(parentGroup, false)
+        {
+            _attrib = attrib;
+        }
+
+        public string Name
+        {
+            get { return _attrib.Name; }
         }
     }
 }

@@ -1,3 +1,7 @@
+Using Buzz presets for storage since it's all there already but can't use Preset.Apply()
+to restore if we want control over what gets restored. Can we inherit our own class
+from Preset and implement our own methods?
+
 Slots
 
 Save/Load machine data to song

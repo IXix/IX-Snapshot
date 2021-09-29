@@ -129,8 +129,7 @@ namespace Snapshot
         {
             foreach (var s in States)
             {
-                if (s.Selected)
-                    s.Capture();
+                s.Capture();
             }
         }
 
@@ -138,7 +137,7 @@ namespace Snapshot
         {
             foreach (var s in States)
             {
-                if (s.Selected && !s.GotState)
+                if (!s.GotState)
                     s.Capture();
             }
         }
@@ -154,11 +153,15 @@ namespace Snapshot
 
         internal void Purge()
         {
+            /*
+             * FIXME: selectedness isn't so simple anymore
+             * Probably need to implement MachineState.Purge()
             foreach (var s in States)
             {
                 if (s.GotState && !s.Selected)
                     s.Clear();
             }
+            */
         }
 
         internal void Clear()

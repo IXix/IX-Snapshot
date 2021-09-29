@@ -53,7 +53,7 @@
 
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type local:MachineStateVM}" ItemsSource="{Binding Children}">
-                        <CheckBox IsThreeState="True">
+                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding MachineName}" />
                             </StackPanel>
@@ -61,7 +61,7 @@
                     </HierarchicalDataTemplate>
 
                     <HierarchicalDataTemplate DataType="{x:Type local:MachinePropertyGroupVM}" ItemsSource="{Binding Children}">
-                        <CheckBox IsThreeState="True">
+                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Type}" />
                             </StackPanel>
@@ -69,7 +69,15 @@
                     </HierarchicalDataTemplate>
 
                     <DataTemplate DataType="{x:Type local:MachineParameterVM}">
-                        <CheckBox>
+                        <CheckBox IsChecked="{Binding IsChecked}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </CheckBox>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type local:MachineAttributeVM}">
+                        <CheckBox IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" />
                             </StackPanel>
