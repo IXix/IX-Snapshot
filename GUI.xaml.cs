@@ -108,6 +108,13 @@ namespace Snapshot
                 }
             }
         }
+
+        private void OnThreeStateClick(object sender, RoutedEventArgs e)
+        {
+            var chk = sender as CheckBox;
+            var VM = chk.DataContext as TreeViewItemViewModel;
+            VM.OnClick();
+        }
     }
 }
 

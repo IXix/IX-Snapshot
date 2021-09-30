@@ -23,32 +23,23 @@ namespace Snapshot
     {
         #region Data
 
-        static readonly TreeViewItemViewModel DummyChild = new TreeViewItemViewModel();
-
         readonly ObservableCollection<TreeViewItemViewModel> _children;
         readonly TreeViewItemViewModel _parent;
 
         bool _isExpanded;
         bool _isSelected;
         bool? _isChecked;
+        bool _allowThreeState;
 
         #endregion // Data
 
         #region Constructors
 
-        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool lazyLoadChildren)
+        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool allowThreeState)
         {
             _parent = parent;
-
+            _allowThreeState = allowThreeState;
             _children = new ObservableCollection<TreeViewItemViewModel>();
-
-            if (lazyLoadChildren)
-                _children.Add(DummyChild);
-        }
-
-        // This is used to create the DummyChild instance.
-        private TreeViewItemViewModel()
-        {
         }
 
         #endregion // Constructors
@@ -64,14 +55,6 @@ namespace Snapshot
         }
 
         /// <summary>
-        /// Returns true if this object's Children have not yet been populated.
-        /// </summary>
-        public bool HasDummyChild
-        {
-            get { return this.Children.Count == 1 && this.Children[0] == DummyChild; }
-        }
-
-        /// <summary>
         /// Gets/sets whether the TreeViewItem 
         /// associated with this object is expanded.
         /// </summary>
@@ -83,19 +66,12 @@ namespace Snapshot
                 if (value != _isExpanded)
                 {
                     _isExpanded = value;
-                    this.OnPropertyChanged("IsExpanded");
+                    OnPropertyChanged("IsExpanded");
                 }
 
                 // Expand all the way up to the root.
                 if (_isExpanded && _parent != null)
                     _parent.IsExpanded = true;
-
-                // Lazy load the child items, if necessary.
-                if (this.HasDummyChild)
-                {
-                    this.Children.Remove(DummyChild);
-                    this.LoadChildren();
-                }
             }
         }
 
@@ -111,7 +87,22 @@ namespace Snapshot
                 if (value != _isSelected)
                 {
                     _isSelected = value;
-                    this.OnPropertyChanged("IsSelected");
+                    OnPropertyChanged("IsSelected");
+                }
+            }
+        }
+
+        /// <summary>
+        /// If the user click causes a three state box to go indeterminate
+        /// force the box, and it's children, to be unchecked.
+        /// </summary>
+        internal void OnClick()
+        {
+            if(_allowThreeState)
+            {
+                if(_isChecked == null)
+                {
+                    IsChecked = false;
                 }
             }
         }
@@ -120,6 +111,7 @@ namespace Snapshot
         /// Gets/sets whether the TreeViewItem 
         /// associated with this object is checked, unchecked or undetermined.
         /// </summary>
+        private bool reentrancyCheck = false;
         public bool? IsChecked
         {
             get { return _isChecked; }
@@ -127,26 +119,52 @@ namespace Snapshot
             {
                 if (value != _isChecked)
                 {
+                    if (reentrancyCheck) return;
+
+                    reentrancyCheck = true;
+
+                    _isChecked = value;
+
                     if(value != null)
                     {
-                        _isChecked = value;
-                    }
-                    else
-                    {
-                        _isChecked = !_isChecked;
-                    }
 
-                    if (Children != null)
-                    {
-                        foreach (var child in Children)
+                        if (Children != null)
                         {
-                            child.IsChecked = (bool)_isChecked;
+                            foreach (var child in Children)
+                            {
+                                child.IsChecked = _isChecked;
+                            }
                         }
                     }
 
-                    this.OnPropertyChanged("IsChecked");
+                    if (Parent != null)
+                    {
+                        Parent.UpdateTreeCheck();
+                    }
+
+                    OnPropertyChanged("IsChecked");
+
+                    reentrancyCheck = false;
                 }
             }
+        }
+
+        void UpdateTreeCheck()
+        {
+            var count = Children.Count(x => x.IsChecked == true);
+            if(count == Children.Count)
+            {
+                IsChecked = true;
+                return;
+            }
+
+            if(count == 0)
+            {
+                IsChecked = false;
+                return;
+            }
+
+            IsChecked = null;
         }
 
         /// <summary>
@@ -170,8 +188,8 @@ namespace Snapshot
 
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion // INotifyPropertyChanged Members
@@ -227,42 +245,6 @@ namespace Snapshot
             States.RemoveAt(States.FindIndex(x => x._state == state));
         }
 
-        internal void OnMachineCheckboxClick(object sender, RoutedEventArgs e)
-        {
-            // If checked, select all children
-            // If unchecked deselect all children
-            var chk = sender as CheckBox;
-            var item = chk.DataContext as TreeViewItemViewModel;
-            foreach(var child in item.Children)
-            {
-                child.IsSelected = item.IsSelected;
-            }
-        }
-
-        internal void OnGroupCheckboxClick(object sender, RoutedEventArgs e)
-        {
-            // FIXME
-            // Set to checked/unchecked if null, user can't set to indeterminate state
-            // Work up tree getting parents to check what check state they should have
-            throw new NotImplementedException();
-        }
-
-        internal void OnParameterCheckboxClick(object sender, RoutedEventArgs e)
-        {
-            // FIXME
-            // Set to checked/unchecked if null, user can't set to indeterminate state
-            // Work up tree getting parents to check what check state they should have
-            throw new NotImplementedException();
-        }
-
-        internal void OnAttributeCheckboxClick(object sender, RoutedEventArgs e)
-        {
-            // FIXME
-            // Set to checked/unchecked if null, user can't set to indeterminate state
-            // Work up tree getting parents to check what check state they should have
-            throw new NotImplementedException();
-        }
-
         public ObservableCollection<MachineStateVM> States { get; }
 
         #region Commands
@@ -281,7 +263,7 @@ namespace Snapshot
         public readonly MachineState _state;
 
         public MachineStateVM(MachineState state)
-            : base(null, false)
+            : base(null, true)
         {
             _state = state;
             LoadChildren();
@@ -305,7 +287,7 @@ namespace Snapshot
         readonly IParameterGroup _group;
 
         public MachinePropertyGroupVM(IParameterGroup group, MachineStateVM parentMachine)
-            : base(parentMachine, false)
+            : base(parentMachine, true)
         {
             _group = group;
             LoadChildren();
