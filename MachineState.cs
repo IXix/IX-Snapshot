@@ -8,47 +8,121 @@ using System.Text;
 
 namespace Snapshot
 {
+    public class ParameterState
+    {
+        public ParameterState(IParameter param)
+        {
+            Parameter = param;
+            Selected = false;
+        }
+
+        public IParameter Parameter{ get; private set; }
+        public bool Selected { get; set; }
+        public string Name { get { return Parameter.Name; } }
+    }
+
+    public class AttributeState
+    {
+        public AttributeState(IAttribute attr)
+        {
+            Attribute = attr;
+            Selected = false;
+        }
+
+        public IAttribute Attribute { get; private set; }
+        public bool Selected { get; set; }
+        public string Name { get { return Attribute.Name; } }
+    }
+
+    public class ParameterStateGroup
+    {
+        public ParameterStateGroup(string name)
+        {
+            Name = name;
+            Properties = new List<ParameterState>();
+        }
+
+        public string Name;
+        public List<ParameterState> Properties;
+    }
+
+    public class AttributeStateGroup
+    {
+        public AttributeStateGroup(string name)
+        {
+            Name = name;
+            Properties = new List<AttributeState>();
+        }
+
+        public string Name;
+        public List<AttributeState> Properties;
+    }
+
     public class MachineState
     {
         public MachineState(IMachine m)
         {
             Machine = m;
             UseData = true;
-            m_gotState = false;
-            m_preset = null;
+            GotState = false;
+
+            InputStates = new ParameterStateGroup("Input");
+            foreach(var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Input).Parameters)
+            {
+                InputStates.Properties.Add(new ParameterState(p));
+            }
+
+            GlobalStates = new ParameterStateGroup("Global");
+            foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
+            {
+                GlobalStates.Properties.Add(new ParameterState(p));
+            }
+
+            TrackStates = new ParameterStateGroup("Track");
+            foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track).Parameters)
+            {
+                TrackStates.Properties.Add(new ParameterState(p));
+            }
+
+            AttributeStates = new AttributeStateGroup("Attributes");
+            foreach (var a in Machine.Attributes)
+            {
+                AttributeStates.Properties.Add(new AttributeState(a));
+            }
         }
 
-        public IMachine Machine { get; set; }
+        public IMachine Machine { get; private set; }
 
-        private bool m_gotState;
-        public bool GotState { get { return m_gotState; } }
+        // FIXME: True if anything is stored
+        public bool GotState { get; private set; }
 
-        // Whether to include save data in the preset
+        // Whether to include machine data
         public bool UseData { get; set; }
 
         // State storage
-        private Preset m_preset;
+        public ParameterStateGroup InputStates { get; private set; }
+        public ParameterStateGroup GlobalStates { get; private set; }
+        public ParameterStateGroup TrackStates { get; private set; }
+        public AttributeStateGroup AttributeStates { get; private set; }
 
         public bool Capture()
         {
-            // Capture everything
-            m_preset = new Preset(Machine, false, true);
-            m_gotState = true;
-            return m_gotState;
+            return GotState;
         }
 
         public bool Restore()
         {
-            // FIXME:
-            // We want to control what gets restored so Preset.Apply() won't work
-            //m_preset.Apply(Machine, UseData);
             return true;
         }
 
         public void Clear()
         {
-            m_gotState = false;
-            m_preset = null;
+            GotState = false;
+        }
+
+        public void Purge()
+        {
+            // FIXME: Remove stored state for unselected items
         }
     }
 }

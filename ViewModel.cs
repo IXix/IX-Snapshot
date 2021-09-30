@@ -29,16 +29,16 @@ namespace Snapshot
         bool _isExpanded;
         bool _isSelected;
         bool? _isChecked;
-        bool _allowThreeState;
+        bool _preventManualIndeterminate;
 
         #endregion // Data
 
         #region Constructors
 
-        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool allowThreeState)
+        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool preventManualIndeterminate)
         {
             _parent = parent;
-            _allowThreeState = allowThreeState;
+            _preventManualIndeterminate = preventManualIndeterminate;
             _children = new ObservableCollection<TreeViewItemViewModel>();
         }
 
@@ -93,17 +93,13 @@ namespace Snapshot
         }
 
         /// <summary>
-        /// If the user click causes a three state box to go indeterminate
-        /// force the box, and it's children, to be unchecked.
+        /// If necessary, prevent user click causing indeterminate state.
         /// </summary>
         internal void OnClick()
         {
-            if(_allowThreeState)
+            if (_preventManualIndeterminate && _isChecked == null)
             {
-                if(_isChecked == null)
-                {
-                    IsChecked = false;
-                }
+                IsChecked = false; // force this and any children to be unchecked.
             }
         }
 
@@ -151,7 +147,7 @@ namespace Snapshot
 
         void UpdateTreeCheck()
         {
-            var count = Children.Count(x => x.IsChecked == true);
+            var count = Children.Count(x => x.IsChecked != false);
             if(count == Children.Count)
             {
                 IsChecked = true;
@@ -276,66 +272,103 @@ namespace Snapshot
 
         protected override void LoadChildren()
         {
-            foreach (IParameterGroup group in _state.Machine.ParameterGroups)
-                base.Children.Add(new MachinePropertyGroupVM(group, this));
+            Children.Add(new MachineDataVM(this));
+            
+            if(_state.InputStates.Properties.Count > 0)
+                Children.Add(new ParameterGroupVM(_state.InputStates, this));
+
+            if (_state.GlobalStates.Properties.Count > 0)
+                Children.Add(new ParameterGroupVM(_state.GlobalStates, this));
+
+            if (_state.TrackStates.Properties.Count > 0)
+                Children.Add(new ParameterGroupVM(_state.TrackStates, this));
         }
     }
 
     // Groups
-    public class MachinePropertyGroupVM : TreeViewItemViewModel
+    public class ParameterGroupVM : TreeViewItemViewModel
     {
-        readonly IParameterGroup _group;
+        readonly ParameterStateGroup _group;
 
-        public MachinePropertyGroupVM(IParameterGroup group, MachineStateVM parentMachine)
+        public ParameterGroupVM(ParameterStateGroup group, MachineStateVM parentMachine)
             : base(parentMachine, true)
         {
             _group = group;
             LoadChildren();
         }
 
-        public ParameterGroupType Type
+        public string Name
         {
-            get { return _group.Type; }
+            get { return _group.Name; }
         }
 
         protected override void LoadChildren()
         {
-            foreach (IParameter param in _group.Parameters)
-                base.Children.Add(new MachineParameterVM(param, this));
+            foreach (var p in _group.Properties)
+                Children.Add(new ParameterStateVM(p, this));
         }
     }
 
-    // Param
-    public class MachineParameterVM : TreeViewItemViewModel
+    public class AttributeGroupVM : TreeViewItemViewModel
     {
-        readonly IParameter _param;
+        readonly AttributeStateGroup _group;
 
-        public MachineParameterVM(IParameter param, MachinePropertyGroupVM parentGroup)
-            : base(parentGroup, false)
+        public AttributeGroupVM(AttributeStateGroup group, MachineStateVM parentMachine)
+            : base(parentMachine, true)
+        {
+            _group = group;
+            LoadChildren();
+        }
+
+        public string Name
+        {
+            get { return _group.Name; }
+        }
+
+        protected override void LoadChildren()
+        {
+            foreach (var p in _group.Properties)
+                Children.Add(new AttributeStateVM(p, this));
+        }
+    }
+
+    public class ParameterStateVM : TreeViewItemViewModel
+    {
+        readonly ParameterState _param;
+
+        public ParameterStateVM(ParameterState param, ParameterGroupVM parent)
+            : base(parent, false)
         {
             _param = param;
         }
 
-        public string Name
-        {
-            get { return _param.Name; }
-        }
+        public string Name { get { return _param.Name; } }
     }
 
-    // Attib
-    public class MachineAttributeVM : TreeViewItemViewModel
+    public class AttributeStateVM : TreeViewItemViewModel
     {
-        readonly IAttribute _attrib;
+        readonly AttributeState _attribute;
 
-        public MachineAttributeVM(IAttribute attrib, MachinePropertyGroupVM parentGroup)
-            : base(parentGroup, false)
+        public AttributeStateVM(AttributeState attr, AttributeGroupVM parent)
+            : base(parent, false)
         {
-            _attrib = attrib;
+            _attribute = attr;
+        }
+
+        public string Name { get { return _attribute.Name; } }
+    }
+
+    // Data
+    public class MachineDataVM : TreeViewItemViewModel
+    {
+        public MachineDataVM(MachineStateVM parentMachine)
+            : base(parentMachine, false)
+        {
         }
 
         public string Name
         {
-            get { return _attrib.Name; }
+            get { return "Data"; }
         }
     }
 }

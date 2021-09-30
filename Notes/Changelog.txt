@@ -1,3 +1,8 @@
+2021.09.30
+	Overhaul of treeview related stuff
+	Treeview checkboxes working properly although they don't actually do anything yet
+		Need to figure out how to connect the state objects. Might need another overhaul :(
+
 2021.09.12
 	Getting things going. Starting to look like something that might eventually work.
 	Trying to work out save/load

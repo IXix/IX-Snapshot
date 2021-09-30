@@ -60,15 +60,7 @@
                         </CheckBox>
                     </HierarchicalDataTemplate>
 
-                    <HierarchicalDataTemplate DataType="{x:Type local:MachinePropertyGroupVM}" ItemsSource="{Binding Children}">
-                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Type}" />
-                            </StackPanel>
-                        </CheckBox>
-                    </HierarchicalDataTemplate>
-
-                    <DataTemplate DataType="{x:Type local:MachineParameterVM}">
+                    <DataTemplate DataType="{x:Type local:MachineDataVM}">
                         <CheckBox IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" />
@@ -76,7 +68,31 @@
                         </CheckBox>
                     </DataTemplate>
 
-                    <DataTemplate DataType="{x:Type local:MachineAttributeVM}">
+                    <HierarchicalDataTemplate DataType="{x:Type local:ParameterGroupVM}" ItemsSource="{Binding Children}">
+                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </CheckBox>
+                    </HierarchicalDataTemplate>
+
+                    <HierarchicalDataTemplate DataType="{x:Type local:AttributeGroupVM}" ItemsSource="{Binding Children}">
+                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </CheckBox>
+                    </HierarchicalDataTemplate>
+
+                    <DataTemplate DataType="{x:Type local:ParameterStateVM}">
+                        <CheckBox IsChecked="{Binding IsChecked}">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </CheckBox>
+                    </DataTemplate>
+
+                    <DataTemplate DataType="{x:Type local:AttributeStateVM}">
                         <CheckBox IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" />

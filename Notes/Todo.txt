@@ -1,22 +1,11 @@
-Using Buzz presets for storage since it's all there already but can't use Preset.Apply()
-to restore if we want control over what gets restored. Can we inherit our own class
-from Preset and implement our own methods?
+Prevent treeview resizing to fit content and add scrollbar
 
 Slots
 
 Save/Load machine data to song
 
-Three state checkboxes on Machine and Groups
-	Checked if all children checked, unchecked if no children checked, indeterminate if some children checked
+Implement include/exclude params/data from store/restore
 
-Checkboxes to include/exclude params from store/restore
-
-Custom preset class to allow excluding unwanted parameters
-	Look at how BuzzGUI.Preset works.
-	Might be able to inherit from it and use a dictionary<param,bool> to control what gets stored , not sure.
-
-Automatic behaviour checkboxes
+Implement code for automatic behaviour checkboxes
 
 Styling of list items based on GotState and UseData
-
-Method of setting UseData from listbox
