@@ -1,3 +1,5 @@
+Treat machine data like other properties. Needs to be included in the _allProperties lists
+
 Implement store/restore/clear/purge
 
 Slots

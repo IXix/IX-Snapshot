@@ -127,7 +127,7 @@ namespace Snapshot
             UseData = false;
             GotState = false;
 
-            _allStates = new List<IPropertyState>();
+            _allProperties = new List<IPropertyState>();
 
             InputStates = new PropertyStateGroup("Input");
             foreach(var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Input).Parameters)
@@ -137,7 +137,7 @@ namespace Snapshot
                     var ps = new ParameterState(p);
                     ps.StateChanged += OnPropertyStateChanged;
                     InputStates.Children.Add(ps);
-                    _allStates.Add(ps);
+                    _allProperties.Add(ps);
                 }
             }
 
@@ -149,7 +149,7 @@ namespace Snapshot
                     var ps = new ParameterState(p);
                     ps.StateChanged += OnPropertyStateChanged;
                     GlobalStates.Children.Add(ps);
-                    _allStates.Add(ps);
+                    _allProperties.Add(ps);
                 }
             }
 
@@ -166,7 +166,7 @@ namespace Snapshot
                         var ps = new ParameterState(p, i);
                         ps.StateChanged += OnPropertyStateChanged;
                         pg.Children.Add(ps);
-                        _allStates.Add(ps);
+                        _allProperties.Add(ps);
                     }
                 }
             }
@@ -177,13 +177,12 @@ namespace Snapshot
                 var ats = new AttributeState(a);
                 ats.StateChanged += OnPropertyStateChanged;
                 AttributeStates.Children.Add(ats);
-                _allStates.Add(ats);
+                _allProperties.Add(ats);
             }
         }
 
         private void OnPropertyStateChanged(object sender, StateChangedEventArgs e)
         {
-            // FIXME: Trigger update of stats text
         }
 
         public IMachine Machine { get; private set; }
@@ -194,24 +193,19 @@ namespace Snapshot
         // How many selected states have not been captured
         public int SelCount
         {
-            get { return _allStates.Count(x => x.Selected == true); }
+            get { return _allProperties.Count(x => x.Selected == true); }
         }
 
         // How many states are stored that aren't selected
         public int RedundantCount
         {
-            get { return _allStates.Count(x => x.Selected == false && x.GotValue == true); }
+            get { return _allProperties.Count(x => x.Selected == false && x.GotValue == true); }
         }
 
         // How many selected states have not been captured
         public int MissingCount
         {
-            get { return _allStates.Count(x => x.Selected == true && x.GotValue == false); }
-        }
-
-        public string InfoSelCount
-        {
-            get { return string.Format("{0} of {1} properties selected", SelCount, _allStates.Count); }
+            get { return _allProperties.Count(x => x.Selected == true && x.GotValue == false); }
         }
 
         // Whether to include machine data
@@ -223,7 +217,8 @@ namespace Snapshot
         public PropertyStateGroup GlobalStates { get; private set; }
         public TrackPropertyStateGroup TrackStates { get; private set; }
         public PropertyStateGroup AttributeStates { get; private set; }
-        private List<IPropertyState> _allStates;
+        private readonly List<IPropertyState> _allProperties;
+        public List<IPropertyState> AllProperties { get { return _allProperties; } }
 
         public bool Capture()
         {

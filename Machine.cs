@@ -26,20 +26,47 @@ namespace Snapshot
 
         public SnapshotVM VM { get; }
 
+        private List<IPropertyState> _allProperties;
+
+        // How many states are selected
+        public int SelCount
+        {
+            get { return _allProperties.Count(x => x.Selected == true); }
+        }
+
+        // How many states have been captured
+        public int StoredCount
+        {
+            get { return _allProperties.Count(x => x.GotValue == true); }
+        }
+
+        // How many states are stored that aren't selected
+        public int RedundantCount
+        {
+            get { return _allProperties.Count(x => x.Selected == false && x.GotValue == true); }
+        }
+
+        // How many selected states have not been captured
+        public int MissingCount
+        {
+            get { return _allProperties.Count(x => x.Selected == true && x.GotValue == false); }
+        }
+
         #region IBuzzMachine
 
         public Machine(IBuzzMachineHost host)
         {
             this.host = host;
             States = new ObservableCollection<MachineState>();
+            VM = new SnapshotVM(this);
+            _allProperties = new List<IPropertyState>();
 
-            var machines = Global.Buzz.Song.Machines;
-            foreach (var m in machines)
+            ReadOnlyCollection<IMachine> machines = Global.Buzz.Song.Machines;
+            foreach (IMachine m in machines)
             {
-                States.Add(new MachineState(m));
+                OnMachineAdded(m);
             }
 
-            VM = new SnapshotVM(this);
 
             Global.Buzz.Song.MachineAdded += (m) => { OnMachineAdded(m); };
             Global.Buzz.Song.MachineRemoved += (m) => { OnMachineRemoved(m); };
@@ -97,17 +124,27 @@ namespace Snapshot
         {
             if (m != host.Machine)
             {
-                var s = new MachineState(m);
-                States.Add(s);
-                VM.AddState(s);
+                MachineState ms = new MachineState(m);
+                foreach (IPropertyState s in ms.AllProperties)
+                {
+                    s.StateChanged += OnSelChanged;
+                    _allProperties.Add(s);
+                }
+                States.Add(ms);
+                VM.AddState(ms);
             }
+        }
+
+        private void OnSelChanged(object sender, StateChangedEventArgs e)
+        {
+            VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant", SelCount, _allProperties.Count, StoredCount, MissingCount, RedundantCount);
         }
 
         private void OnMachineRemoved(IMachine m)
         {
             if (m != host.Machine)
             {
-                var s = States[States.FindIndex(x => x.Machine == m)];
+                MachineState s = States[States.FindIndex(x => x.Machine == m)];
                 States.Remove(s);
                 VM.RemoveState(s);
             }
@@ -133,7 +170,7 @@ namespace Snapshot
 
         internal void Capture()
         {
-            foreach (var s in States)
+            foreach (MachineState s in States)
             {
                 s.Capture();
             }
@@ -141,19 +178,23 @@ namespace Snapshot
 
         internal void CaptureMissing()
         {
-            foreach (var s in States)
+            foreach (MachineState s in States)
             {
                 if (!s.GotState)
+                {
                     s.Capture();
+                }
             }
         }
 
         internal void Restore()
         {
-            foreach (var s in States)
+            foreach (MachineState s in States)
             {
                 if (s.GotState)
+                {
                     s.Restore();
+                }
             }
         }
 
@@ -172,10 +213,12 @@ namespace Snapshot
 
         internal void Clear()
         {
-            foreach (var s in States)
+            foreach (MachineState s in States)
             {
                 if (s.GotState)
+                {
                     s.Clear();
+                }
             }
         }
 

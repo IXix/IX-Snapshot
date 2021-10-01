@@ -100,10 +100,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <TextBlock x:Name="txtSelCount" TextWrapping="Wrap" Text="{Binding InfoSelCount, UpdateSourceTrigger=PropertyChanged}"/>
-                <TextBlock x:Name="txtStoredCount" TextWrapping="Wrap" Text="FIXME n stored"/>
-                <TextBlock x:Name="txtMissingCount" TextWrapping="Wrap" Text="FIXME n missing"/>
-                <TextBlock x:Name="txtPurgeCount" TextWrapping="Wrap" Text="FIXME n redundant"/>
+                <TextBlock x:Name="txtSelCount" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
                 <CheckBox x:Name="chkSelNew" Content="Select new machines" FontSize="14"/>

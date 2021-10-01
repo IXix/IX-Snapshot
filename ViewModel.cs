@@ -201,7 +201,7 @@ namespace Snapshot
     }
 
     // Main interaction for GUI
-    public class SnapshotVM
+    public class SnapshotVM : INotifyPropertyChanged
     {
         public SnapshotVM(Machine owner)
         {
@@ -238,7 +238,30 @@ namespace Snapshot
             };
         }
 
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+
+        #endregion
+
         Machine Owner { get; set; }
+
+        private string selectionInfoText;
+        public string SelectionInfo
+        {
+            get { return selectionInfoText; }
+            set
+            {
+                selectionInfoText = value;
+                NotifyPropertyChanged("SelectionInfo");
+            }
+        }
 
         public void AddState(MachineState state)
         {
@@ -355,7 +378,8 @@ namespace Snapshot
 
         protected override void OnCheckChanged()
         {
-            _property.OnStateChanged(new StateChangedEventArgs() { Property = _property, Selected = (bool)IsChecked });
+            _property.Selected = (bool)IsChecked;
+            _property.OnStateChanged(new StateChangedEventArgs() { Property = _property, Selected = _property.Selected });
         }
 
         public string Name { get { return _property.Track != null ? _property.Track.ToString() : _property.Name; } }

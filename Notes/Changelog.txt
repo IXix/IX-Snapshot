@@ -5,6 +5,7 @@
 	Ignore params without state flag
 	Made things more Interfacey and Eventy
 	Track params are now selectable per track.
+	Implemented info display
 
 2021.09.30
 	Overhaul of treeview related stuff
