@@ -1,7 +1,3 @@
-Should we allow include/exclude on a per-track basis?
-	Leaning toward yes but some machines have stupid numbers of tracks so how
-	would we handle it in the interface? Some kind of filter system?
-
 Implement store/restore/clear/purge
 
 Slots

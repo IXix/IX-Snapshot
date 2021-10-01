@@ -11,6 +11,7 @@ namespace Snapshot
     public interface IPropertyState
     {
         string Name { get; }
+        int? Track { get; }
         bool Selected { get; set; }
         int? Value { get; set; }
         bool GotValue { get; }
@@ -27,14 +28,16 @@ namespace Snapshot
 
     public class ParameterState : IPropertyState
     {
-        public ParameterState(IParameter param)
+        public ParameterState(IParameter param, int? track = null)
         {
             Parameter = param;
             Selected = false;
             Value = null;
+            Track = track;
         }
 
         public IParameter Parameter{ get; private set; }
+        public int? Track { get; private set; }
         public bool Selected { get; set; }
         public string Name { get { return Parameter.Name; } }
 
@@ -65,6 +68,7 @@ namespace Snapshot
         }
 
         public IAttribute Attribute { get; private set; }
+        public int? Track { get; private set; }
         public bool Selected { get; set; }
         public string Name { get { return Attribute.Name; } }
 
@@ -85,16 +89,34 @@ namespace Snapshot
         }
     }
 
-    public class PropertyStateGroup
+    public interface IGroup<T>
+    {
+        string Name { get; }
+        List<T> Children { get; }
+    }
+
+    public class PropertyStateGroup : IGroup<IPropertyState>
     {
         public PropertyStateGroup(string name)
         {
             Name = name;
-            Properties = new List<IPropertyState>();
+            Children = new List<IPropertyState>();
         }
 
-        public string Name;
-        public List<IPropertyState> Properties;
+        public string Name { get; }
+        public List<IPropertyState> Children { get; }
+    }
+
+    public class TrackPropertyStateGroup : IGroup<PropertyStateGroup>
+    {
+        public TrackPropertyStateGroup(string name)
+        {
+            Name = name;
+            Children = new List<PropertyStateGroup>();
+        }
+
+        public string Name { get; }
+        public List<PropertyStateGroup> Children { get; }
     }
 
     public class MachineState
@@ -104,8 +126,6 @@ namespace Snapshot
             Machine = m;
             UseData = false;
             GotState = false;
-            MissingCount = 0;
-            RedundantCount = 0;
 
             _allStates = new List<IPropertyState>();
 
@@ -116,7 +136,7 @@ namespace Snapshot
                 {
                     var ps = new ParameterState(p);
                     ps.StateChanged += OnPropertyStateChanged;
-                    InputStates.Properties.Add(ps);
+                    InputStates.Children.Add(ps);
                     _allStates.Add(ps);
                 }
             }
@@ -128,21 +148,26 @@ namespace Snapshot
                 {
                     var ps = new ParameterState(p);
                     ps.StateChanged += OnPropertyStateChanged;
-                    GlobalStates.Properties.Add(ps);
+                    GlobalStates.Children.Add(ps);
                     _allStates.Add(ps);
                 }
             }
 
-            TrackStates = new PropertyStateGroup("Track");
+            TrackStates = new TrackPropertyStateGroup("Track");
             var tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
             foreach (var p in tracks.Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
-                    var ps = new ParameterState(p);
-                    ps.StateChanged += OnPropertyStateChanged;
-                    TrackStates.Properties.Add(ps);
-                    _allStates.Add(ps);
+                    var pg = new PropertyStateGroup(p.Name);
+                    TrackStates.Children.Add(pg);
+                    for(int i = 0; i < tracks.TrackCount; i++)
+                    {
+                        var ps = new ParameterState(p, i);
+                        ps.StateChanged += OnPropertyStateChanged;
+                        pg.Children.Add(ps);
+                        _allStates.Add(ps);
+                    }
                 }
             }
 
@@ -151,35 +176,14 @@ namespace Snapshot
             {
                 var ats = new AttributeState(a);
                 ats.StateChanged += OnPropertyStateChanged;
-                AttributeStates.Properties.Add(ats);
+                AttributeStates.Children.Add(ats);
                 _allStates.Add(ats);
             }
         }
 
         private void OnPropertyStateChanged(object sender, StateChangedEventArgs e)
         {
-            if(e.Selected)
-            {
-                if(e.Property.GotValue)
-                {
-                    RedundantCount--;
-                }
-                else
-                {
-                    MissingCount++;
-                }
-            }
-            else
-            {
-                if (e.Property.GotValue)
-                {
-                    RedundantCount++;
-                }
-                else
-                {
-                    MissingCount--;
-                }
-            }
+            // FIXME: Trigger update of stats text
         }
 
         public IMachine Machine { get; private set; }
@@ -187,11 +191,28 @@ namespace Snapshot
         // True if anything is stored
         public bool GotState { get; private set; }
 
+        // How many selected states have not been captured
+        public int SelCount
+        {
+            get { return _allStates.Count(x => x.Selected == true); }
+        }
+
         // How many states are stored that aren't selected
-        public int RedundantCount { get; private set; }
+        public int RedundantCount
+        {
+            get { return _allStates.Count(x => x.Selected == false && x.GotValue == true); }
+        }
 
         // How many selected states have not been captured
-        public int MissingCount { get; private set; }
+        public int MissingCount
+        {
+            get { return _allStates.Count(x => x.Selected == true && x.GotValue == false); }
+        }
+
+        public string InfoSelCount
+        {
+            get { return string.Format("{0} of {1} properties selected", SelCount, _allStates.Count); }
+        }
 
         // Whether to include machine data
         public bool UseData { get; set; }
@@ -200,7 +221,7 @@ namespace Snapshot
         // the private is to make capture etc. simpler
         public PropertyStateGroup InputStates { get; private set; }
         public PropertyStateGroup GlobalStates { get; private set; }
-        public PropertyStateGroup TrackStates { get; private set; }
+        public TrackPropertyStateGroup TrackStates { get; private set; }
         public PropertyStateGroup AttributeStates { get; private set; }
         private List<IPropertyState> _allStates;
 

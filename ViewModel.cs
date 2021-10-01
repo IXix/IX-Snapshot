@@ -283,14 +283,14 @@ namespace Snapshot
         {
             Children.Add(new MachineDataVM(_state, this));
             
-            if(_state.InputStates.Properties.Count > 0)
+            if(_state.InputStates.Children.Count > 0)
                 Children.Add(new PropertyStateGroupVM(_state.InputStates, this));
 
-            if (_state.GlobalStates.Properties.Count > 0)
+            if (_state.GlobalStates.Children.Count > 0)
                 Children.Add(new PropertyStateGroupVM(_state.GlobalStates, this));
 
-            if (_state.TrackStates.Properties.Count > 0)
-                Children.Add(new PropertyStateGroupVM(_state.TrackStates, this));
+            if (_state.TrackStates.Children.Count > 0)
+                Children.Add(new TrackPropertyStateGroupVM(_state.TrackStates, this));
         }
     }
 
@@ -299,7 +299,7 @@ namespace Snapshot
     {
         readonly PropertyStateGroup _group;
 
-        public PropertyStateGroupVM(PropertyStateGroup group, MachineStateVM parentMachine)
+        public PropertyStateGroupVM(PropertyStateGroup group, TreeViewItemViewModel parentMachine)
             : base(parentMachine, true)
         {
             _group = group;
@@ -313,8 +313,32 @@ namespace Snapshot
 
         protected override void LoadChildren()
         {
-            foreach (var p in _group.Properties)
+            foreach (var p in _group.Children)
                 Children.Add(new PropertyStateVM(p, this));
+        }
+    }
+
+    // Groups
+    public class TrackPropertyStateGroupVM : TreeViewItemViewModel
+    {
+        readonly TrackPropertyStateGroup _group;
+
+        public TrackPropertyStateGroupVM(TrackPropertyStateGroup group, TreeViewItemViewModel parent)
+            : base(parent, true)
+        {
+            _group = group;
+            LoadChildren();
+        }
+
+        public string Name
+        {
+            get { return _group.Name; }
+        }
+
+        protected override void LoadChildren()
+        {
+            foreach (var pg in _group.Children)
+                Children.Add(new PropertyStateGroupVM(pg, this));
         }
     }
 
@@ -322,7 +346,7 @@ namespace Snapshot
     {
         readonly IPropertyState _property;
 
-        public PropertyStateVM(IPropertyState property, PropertyStateGroupVM parent)
+        public PropertyStateVM(IPropertyState property, TreeViewItemViewModel parent)
             : base(parent, false)
         {
             _property = property;
@@ -334,7 +358,7 @@ namespace Snapshot
             _property.OnStateChanged(new StateChangedEventArgs() { Property = _property, Selected = (bool)IsChecked });
         }
 
-        public string Name { get { return _property.Name; } }
+        public string Name { get { return _property.Track != null ? _property.Track.ToString() : _property.Name; } }
     }
 
     // Data
@@ -342,7 +366,7 @@ namespace Snapshot
     {
         readonly MachineState _state;
 
-        public MachineDataVM(MachineState state, MachineStateVM parent)
+        public MachineDataVM(MachineState state, TreeViewItemViewModel parent)
             : base(parent, false)
         {
             _state = state;

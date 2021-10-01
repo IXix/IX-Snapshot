@@ -76,6 +76,14 @@
                         </CheckBox>
                     </HierarchicalDataTemplate>
 
+                    <HierarchicalDataTemplate DataType="{x:Type local:TrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
+                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </CheckBox>
+                    </HierarchicalDataTemplate>
+
                     <DataTemplate DataType="{x:Type local:PropertyStateVM}">
                         <CheckBox IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
@@ -92,10 +100,10 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <TextBlock x:Name="txtSelCount" TextWrapping="Wrap" Text="n of n machines selected"/>
-                <TextBlock x:Name="txtStoredCount" TextWrapping="Wrap" Text="n stored"/>
-                <TextBlock x:Name="txtMissingCount" TextWrapping="Wrap" Text="n missing"/>
-                <TextBlock x:Name="txtPurgeCount" TextWrapping="Wrap" Text="n redundant"/>
+                <TextBlock x:Name="txtSelCount" TextWrapping="Wrap" Text="{Binding InfoSelCount, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock x:Name="txtStoredCount" TextWrapping="Wrap" Text="FIXME n stored"/>
+                <TextBlock x:Name="txtMissingCount" TextWrapping="Wrap" Text="FIXME n missing"/>
+                <TextBlock x:Name="txtPurgeCount" TextWrapping="Wrap" Text="FIXME n redundant"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
                 <CheckBox x:Name="chkSelNew" Content="Select new machines" FontSize="14"/>
