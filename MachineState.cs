@@ -69,19 +69,22 @@ namespace Snapshot
             InputStates = new ParameterStateGroup("Input");
             foreach(var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Input).Parameters)
             {
-                InputStates.Properties.Add(new ParameterState(p));
+                if(p.Flags.HasFlag(ParameterFlags.State))
+                    InputStates.Properties.Add(new ParameterState(p));
             }
 
             GlobalStates = new ParameterStateGroup("Global");
             foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
             {
-                GlobalStates.Properties.Add(new ParameterState(p));
+                if (p.Flags.HasFlag(ParameterFlags.State))
+                    GlobalStates.Properties.Add(new ParameterState(p));
             }
 
             TrackStates = new ParameterStateGroup("Track");
             foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track).Parameters)
             {
-                TrackStates.Properties.Add(new ParameterState(p));
+                if (p.Flags.HasFlag(ParameterFlags.State))
+                    TrackStates.Properties.Add(new ParameterState(p));
             }
 
             AttributeStates = new AttributeStateGroup("Attributes");
@@ -93,8 +96,14 @@ namespace Snapshot
 
         public IMachine Machine { get; private set; }
 
-        // FIXME: True if anything is stored
+        // True if anything is stored
         public bool GotState { get; private set; }
+
+        // How many states are stored that aren't selected
+        public int RedundantCount { get; private set; }
+
+        // How many selected states have not been captured
+        public int MissingCount { get; private set; }
 
         // Whether to include machine data
         public bool UseData { get; set; }
