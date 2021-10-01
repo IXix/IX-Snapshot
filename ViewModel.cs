@@ -149,14 +149,16 @@ namespace Snapshot
 
         void UpdateTreeCheck()
         {
-            var count = Children.Count(x => x.IsChecked != false);
-            if(count == Children.Count)
+            var c = Children.Count(x => x.IsChecked == true);
+            var i = Children.Count(x => x.IsChecked == null);
+
+            if (c == Children.Count)
             {
                 IsChecked = true;
                 return;
             }
 
-            if(count == 0)
+            if(c == 0 && i == 0)
             {
                 IsChecked = false;
                 return;
@@ -282,22 +284,22 @@ namespace Snapshot
             Children.Add(new MachineDataVM(_state, this));
             
             if(_state.InputStates.Properties.Count > 0)
-                Children.Add(new ParameterGroupVM(_state.InputStates, this));
+                Children.Add(new PropertyStateGroupVM(_state.InputStates, this));
 
             if (_state.GlobalStates.Properties.Count > 0)
-                Children.Add(new ParameterGroupVM(_state.GlobalStates, this));
+                Children.Add(new PropertyStateGroupVM(_state.GlobalStates, this));
 
             if (_state.TrackStates.Properties.Count > 0)
-                Children.Add(new ParameterGroupVM(_state.TrackStates, this));
+                Children.Add(new PropertyStateGroupVM(_state.TrackStates, this));
         }
     }
 
     // Groups
-    public class ParameterGroupVM : TreeViewItemViewModel
+    public class PropertyStateGroupVM : TreeViewItemViewModel
     {
-        readonly ParameterStateGroup _group;
+        readonly PropertyStateGroup _group;
 
-        public ParameterGroupVM(ParameterStateGroup group, MachineStateVM parentMachine)
+        public PropertyStateGroupVM(PropertyStateGroup group, MachineStateVM parentMachine)
             : base(parentMachine, true)
         {
             _group = group;
@@ -312,69 +314,27 @@ namespace Snapshot
         protected override void LoadChildren()
         {
             foreach (var p in _group.Properties)
-                Children.Add(new ParameterStateVM(p, this));
+                Children.Add(new PropertyStateVM(p, this));
         }
     }
 
-    public class AttributeGroupVM : TreeViewItemViewModel
+    public class PropertyStateVM : TreeViewItemViewModel
     {
-        readonly AttributeStateGroup _group;
+        readonly IPropertyState _property;
 
-        public AttributeGroupVM(AttributeStateGroup group, MachineStateVM parentMachine)
-            : base(parentMachine, true)
-        {
-            _group = group;
-            LoadChildren();
-        }
-
-        public string Name
-        {
-            get { return _group.Name; }
-        }
-
-        protected override void LoadChildren()
-        {
-            foreach (var p in _group.Properties)
-                Children.Add(new AttributeStateVM(p, this));
-        }
-    }
-
-    public class ParameterStateVM : TreeViewItemViewModel
-    {
-        readonly ParameterState _param;
-
-        public ParameterStateVM(ParameterState param, ParameterGroupVM parent)
+        public PropertyStateVM(IPropertyState property, PropertyStateGroupVM parent)
             : base(parent, false)
         {
-            _param = param;
-            IsChecked = _param.Selected;
+            _property = property;
+            IsChecked = _property.Selected;
         }
 
         protected override void OnCheckChanged()
         {
-            _param.Selected = (bool) IsChecked;
+            _property.OnStateChanged(new StateChangedEventArgs() { Property = _property, Selected = (bool)IsChecked });
         }
 
-        public string Name { get { return _param.Name; } }
-    }
-
-    public class AttributeStateVM : TreeViewItemViewModel
-    {
-        readonly AttributeState _attribute;
-
-        public AttributeStateVM(AttributeState attr, AttributeGroupVM parent)
-            : base(parent, false)
-        {
-            _attribute = attr;
-            IsChecked = _attribute.Selected;
-        }
-
-        protected override void OnCheckChanged()
-        {
-            _attribute.Selected = (bool) IsChecked;
-        }
-
-        public string Name { get { return _attribute.Name; } }
+        public string Name { get { return _property.Name; } }
     }
 
     // Data

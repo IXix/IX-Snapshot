@@ -3,6 +3,8 @@
 	Added OnCheckChanged() to update state objects
 	Machines default to unchecked
 	Ignore params without state flag
+	Made things more Interfacey and Eventy
+		Things still don't do much but they don't do it in a much more sophisticated way.
 
 2021.09.30
 	Overhaul of treeview related stuff

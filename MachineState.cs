@@ -8,20 +8,55 @@ using System.Text;
 
 namespace Snapshot
 {
-    public class ParameterState
+    public interface IPropertyState
+    {
+        string Name { get; }
+        bool Selected { get; set; }
+        int? Value { get; set; }
+        bool GotValue { get; }
+
+        event EventHandler<StateChangedEventArgs> StateChanged;
+        void OnStateChanged(StateChangedEventArgs e);
+    }
+
+    public class StateChangedEventArgs : EventArgs
+    {
+        public IPropertyState Property { get; set; }
+        public bool Selected { get; set; }
+    }
+
+    public class ParameterState : IPropertyState
     {
         public ParameterState(IParameter param)
         {
             Parameter = param;
             Selected = false;
+            Value = null;
         }
 
         public IParameter Parameter{ get; private set; }
         public bool Selected { get; set; }
         public string Name { get { return Parameter.Name; } }
+
+        // Stored value. null if not captured
+        public int? Value { get; set; }
+
+        public bool GotValue { get { return Value != null; } }
+
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        public void OnStateChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = StateChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
     }
 
-    public class AttributeState
+    public class AttributeState : IPropertyState
     {
         public AttributeState(IAttribute attr)
         {
@@ -32,30 +67,34 @@ namespace Snapshot
         public IAttribute Attribute { get; private set; }
         public bool Selected { get; set; }
         public string Name { get { return Attribute.Name; } }
+
+        // Stored value. null if not captured
+        public int? Value { get; set; }
+
+        public bool GotValue { get { return Value != null; } }
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        public void OnStateChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = StateChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
     }
 
-    public class ParameterStateGroup
+    public class PropertyStateGroup
     {
-        public ParameterStateGroup(string name)
+        public PropertyStateGroup(string name)
         {
             Name = name;
-            Properties = new List<ParameterState>();
+            Properties = new List<IPropertyState>();
         }
 
         public string Name;
-        public List<ParameterState> Properties;
-    }
-
-    public class AttributeStateGroup
-    {
-        public AttributeStateGroup(string name)
-        {
-            Name = name;
-            Properties = new List<AttributeState>();
-        }
-
-        public string Name;
-        public List<AttributeState> Properties;
+        public List<IPropertyState> Properties;
     }
 
     public class MachineState
@@ -65,32 +104,81 @@ namespace Snapshot
             Machine = m;
             UseData = false;
             GotState = false;
+            MissingCount = 0;
+            RedundantCount = 0;
 
-            InputStates = new ParameterStateGroup("Input");
+            _allStates = new List<IPropertyState>();
+
+            InputStates = new PropertyStateGroup("Input");
             foreach(var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Input).Parameters)
             {
                 if(p.Flags.HasFlag(ParameterFlags.State))
-                    InputStates.Properties.Add(new ParameterState(p));
+                {
+                    var ps = new ParameterState(p);
+                    ps.StateChanged += OnPropertyStateChanged;
+                    InputStates.Properties.Add(ps);
+                    _allStates.Add(ps);
+                }
             }
 
-            GlobalStates = new ParameterStateGroup("Global");
+            GlobalStates = new PropertyStateGroup("Global");
             foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
-                    GlobalStates.Properties.Add(new ParameterState(p));
+                {
+                    var ps = new ParameterState(p);
+                    ps.StateChanged += OnPropertyStateChanged;
+                    GlobalStates.Properties.Add(ps);
+                    _allStates.Add(ps);
+                }
             }
 
-            TrackStates = new ParameterStateGroup("Track");
-            foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track).Parameters)
+            TrackStates = new PropertyStateGroup("Track");
+            var tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
+            foreach (var p in tracks.Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
-                    TrackStates.Properties.Add(new ParameterState(p));
+                {
+                    var ps = new ParameterState(p);
+                    ps.StateChanged += OnPropertyStateChanged;
+                    TrackStates.Properties.Add(ps);
+                    _allStates.Add(ps);
+                }
             }
 
-            AttributeStates = new AttributeStateGroup("Attributes");
+            AttributeStates = new PropertyStateGroup("Attributes");
             foreach (var a in Machine.Attributes)
             {
-                AttributeStates.Properties.Add(new AttributeState(a));
+                var ats = new AttributeState(a);
+                ats.StateChanged += OnPropertyStateChanged;
+                AttributeStates.Properties.Add(ats);
+                _allStates.Add(ats);
+            }
+        }
+
+        private void OnPropertyStateChanged(object sender, StateChangedEventArgs e)
+        {
+            if(e.Selected)
+            {
+                if(e.Property.GotValue)
+                {
+                    RedundantCount--;
+                }
+                else
+                {
+                    MissingCount++;
+                }
+            }
+            else
+            {
+                if (e.Property.GotValue)
+                {
+                    RedundantCount++;
+                }
+                else
+                {
+                    MissingCount--;
+                }
             }
         }
 
@@ -108,11 +196,13 @@ namespace Snapshot
         // Whether to include machine data
         public bool UseData { get; set; }
 
-        // State storage
-        public ParameterStateGroup InputStates { get; private set; }
-        public ParameterStateGroup GlobalStates { get; private set; }
-        public ParameterStateGroup TrackStates { get; private set; }
-        public AttributeStateGroup AttributeStates { get; private set; }
+        // State storage. The publics are for the treeview
+        // the private is to make capture etc. simpler
+        public PropertyStateGroup InputStates { get; private set; }
+        public PropertyStateGroup GlobalStates { get; private set; }
+        public PropertyStateGroup TrackStates { get; private set; }
+        public PropertyStateGroup AttributeStates { get; private set; }
+        private List<IPropertyState> _allStates;
 
         public bool Capture()
         {
