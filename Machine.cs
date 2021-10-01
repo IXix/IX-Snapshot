@@ -95,16 +95,22 @@ namespace Snapshot
         #region events
         private void OnMachineAdded(IMachine m)
         {
-            var s = new MachineState(m);
-            States.Add(s);
-            VM.AddState(s);
+            if (m != host.Machine)
+            {
+                var s = new MachineState(m);
+                States.Add(s);
+                VM.AddState(s);
+            }
         }
 
         private void OnMachineRemoved(IMachine m)
         {
-            var s = States[States.FindIndex(x => x.Machine == m)];
-            States.Remove(s);
-            VM.RemoveState(s);
+            if (m != host.Machine)
+            {
+                var s = States[States.FindIndex(x => x.Machine == m)];
+                States.Remove(s);
+                VM.RemoveState(s);
+            }
         }
         #endregion events
 

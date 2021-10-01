@@ -63,7 +63,7 @@ namespace Snapshot
         public MachineState(IMachine m)
         {
             Machine = m;
-            UseData = true;
+            UseData = false;
             GotState = false;
 
             InputStates = new ParameterStateGroup("Input");

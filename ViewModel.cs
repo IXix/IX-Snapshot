@@ -140,6 +140,8 @@ namespace Snapshot
 
                     OnPropertyChanged("IsChecked");
 
+                    OnCheckChanged();
+
                     reentrancyCheck = false;
                 }
             }
@@ -169,6 +171,11 @@ namespace Snapshot
         /// </summary>
         protected virtual void LoadChildren()
         {
+        }
+
+        protected virtual void OnCheckChanged()
+        {
+
         }
 
         public TreeViewItemViewModel Parent
@@ -272,7 +279,7 @@ namespace Snapshot
 
         protected override void LoadChildren()
         {
-            Children.Add(new MachineDataVM(this));
+            Children.Add(new MachineDataVM(_state, this));
             
             if(_state.InputStates.Properties.Count > 0)
                 Children.Add(new ParameterGroupVM(_state.InputStates, this));
@@ -340,6 +347,12 @@ namespace Snapshot
             : base(parent, false)
         {
             _param = param;
+            IsChecked = _param.Selected;
+        }
+
+        protected override void OnCheckChanged()
+        {
+            _param.Selected = (bool) IsChecked;
         }
 
         public string Name { get { return _param.Name; } }
@@ -353,6 +366,12 @@ namespace Snapshot
             : base(parent, false)
         {
             _attribute = attr;
+            IsChecked = _attribute.Selected;
+        }
+
+        protected override void OnCheckChanged()
+        {
+            _attribute.Selected = (bool) IsChecked;
         }
 
         public string Name { get { return _attribute.Name; } }
@@ -361,9 +380,13 @@ namespace Snapshot
     // Data
     public class MachineDataVM : TreeViewItemViewModel
     {
-        public MachineDataVM(MachineStateVM parentMachine)
-            : base(parentMachine, false)
+        readonly MachineState _state;
+
+        public MachineDataVM(MachineState state, MachineStateVM parent)
+            : base(parent, false)
         {
+            _state = state;
+            IsChecked = _state.UseData;
         }
 
         public string Name

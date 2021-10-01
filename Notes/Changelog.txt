@@ -1,3 +1,8 @@
+2021.09.01
+	Snapshot no longer appears in the treeview
+	Added OnCheckChanged() to update state objects
+	Machines default to unchecked
+
 2021.09.30
 	Overhaul of treeview related stuff
 	Treeview checkboxes working properly although they don't actually do anything yet

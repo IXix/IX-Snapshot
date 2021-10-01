@@ -1,11 +1,11 @@
-Prevent treeview resizing to fit content and add scrollbar
+Implement store/restore/clear/purge
 
 Slots
 
 Save/Load machine data to song
 
-Implement include/exclude params/data from store/restore
-
 Implement code for automatic behaviour checkboxes
 
 Styling of list items based on GotState and UseData
+
+Prevent treeview resizing to fit content and add scrollbar
