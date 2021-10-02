@@ -8,22 +8,38 @@ using System.Text;
 
 namespace Snapshot
 {
-    public interface IPropertyState
-    {
-        string Name { get; }
-        int? Track { get; }
-        bool Selected { get; set; }
-        int? Value { get; set; }
-        bool GotValue { get; }
-
-        event EventHandler<StateChangedEventArgs> StateChanged;
-        void OnStateChanged(StateChangedEventArgs e);
-    }
-
     public class StateChangedEventArgs : EventArgs
     {
         public IPropertyState Property { get; set; }
         public bool Selected { get; set; }
+    }
+
+    public interface INamed
+    {
+        string Name { get; }
+    }
+
+    public interface ISelectable : INamed
+    {
+        bool Selected { get; set; }
+        event EventHandler<StateChangedEventArgs> SelChanged;
+        void OnSelChanged(StateChangedEventArgs e);
+    }
+
+    public interface IValueContainer
+    {
+        bool GotValue { get; }
+        // FIXME: Capture/Restore etc.
+    }
+
+    public interface IPropertyState : ISelectable, IValueContainer
+    {
+        int? Track { get; }
+    }
+
+    public interface IGroup<T> : INamed
+    {
+        List<T> Children { get; }
     }
 
     public class ParameterState : IPropertyState
@@ -36,22 +52,19 @@ namespace Snapshot
             Track = track;
         }
 
-        public IParameter Parameter{ get; private set; }
-        public int? Track { get; private set; }
-        public bool Selected { get; set; }
-        public string Name { get { return Parameter.Name; } }
-
-        // Stored value. null if not captured
+        public IParameter Parameter { get; private set; }
         public int? Value { get; set; }
 
+        public string Name => Track == null ?Parameter.Name : Track.ToString();
+
+        public int? Track { get; private set; }
         public bool GotValue { get { return Value != null; } }
 
-
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        public void OnStateChanged(StateChangedEventArgs e)
+        public bool Selected { get; set; }
+        public event EventHandler<StateChangedEventArgs> SelChanged;
+        public void OnSelChanged(StateChangedEventArgs e)
         {
-            EventHandler<StateChangedEventArgs> handler = StateChanged;
+            EventHandler<StateChangedEventArgs> handler = SelChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -68,20 +81,18 @@ namespace Snapshot
         }
 
         public IAttribute Attribute { get; private set; }
-        public int? Track { get; private set; }
-        public bool Selected { get; set; }
-        public string Name { get { return Attribute.Name; } }
-
-        // Stored value. null if not captured
         public int? Value { get; set; }
 
-        public bool GotValue { get { return Value != null; } }
+        public string Name => Attribute.Name;
 
-        public event EventHandler<StateChangedEventArgs> StateChanged;
+        public int? Track { get; private set; }
+        public bool GotValue => Value != null;
 
-        public void OnStateChanged(StateChangedEventArgs e)
+        public bool Selected { get; set; }
+        public event EventHandler<StateChangedEventArgs> SelChanged;
+        public void OnSelChanged(StateChangedEventArgs e)
         {
-            EventHandler<StateChangedEventArgs> handler = StateChanged;
+            EventHandler<StateChangedEventArgs> handler = SelChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -89,10 +100,25 @@ namespace Snapshot
         }
     }
 
-    public interface IGroup<T>
+    public class DataState : IPropertyState
     {
-        string Name { get; }
-        List<T> Children { get; }
+        public byte [] Value { get; set; }
+
+        public string Name => "Data";
+
+        public int? Track => null;
+        public bool GotValue => Value != null;
+
+        public bool Selected { get; set; }
+        public event EventHandler<StateChangedEventArgs> SelChanged;
+        public void OnSelChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = SelChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
     }
 
     public class PropertyStateGroup : IGroup<IPropertyState>
@@ -104,6 +130,7 @@ namespace Snapshot
         }
 
         public string Name { get; }
+
         public List<IPropertyState> Children { get; }
     }
 
@@ -116,6 +143,7 @@ namespace Snapshot
         }
 
         public string Name { get; }
+
         public List<PropertyStateGroup> Children { get; }
     }
 
@@ -124,10 +152,12 @@ namespace Snapshot
         public MachineState(IMachine m)
         {
             Machine = m;
-            UseData = false;
             GotState = false;
 
             _allProperties = new List<IPropertyState>();
+
+            DataStates = new DataState();
+            _allProperties.Add(DataStates);
 
             InputStates = new PropertyStateGroup("Input");
             foreach(var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Input).Parameters)
@@ -135,7 +165,7 @@ namespace Snapshot
                 if(p.Flags.HasFlag(ParameterFlags.State))
                 {
                     var ps = new ParameterState(p);
-                    ps.StateChanged += OnPropertyStateChanged;
+                    ps.SelChanged += OnPropertyStateChanged;
                     InputStates.Children.Add(ps);
                     _allProperties.Add(ps);
                 }
@@ -147,7 +177,7 @@ namespace Snapshot
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
                     var ps = new ParameterState(p);
-                    ps.StateChanged += OnPropertyStateChanged;
+                    ps.SelChanged += OnPropertyStateChanged;
                     GlobalStates.Children.Add(ps);
                     _allProperties.Add(ps);
                 }
@@ -164,7 +194,7 @@ namespace Snapshot
                     for(int i = 0; i < tracks.TrackCount; i++)
                     {
                         var ps = new ParameterState(p, i);
-                        ps.StateChanged += OnPropertyStateChanged;
+                        ps.SelChanged += OnPropertyStateChanged;
                         pg.Children.Add(ps);
                         _allProperties.Add(ps);
                     }
@@ -175,7 +205,7 @@ namespace Snapshot
             foreach (var a in Machine.Attributes)
             {
                 var ats = new AttributeState(a);
-                ats.StateChanged += OnPropertyStateChanged;
+                ats.SelChanged += OnPropertyStateChanged;
                 AttributeStates.Children.Add(ats);
                 _allProperties.Add(ats);
             }
@@ -208,11 +238,9 @@ namespace Snapshot
             get { return _allProperties.Count(x => x.Selected == true && x.GotValue == false); }
         }
 
-        // Whether to include machine data
-        public bool UseData { get; set; }
-
         // State storage. The publics are for the treeview
         // the private is to make capture etc. simpler
+        public DataState DataStates { get; set; }
         public PropertyStateGroup InputStates { get; private set; }
         public PropertyStateGroup GlobalStates { get; private set; }
         public TrackPropertyStateGroup TrackStates { get; private set; }

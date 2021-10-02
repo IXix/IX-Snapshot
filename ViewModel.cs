@@ -304,7 +304,7 @@ namespace Snapshot
 
         protected override void LoadChildren()
         {
-            Children.Add(new MachineDataVM(_state, this));
+            Children.Add(new PropertyStateVM(_state.DataStates, this));
             
             if(_state.InputStates.Children.Count > 0)
                 Children.Add(new PropertyStateGroupVM(_state.InputStates, this));
@@ -379,27 +379,9 @@ namespace Snapshot
         protected override void OnCheckChanged()
         {
             _property.Selected = (bool)IsChecked;
-            _property.OnStateChanged(new StateChangedEventArgs() { Property = _property, Selected = _property.Selected });
+            _property.OnSelChanged(new StateChangedEventArgs() { Property = _property, Selected = _property.Selected });
         }
 
-        public string Name { get { return _property.Track != null ? _property.Track.ToString() : _property.Name; } }
-    }
-
-    // Data
-    public class MachineDataVM : TreeViewItemViewModel
-    {
-        readonly MachineState _state;
-
-        public MachineDataVM(MachineState state, TreeViewItemViewModel parent)
-            : base(parent, false)
-        {
-            _state = state;
-            IsChecked = _state.UseData;
-        }
-
-        public string Name
-        {
-            get { return "Data"; }
-        }
+        public string Name => _property.Name;
     }
 }

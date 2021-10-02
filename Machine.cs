@@ -127,7 +127,7 @@ namespace Snapshot
                 MachineState ms = new MachineState(m);
                 foreach (IPropertyState s in ms.AllProperties)
                 {
-                    s.StateChanged += OnSelChanged;
+                    s.SelChanged += OnSelChanged;
                     _allProperties.Add(s);
                 }
                 States.Add(ms);

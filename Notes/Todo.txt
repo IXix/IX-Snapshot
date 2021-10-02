@@ -1,5 +1,3 @@
-Treat machine data like other properties. Needs to be included in the _allProperties lists
-
 Implement store/restore/clear/purge
 
 Slots
@@ -11,3 +9,5 @@ Implement code for automatic behaviour checkboxes
 Styling of list items based on GotState and UseData
 
 Prevent treeview resizing to fit content and add scrollbar
+
+Info readout seems wrong. Total number of properties doesn't match num selected when everything selected.
