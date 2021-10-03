@@ -28,6 +28,8 @@ namespace Snapshot
 
         private List<IPropertyState> _allProperties;
 
+        public bool GotState { get; private set; }
+
         // How many states are selected
         public int SelCount
         {
@@ -127,7 +129,8 @@ namespace Snapshot
                 MachineState ms = new MachineState(m);
                 foreach (IPropertyState s in ms.AllProperties)
                 {
-                    s.SelChanged += OnSelChanged;
+                    s.SelChanged += OnStateChanged;
+                    s.ValChanged += OnStateChanged;
                     _allProperties.Add(s);
                 }
                 States.Add(ms);
@@ -135,7 +138,7 @@ namespace Snapshot
             }
         }
 
-        private void OnSelChanged(object sender, StateChangedEventArgs e)
+        private void OnStateChanged(object sender, StateChangedEventArgs e)
         {
             VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant", SelCount, _allProperties.Count, StoredCount, MissingCount, RedundantCount);
         }
@@ -164,6 +167,7 @@ namespace Snapshot
                 // FIXME: Do something useful
             }
         }
+
         #endregion Global Parameters
 
         #region Commands
@@ -172,7 +176,7 @@ namespace Snapshot
         {
             foreach (MachineState s in States)
             {
-                s.Capture();
+                if (s.Capture()) GotState = true;
             }
         }
 
@@ -180,18 +184,15 @@ namespace Snapshot
         {
             foreach (MachineState s in States)
             {
-                if (!s.GotState)
-                {
-                    s.Capture();
-                }
+                if(s.CaptureMissing()) GotState = true;
             }
         }
 
         internal void Restore()
         {
-            foreach (MachineState s in States)
+            if (GotState)
             {
-                if (s.GotState)
+                foreach (MachineState s in States)
                 {
                     s.Restore();
                 }
@@ -200,25 +201,25 @@ namespace Snapshot
 
         internal void Purge()
         {
-            /*
-             * FIXME: selectedness isn't so simple anymore
-             * Probably need to implement MachineState.Purge()
-            foreach (var s in States)
+            if (GotState)
             {
-                if (s.GotState && !s.Selected)
-                    s.Clear();
+                foreach (var s in States)
+                {
+                    s.Purge();
+                    if (s.GotState) GotState = true;
+                }
             }
-            */
         }
 
         internal void Clear()
         {
-            foreach (MachineState s in States)
+            if (GotState)
             {
-                if (s.GotState)
+                foreach (MachineState s in States)
                 {
                     s.Clear();
                 }
+                GotState = false;
             }
         }
 

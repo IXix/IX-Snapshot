@@ -29,7 +29,15 @@ namespace Snapshot
     public interface IValueContainer
     {
         bool GotValue { get; }
-        // FIXME: Capture/Restore etc.
+
+        bool Capture();
+        bool CaptureMissing();
+        bool Restore();
+        void Clear();
+        void Purge();
+
+        event EventHandler<StateChangedEventArgs> ValChanged;
+        void OnValChanged(StateChangedEventArgs e);
     }
 
     public interface IPropertyState : ISelectable, IValueContainer
@@ -48,8 +56,8 @@ namespace Snapshot
         {
             Parameter = param;
             Selected = false;
-            Value = null;
             Track = track;
+            Value = new int?();
         }
 
         public IParameter Parameter { get; private set; }
@@ -58,13 +66,70 @@ namespace Snapshot
         public string Name => Track == null ?Parameter.Name : Track.ToString();
 
         public int? Track { get; private set; }
-        public bool GotValue { get { return Value != null; } }
+        public bool GotValue => Value.HasValue;
 
         public bool Selected { get; set; }
         public event EventHandler<StateChangedEventArgs> SelChanged;
+        public event EventHandler<StateChangedEventArgs> ValChanged;
+
+        public bool Capture()
+        {
+            if(Selected)
+            {
+                Value = Parameter.GetValue(Track ?? 0);
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                return true;
+            }
+            return false;
+        }
+
+        public bool CaptureMissing()
+        {
+            if (Selected && !GotValue)
+            {
+                Value = Parameter.GetValue(Track ?? 0);
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                return true;
+            }
+            return false;
+        }
+
+        public bool Restore()
+        {
+            if (Selected && GotValue)
+            {
+                Parameter.SetValue(Track ?? 0, Value.Value);
+                return true;
+            }
+            return false;
+        }
+
+        public void Clear()
+        {
+            Value = null;
+            OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+        }
+
+        public void Purge()
+        {
+            if (GotValue && !Selected)
+            {
+                Clear();
+            }
+        }
+
         public void OnSelChanged(StateChangedEventArgs e)
         {
             EventHandler<StateChangedEventArgs> handler = SelChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public void OnValChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = ValChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -78,6 +143,7 @@ namespace Snapshot
         {
             Attribute = attr;
             Selected = false;
+            Value = new int?();
         }
 
         public IAttribute Attribute { get; private set; }
@@ -86,13 +152,70 @@ namespace Snapshot
         public string Name => Attribute.Name;
 
         public int? Track { get; private set; }
-        public bool GotValue => Value != null;
+        public bool GotValue => Value.HasValue;
+
+        public bool Capture()
+        {
+            if (Selected)
+            {
+                Value = Attribute.Value;
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                return true;
+            }
+            return false;
+        }
+
+        public bool CaptureMissing()
+        {
+            if (Selected && !GotValue)
+            {
+                Value = Attribute.Value;
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                return true;
+            }
+            return false;
+        }
+
+        public bool Restore()
+        {
+            if (Selected && GotValue)
+            {
+                Attribute.Value = Value.Value;
+                return true;
+            }
+            return false;
+        }
+
+        public void Clear()
+        {
+            Value = null;
+            OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+        }
+
+        public void Purge()
+        {
+            if (GotValue && !Selected)
+            {
+                Clear();
+            }
+        }
 
         public bool Selected { get; set; }
         public event EventHandler<StateChangedEventArgs> SelChanged;
+        public event EventHandler<StateChangedEventArgs> ValChanged;
+
         public void OnSelChanged(StateChangedEventArgs e)
         {
             EventHandler<StateChangedEventArgs> handler = SelChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public void OnValChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = ValChanged;
             if (handler != null)
             {
                 handler(this, e);
@@ -102,15 +225,74 @@ namespace Snapshot
 
     public class DataState : IPropertyState
     {
+        public DataState(IMachine machine)
+        {
+            _machine = machine;
+            Selected = false;
+            Value = null;
+        }
+
         public byte [] Value { get; set; }
 
         public string Name => "Data";
 
+        private IMachine _machine;
+        public IMachine Machine => _machine;
         public int? Track => null;
+        
         public bool GotValue => Value != null;
 
+        public bool Capture()
+        {
+            if(Selected)
+            {
+                Value = Machine.Data;
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                return true;
+            }
+            return false;
+        }
+
+        public bool CaptureMissing()
+        {
+            if (Selected && !GotValue)
+            {
+                Value = Machine.Data;
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                return true;
+            }
+            return false;
+        }
+
+        public bool Restore()
+        {
+            if (Selected && GotValue)
+            {
+                Machine.Data = Value;
+                return true;
+            }
+            return false;
+        }
+
+        public void Clear()
+        {
+            Value = null;
+            OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+        }
+
+        public void Purge()
+        {
+            if(GotValue && !Selected)
+            {
+                Clear();
+            }
+        }
+
         public bool Selected { get; set; }
+
         public event EventHandler<StateChangedEventArgs> SelChanged;
+        public event EventHandler<StateChangedEventArgs> ValChanged;
+
         public void OnSelChanged(StateChangedEventArgs e)
         {
             EventHandler<StateChangedEventArgs> handler = SelChanged;
@@ -119,9 +301,18 @@ namespace Snapshot
                 handler(this, e);
             }
         }
+
+        public void OnValChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = ValChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
     }
 
-    public class PropertyStateGroup : IGroup<IPropertyState>
+    public class PropertyStateGroup : IGroup<IPropertyState>, IValueContainer
     {
         public PropertyStateGroup(string name)
         {
@@ -132,9 +323,73 @@ namespace Snapshot
         public string Name { get; }
 
         public List<IPropertyState> Children { get; }
+
+        public bool GotValue { get; private set; }
+
+        public event EventHandler<StateChangedEventArgs> ValChanged;
+
+        public bool Capture()
+        {
+            foreach (IPropertyState ps in Children)
+            {
+                if (ps.Capture()) GotValue = true;
+            }
+            return GotValue;
+        }
+
+
+        public bool CaptureMissing()
+        {
+            foreach (IPropertyState ps in Children)
+            {
+                if (ps.CaptureMissing()) GotValue = true;
+            }
+            return GotValue;
+        }
+
+        public void Clear()
+        {
+            if (GotValue)
+            {
+                foreach (IPropertyState ps in Children)
+                {
+                    ps.Clear();
+                }
+                GotValue = false;
+            }
+        }
+
+        public void Purge()
+        {
+            if (GotValue)
+            {
+                foreach (IPropertyState ps in Children)
+                {
+                    ps.Purge();
+                }
+            }
+        }
+
+        public void OnValChanged(StateChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Restore()
+        {
+            bool result = false;
+            if (GotValue)
+            {
+                foreach (IPropertyState ps in Children)
+                {
+                    if (ps.Restore()) result = true;
+                }
+            }
+            return result;
+        }
     }
 
-    public class TrackPropertyStateGroup : IGroup<PropertyStateGroup>
+    public class TrackPropertyStateGroup : IGroup<PropertyStateGroup>, IValueContainer
     {
         public TrackPropertyStateGroup(string name)
         {
@@ -145,6 +400,74 @@ namespace Snapshot
         public string Name { get; }
 
         public List<PropertyStateGroup> Children { get; }
+
+        public bool GotValue { get; private set; }
+
+        public event EventHandler<StateChangedEventArgs> ValChanged;
+
+        public bool Capture()
+        {
+            foreach (PropertyStateGroup pg in Children)
+            {
+                if (pg.Capture()) GotValue = true;
+            }
+            return GotValue;
+        }
+
+        public bool CaptureMissing()
+        {
+            foreach (PropertyStateGroup pg in Children)
+            {
+                if (pg.CaptureMissing()) GotValue = true;
+            }
+            return GotValue;
+        }
+
+        public void Clear()
+        {
+            if (GotValue)
+            {
+                foreach (PropertyStateGroup pg in Children)
+                {
+                    pg.Clear();
+                }
+                GotValue = false;
+            }
+        }
+
+        public void OnValChanged(StateChangedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Restore()
+        {
+            bool result = false;
+            if (GotValue)
+            {
+                foreach (PropertyStateGroup pg in Children)
+                {
+                    if (pg.Restore()) result = true;
+                }
+            }
+            return result;
+        }
+
+        public void Purge()
+        {
+            bool statesRemaining = false;
+
+            if (GotValue)
+            {
+                foreach (PropertyStateGroup pg in Children)
+                {
+                    pg.Purge();
+                    if (pg.GotValue) statesRemaining = true;
+                }
+            }
+
+            GotValue = statesRemaining;
+        }
     }
 
     public class MachineState
@@ -156,7 +479,7 @@ namespace Snapshot
 
             _allProperties = new List<IPropertyState>();
 
-            DataStates = new DataState();
+            DataStates = new DataState(m);
             _allProperties.Add(DataStates);
 
             InputStates = new PropertyStateGroup("Input");
@@ -165,7 +488,6 @@ namespace Snapshot
                 if(p.Flags.HasFlag(ParameterFlags.State))
                 {
                     var ps = new ParameterState(p);
-                    ps.SelChanged += OnPropertyStateChanged;
                     InputStates.Children.Add(ps);
                     _allProperties.Add(ps);
                 }
@@ -177,7 +499,6 @@ namespace Snapshot
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
                     var ps = new ParameterState(p);
-                    ps.SelChanged += OnPropertyStateChanged;
                     GlobalStates.Children.Add(ps);
                     _allProperties.Add(ps);
                 }
@@ -194,7 +515,6 @@ namespace Snapshot
                     for(int i = 0; i < tracks.TrackCount; i++)
                     {
                         var ps = new ParameterState(p, i);
-                        ps.SelChanged += OnPropertyStateChanged;
                         pg.Children.Add(ps);
                         _allProperties.Add(ps);
                     }
@@ -205,7 +525,6 @@ namespace Snapshot
             foreach (var a in Machine.Attributes)
             {
                 var ats = new AttributeState(a);
-                ats.SelChanged += OnPropertyStateChanged;
                 AttributeStates.Children.Add(ats);
                 _allProperties.Add(ats);
             }
@@ -250,22 +569,67 @@ namespace Snapshot
 
         public bool Capture()
         {
+            if(DataStates.Capture()) GotState = true;
+
+            if(InputStates.Capture()) GotState = true;
+
+            if (GlobalStates.Capture()) GotState = true;
+
+            if (TrackStates.Capture()) GotState = true;
+
+            return GotState;
+        }
+
+        public bool CaptureMissing()
+        {
+            if (DataStates.CaptureMissing()) GotState = true;
+
+            if (InputStates.CaptureMissing()) GotState = true;
+
+            if (GlobalStates.CaptureMissing()) GotState = true;
+
+            if (TrackStates.CaptureMissing()) GotState = true;
+
             return GotState;
         }
 
         public bool Restore()
         {
-            return true;
+            bool result = false;
+
+            if (DataStates.Restore()) result = true;
+
+            if (InputStates.Restore()) result = true;
+
+            if (GlobalStates.Restore()) result = true;
+
+            if (TrackStates.Restore()) result = true;
+
+            return result;
         }
 
         public void Clear()
         {
+            DataStates.Clear();
+
+            InputStates.Clear();
+
+            GlobalStates.Clear();
+
+            TrackStates.Clear();
+
             GotState = false;
         }
 
         public void Purge()
         {
-            // FIXME: Remove stored state for unselected items
+            DataStates.Clear();
+
+            InputStates.Clear();
+
+            GlobalStates.Clear();
+
+            TrackStates.Clear();
         }
     }
 }

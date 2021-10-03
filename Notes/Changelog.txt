@@ -1,3 +1,6 @@
+2021.09.03
+	Implemented Capture, CaptureMissing, Restore, Clear and Purge 
+
 2021.09.02
 	Reworked things to handle machine data the same as params and attributes
 

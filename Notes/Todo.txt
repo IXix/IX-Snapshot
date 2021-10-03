@@ -1,13 +1,23 @@
-Implement store/restore/clear/purge
+Prevent treeview resizing to fit content and add scrollbar
 
 Slots
+	Either:
+		a. Convert stored values into arrays of values
+			Avoids duplication of machine state structures
+		b. Add a MachineState for each slot
+			Easier but less efficient.
 
 Save/Load machine data to song
 
+Add option to capture/clear on check/uncheck property
+
 Implement code for automatic behaviour checkboxes
 
-Styling of list items based on GotState and UseData
+Styling of list items based on whether a value is stored/not stored/missing
 
-Prevent treeview resizing to fit content and add scrollbar
+Data item should display the data size (possibly both stored size and machine sizes) so we know whether we're storing 16GB of data
 
 Info readout seems wrong. Total number of properties doesn't match num selected when everything selected.
+
+Selecting (not checking) items in the treeview is very sluggish and doesn't work for mouse-clicks
+	Probably fires loads of unused events or something.
