@@ -1,5 +1,3 @@
-Prevent treeview resizing to fit content and add scrollbar
-
 Slots
 	Either:
 		a. Convert stored values into arrays of values

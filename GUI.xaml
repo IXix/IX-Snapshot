@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              xmlns:local="clr-namespace:Snapshot" d:DataContext="{d:DesignInstance Type=local:SnapshotVM}"
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="500" d:DesignWidth="500" Height="500">
     <UserControl.Resources>
         <Style TargetType="StackPanel">
             <Setter Property="Margin" Value="1" />
@@ -30,13 +30,13 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid x:Name="MainGrid" MinWidth="200" MinHeight="200" Margin="0,0,0,8">
+    <Grid x:Name="MainGrid" MinHeight="200" Margin="0,0,0,8">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
-            <TreeView x:Name="MachineList" Grid.Row="0"  MinHeight="200" ItemsSource="{Binding States}">
+            <TreeView x:Name="MachineList" Grid.Row="0" ItemsSource="{Binding States}">
                 <TreeView.ItemContainerStyle>
                     <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                     <Style TargetType="{x:Type TreeViewItem}">
