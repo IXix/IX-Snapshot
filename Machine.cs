@@ -29,6 +29,11 @@ namespace Snapshot
         private List<IPropertyState> _allProperties;
 
         public bool GotState { get; private set; }
+        public bool SelectNewMachines { get; set; }
+        public bool CaptureOnSlotChange { get; set; }
+        public bool RestoreOnSlotChange { get; set; }
+        public bool RestoreOnSongLoad { get; set; }
+        public bool RestoreOnStop { get; set; }
 
         // How many states are selected
         public int SelCount
@@ -110,13 +115,20 @@ namespace Snapshot
 
         public void Stop()
         {
-            // FIXME - If restore on stop
+            if(RestoreOnStop)
+            {
+                Restore();
+            }
         }
 
         // Called after song load or template drop
         public void ImportFinished(IDictionary<string, string> machineNameMap)
         {
             // FIXME - Remap stored states to correct machines using machineNameMap
+            //if(RestoreOnSongLoad)
+            //{
+            //    Restore();
+            //}
         }
 
         #endregion IBuzzMachine
@@ -131,6 +143,7 @@ namespace Snapshot
                 {
                     s.SelChanged += OnStateChanged;
                     s.ValChanged += OnStateChanged;
+                    s.Selected = SelectNewMachines;
                     _allProperties.Add(s);
                 }
                 States.Add(ms);

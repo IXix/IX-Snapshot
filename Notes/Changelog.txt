@@ -8,6 +8,7 @@
 	Data item is no longer added if machine has no data
 	Fixed MachineState being needlessly generated for Snapshot
 	Prevent items with no children being checked in UpdateTreeCheck()
+	Implemented SelectNewMachines and RestoreOnStop
 
 2021.09.03
 	Implemented Capture, CaptureMissing, Restore, Clear and Purge 

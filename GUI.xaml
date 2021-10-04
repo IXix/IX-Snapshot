@@ -95,11 +95,11 @@
                 <TextBlock x:Name="txtSelCount" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
-                <CheckBox x:Name="chkSelNew" Content="Select new machines" FontSize="14"/>
-                <CheckBox x:Name="chkCaptureOnSlot" Content="Capture on slot change" />
-                <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" />
-                <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" />
-                <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" />
+                <CheckBox x:Name="chkSelNew" Content="Select new machines" IsChecked="{Binding SelectNewMachines}"/>
+                <CheckBox x:Name="chkCaptureOnSlot" Content="Capture on slot change" IsChecked="{Binding CaptureOnSlotChange}"/>
+                <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" IsChecked="{Binding RestoreOnSlotChange}"/>
+                <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}"/>
+                <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}"/>
                 <Separator Height="9" />
                 <Button x:Name="btnCapture" Command="{Binding cmdCapture}">Capture</Button>
                 <Button x:Name="btnCaptureMissing" Command="{Binding cmdCaptureMissing}">Capture Missing</Button>

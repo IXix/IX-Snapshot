@@ -236,6 +236,7 @@ namespace Snapshot
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Purge()
             };
+
         }
 
         #region INotifyPropertyChanged
@@ -281,8 +282,37 @@ namespace Snapshot
         public SimpleCommand cmdRestore { get; private set; }
         public SimpleCommand cmdClear { get; private set; }
         public SimpleCommand cmdPurge { get; private set; }
-        public SimpleCommand cmdTest { get; private set; }
         #endregion Commands
+
+        #region Properties
+
+        public bool SelectNewMachines
+        {
+            get => Owner.SelectNewMachines;
+            set => Owner.SelectNewMachines = value;
+        }
+        public bool CaptureOnSlotChange
+        {
+            get => Owner.CaptureOnSlotChange;
+            set => Owner.CaptureOnSlotChange = value;
+        }
+        public bool RestoreOnSlotChange
+        {
+            get => Owner.RestoreOnSlotChange;
+            set => Owner.RestoreOnSlotChange = value;
+        }
+        public bool RestoreOnSongLoad
+        {
+            get => Owner.RestoreOnSlotChange;
+            set => Owner.RestoreOnSlotChange = value;
+        }
+        public bool RestoreOnStop
+        {
+            get => Owner.RestoreOnStop;
+            set => Owner.RestoreOnStop = value;
+        }
+
+        #endregion Properties
     }
 
     // Machines
