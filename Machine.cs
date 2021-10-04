@@ -124,7 +124,7 @@ namespace Snapshot
         #region events
         private void OnMachineAdded(IMachine m)
         {
-            if (m != host.Machine)
+            if (m.ManagedMachine != this)
             {
                 MachineState ms = new MachineState(m);
                 foreach (IPropertyState s in ms.AllProperties)

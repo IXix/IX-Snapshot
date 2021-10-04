@@ -234,7 +234,50 @@ namespace Snapshot
 
         public byte [] Value { get; set; }
 
-        public string Name => "Data";
+        // Byte count to formatted string solution - https://stackoverflow.com/a/48467634
+        private static string[] suffixes = new[] { "b", "K", "M", "G", "T", "P" };
+        public static string ToSize(double number, int precision = 2)
+        {
+            // unit is the number of bytes
+            const double unit = 1024;
+
+            // suffix counter
+            int i = 0;
+
+            // as long as we're bigger than a unit, keep going
+            while (number > unit)
+            {
+                number /= unit;
+                i++;
+            }
+
+            // apply precision and current suffix
+            return Math.Round(number, precision) + suffixes[i];
+        }
+
+        public string Name
+        {
+            get
+            {
+                string size = "";
+                if(Value == null)
+                {
+                    if(Machine.Data != null)
+                    {
+                        size = string.Format("Data ({0})", ToSize(Machine.Data.Length));
+                    }
+                    else
+                    {
+                        size = "Data (none)";
+                    }
+                }
+                else
+                {
+                    size = string.Format("Data - {0}", ToSize(Value.Length));
+                }
+                return size;
+            }
+        }
 
         private IMachine _machine;
         public IMachine Machine => _machine;
@@ -361,13 +404,16 @@ namespace Snapshot
 
         public void Purge()
         {
+            bool statesRemaining = false;
             if (GotValue)
             {
                 foreach (IPropertyState ps in Children)
                 {
                     ps.Purge();
+                    if (ps.GotValue) statesRemaining = true;
                 }
             }
+            GotValue = statesRemaining;
         }
 
         public void OnValChanged(StateChangedEventArgs e)
@@ -479,18 +525,10 @@ namespace Snapshot
 
             _allProperties = new List<IPropertyState>();
 
-            DataStates = new DataState(m);
-            _allProperties.Add(DataStates);
-
-            InputStates = new PropertyStateGroup("Input");
-            foreach(var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Input).Parameters)
+            if(Machine.Data != null)
             {
-                if(p.Flags.HasFlag(ParameterFlags.State))
-                {
-                    var ps = new ParameterState(p);
-                    InputStates.Children.Add(ps);
-                    _allProperties.Add(ps);
-                }
+                DataStates = new DataState(m);
+                _allProperties.Add(DataStates);
             }
 
             GlobalStates = new PropertyStateGroup("Global");
@@ -560,7 +598,6 @@ namespace Snapshot
         // State storage. The publics are for the treeview
         // the private is to make capture etc. simpler
         public DataState DataStates { get; set; }
-        public PropertyStateGroup InputStates { get; private set; }
         public PropertyStateGroup GlobalStates { get; private set; }
         public TrackPropertyStateGroup TrackStates { get; private set; }
         public PropertyStateGroup AttributeStates { get; private set; }
@@ -569,9 +606,9 @@ namespace Snapshot
 
         public bool Capture()
         {
-            if(DataStates.Capture()) GotState = true;
+            if(DataStates != null && DataStates.Capture()) GotState = true;
 
-            if(InputStates.Capture()) GotState = true;
+            if (AttributeStates.Capture()) GotState = true;
 
             if (GlobalStates.Capture()) GotState = true;
 
@@ -582,9 +619,9 @@ namespace Snapshot
 
         public bool CaptureMissing()
         {
-            if (DataStates.CaptureMissing()) GotState = true;
+            if (DataStates != null && DataStates.CaptureMissing()) GotState = true;
 
-            if (InputStates.CaptureMissing()) GotState = true;
+            if (AttributeStates.CaptureMissing()) GotState = true;
 
             if (GlobalStates.CaptureMissing()) GotState = true;
 
@@ -597,9 +634,9 @@ namespace Snapshot
         {
             bool result = false;
 
-            if (DataStates.Restore()) result = true;
+            if (DataStates != null && DataStates.Restore()) result = true;
 
-            if (InputStates.Restore()) result = true;
+            if (AttributeStates.Restore()) result = true;
 
             if (GlobalStates.Restore()) result = true;
 
@@ -610,9 +647,9 @@ namespace Snapshot
 
         public void Clear()
         {
-            DataStates.Clear();
+            if(DataStates != null) DataStates.Clear();
 
-            InputStates.Clear();
+            AttributeStates.Clear();
 
             GlobalStates.Clear();
 
@@ -623,13 +660,13 @@ namespace Snapshot
 
         public void Purge()
         {
-            DataStates.Clear();
+            if (DataStates != null) DataStates.Purge();
 
-            InputStates.Clear();
+            AttributeStates.Purge();
 
-            GlobalStates.Clear();
+            GlobalStates.Purge();
 
-            TrackStates.Clear();
+            TrackStates.Purge();
         }
     }
 }

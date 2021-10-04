@@ -1,5 +1,13 @@
 2021.09.04
 	Improved GUI control size stretch/fit etc.
+	Removed MachineState.InputStates
+		Apparently machine input parameters (amp + pan) can't be set
+	Attribute now shown in treeview (duh)
+	Fixed a few bugs related to Purge
+	Implemented display of machine data size
+	Data item is no longer added if machine has no data
+	Fixed MachineState being needlessly generated for Snapshot
+	Prevent items with no children being checked in UpdateTreeCheck()
 
 2021.09.03
 	Implemented Capture, CaptureMissing, Restore, Clear and Purge 

@@ -152,15 +152,15 @@ namespace Snapshot
             var c = Children.Count(x => x.IsChecked == true);
             var i = Children.Count(x => x.IsChecked == null);
 
-            if (c == Children.Count)
-            {
-                IsChecked = true;
-                return;
-            }
-
             if(c == 0 && i == 0)
             {
                 IsChecked = false;
+                return;
+            }
+
+            if (c == Children.Count)
+            {
+                IsChecked = true;
                 return;
             }
 
@@ -294,6 +294,7 @@ namespace Snapshot
             : base(null, true)
         {
             _state = state;
+            IsChecked = false;
             LoadChildren();
         }
 
@@ -304,10 +305,11 @@ namespace Snapshot
 
         protected override void LoadChildren()
         {
-            Children.Add(new PropertyStateVM(_state.DataStates, this));
-            
-            if(_state.InputStates.Children.Count > 0)
-                Children.Add(new PropertyStateGroupVM(_state.InputStates, this));
+            if(_state.DataStates != null)
+                Children.Add(new PropertyStateVM(_state.DataStates, this));
+
+            if (_state.AttributeStates.Children.Count > 0)
+                Children.Add(new PropertyStateGroupVM(_state.AttributeStates, this));
 
             if (_state.GlobalStates.Children.Count > 0)
                 Children.Add(new PropertyStateGroupVM(_state.GlobalStates, this));
@@ -326,6 +328,7 @@ namespace Snapshot
             : base(parentMachine, true)
         {
             _group = group;
+            IsChecked = false;
             LoadChildren();
         }
 
@@ -350,6 +353,7 @@ namespace Snapshot
             : base(parent, true)
         {
             _group = group;
+            IsChecked = false;
             LoadChildren();
         }
 
@@ -374,6 +378,12 @@ namespace Snapshot
         {
             _property = property;
             IsChecked = _property.Selected;
+            _property.ValChanged += OnValChanged;
+        }
+
+        private void OnValChanged(object sender, StateChangedEventArgs e)
+        {
+            OnPropertyChanged("Name");
         }
 
         protected override void OnCheckChanged()
