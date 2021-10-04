@@ -29,6 +29,7 @@ namespace Snapshot
     public interface IValueContainer
     {
         bool GotValue { get; }
+        int Slot { get; set; }
 
         bool Capture();
         bool CaptureMissing();
@@ -50,29 +51,102 @@ namespace Snapshot
         List<T> Children { get; }
     }
 
-    public class ParameterState : IPropertyState
+    public class PropertyBase : IPropertyState
+    {
+        virtual public int? Track { get; protected set; }
+
+        virtual public bool Selected { get; set; }
+
+        virtual public string Name => throw new NotImplementedException();
+
+        virtual public bool GotValue { get; protected set; }
+
+        protected int m_slot;
+        virtual public int Slot
+        {
+            get => m_slot;
+            set
+            {
+                if (m_slot != value)
+                {
+                    m_slot = value;
+                    OnSelChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                    OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                }
+            }
+        }
+
+        public event EventHandler<StateChangedEventArgs> SelChanged;
+        public void OnSelChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = SelChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        public event EventHandler<StateChangedEventArgs> ValChanged;
+        public void OnValChanged(StateChangedEventArgs e)
+        {
+            EventHandler<StateChangedEventArgs> handler = ValChanged;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        virtual public bool Capture()
+        {
+            throw new NotImplementedException();
+        }
+
+        virtual public bool CaptureMissing()
+        {
+            throw new NotImplementedException();
+        }
+
+        virtual public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        virtual public void Purge()
+        {
+            throw new NotImplementedException();
+        }
+
+        virtual public bool Restore()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class ParameterState : PropertyBase
     {
         public ParameterState(IParameter param, int? track = null)
         {
             Parameter = param;
             Selected = false;
+            Slot = 0;
             Track = track;
-            Value = new int?();
+            m_values = new int?[128];
         }
 
         public IParameter Parameter { get; private set; }
-        public int? Value { get; set; }
 
-        public string Name => Track == null ?Parameter.Name : Track.ToString();
+        private int?[] m_values;
+        public int? Value
+        {
+            get => m_values[Slot];
+            set => m_values[Slot] = value;
+        }
 
-        public int? Track { get; private set; }
-        public bool GotValue => Value.HasValue;
+        public override string Name => Track == null ?Parameter.Name : Track.ToString();
 
-        public bool Selected { get; set; }
-        public event EventHandler<StateChangedEventArgs> SelChanged;
-        public event EventHandler<StateChangedEventArgs> ValChanged;
+        public override bool GotValue => Value.HasValue;
 
-        public bool Capture()
+        public override bool Capture()
         {
             if(Selected)
             {
@@ -83,7 +157,7 @@ namespace Snapshot
             return false;
         }
 
-        public bool CaptureMissing()
+        public override bool CaptureMissing()
         {
             if (Selected && !GotValue)
             {
@@ -94,7 +168,7 @@ namespace Snapshot
             return false;
         }
 
-        public bool Restore()
+        public override bool Restore()
         {
             if (Selected && GotValue)
             {
@@ -104,57 +178,45 @@ namespace Snapshot
             return false;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             Value = null;
             OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
         }
 
-        public void Purge()
+        public override void Purge()
         {
             if (GotValue && !Selected)
             {
                 Clear();
             }
         }
-
-        public void OnSelChanged(StateChangedEventArgs e)
-        {
-            EventHandler<StateChangedEventArgs> handler = SelChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        public void OnValChanged(StateChangedEventArgs e)
-        {
-            EventHandler<StateChangedEventArgs> handler = ValChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
     }
 
-    public class AttributeState : IPropertyState
+    public class AttributeState : PropertyBase
     {
         public AttributeState(IAttribute attr)
         {
             Attribute = attr;
             Selected = false;
-            Value = new int?();
+            Slot = 0;
+            m_values = new int?[128];
         }
 
         public IAttribute Attribute { get; private set; }
-        public int? Value { get; set; }
 
-        public string Name => Attribute.Name;
+        private int?[] m_values;
+        public int? Value
+        {
+            get => m_values[Slot];
+            set => m_values[Slot] = value;
+        }
 
-        public int? Track { get; private set; }
-        public bool GotValue => Value.HasValue;
+        public override string Name => Attribute.Name;
 
-        public bool Capture()
+        public override bool GotValue => Value.HasValue;
+
+        public override bool Capture()
         {
             if (Selected)
             {
@@ -165,7 +227,7 @@ namespace Snapshot
             return false;
         }
 
-        public bool CaptureMissing()
+        public override bool CaptureMissing()
         {
             if (Selected && !GotValue)
             {
@@ -176,7 +238,7 @@ namespace Snapshot
             return false;
         }
 
-        public bool Restore()
+        public override bool Restore()
         {
             if (Selected && GotValue)
             {
@@ -186,53 +248,37 @@ namespace Snapshot
             return false;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             Value = null;
             OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
         }
 
-        public void Purge()
+        public override void Purge()
         {
             if (GotValue && !Selected)
             {
                 Clear();
             }
         }
-
-        public bool Selected { get; set; }
-        public event EventHandler<StateChangedEventArgs> SelChanged;
-        public event EventHandler<StateChangedEventArgs> ValChanged;
-
-        public void OnSelChanged(StateChangedEventArgs e)
-        {
-            EventHandler<StateChangedEventArgs> handler = SelChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        public void OnValChanged(StateChangedEventArgs e)
-        {
-            EventHandler<StateChangedEventArgs> handler = ValChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
     }
 
-    public class DataState : IPropertyState
+    public class DataState : PropertyBase
     {
         public DataState(IMachine machine)
         {
             _machine = machine;
             Selected = false;
-            Value = null;
+            Slot = 0;
+            m_values = new byte[128][];
         }
 
-        public byte [] Value { get; set; }
+        private byte[][] m_values;
+        public byte[] Value
+        {
+            get => m_values[Slot];
+            set => m_values[Slot] = value;
+        }
 
         // Byte count to formatted string solution - https://stackoverflow.com/a/48467634
         private static string[] suffixes = new[] { "b", "K", "M", "G", "T", "P" };
@@ -255,7 +301,7 @@ namespace Snapshot
             return Math.Round(number, precision) + suffixes[i];
         }
 
-        public string Name
+        public override string Name
         {
             get
             {
@@ -281,11 +327,12 @@ namespace Snapshot
 
         private IMachine _machine;
         public IMachine Machine => _machine;
-        public int? Track => null;
-        
-        public bool GotValue => Value != null;
 
-        public bool Capture()
+        public override int? Track => null;
+
+        public override bool GotValue => Value != null;
+
+        public override bool Capture()
         {
             if(Selected)
             {
@@ -296,7 +343,7 @@ namespace Snapshot
             return false;
         }
 
-        public bool CaptureMissing()
+        public override bool CaptureMissing()
         {
             if (Selected && !GotValue)
             {
@@ -307,7 +354,7 @@ namespace Snapshot
             return false;
         }
 
-        public bool Restore()
+        public override bool Restore()
         {
             if (Selected && GotValue)
             {
@@ -317,61 +364,51 @@ namespace Snapshot
             return false;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             Value = null;
             OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
         }
 
-        public void Purge()
+        public override void Purge()
         {
             if(GotValue && !Selected)
             {
                 Clear();
             }
         }
-
-        public bool Selected { get; set; }
-
-        public event EventHandler<StateChangedEventArgs> SelChanged;
-        public event EventHandler<StateChangedEventArgs> ValChanged;
-
-        public void OnSelChanged(StateChangedEventArgs e)
-        {
-            EventHandler<StateChangedEventArgs> handler = SelChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
-        public void OnValChanged(StateChangedEventArgs e)
-        {
-            EventHandler<StateChangedEventArgs> handler = ValChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
     }
 
-    public class PropertyStateGroup : IGroup<IPropertyState>, IValueContainer
+    public class PropertyStateGroup : PropertyBase, IGroup<IPropertyState>
     {
         public PropertyStateGroup(string name)
         {
             Name = name;
+            Slot = 0;
             Children = new List<IPropertyState>();
         }
 
-        public string Name { get; }
+        public override string Name { get; }
 
         public List<IPropertyState> Children { get; }
 
-        public bool GotValue { get; private set; }
+        public override int Slot
+        {
+            get => m_slot;
+            set
+            {
+                if (m_slot != value)
+                {
+                    m_slot = value;
+                    foreach(IPropertyState s in Children)
+                    {
+                        s.Slot = value;
+                    }
+                }
+            }
+        }
 
-        public event EventHandler<StateChangedEventArgs> ValChanged;
-
-        public bool Capture()
+        public override bool Capture()
         {
             foreach (IPropertyState ps in Children)
             {
@@ -380,8 +417,7 @@ namespace Snapshot
             return GotValue;
         }
 
-
-        public bool CaptureMissing()
+        public override bool CaptureMissing()
         {
             foreach (IPropertyState ps in Children)
             {
@@ -390,7 +426,7 @@ namespace Snapshot
             return GotValue;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             if (GotValue)
             {
@@ -402,7 +438,7 @@ namespace Snapshot
             }
         }
 
-        public void Purge()
+        public override void Purge()
         {
             bool statesRemaining = false;
             if (GotValue)
@@ -416,12 +452,7 @@ namespace Snapshot
             GotValue = statesRemaining;
         }
 
-        public void OnValChanged(StateChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Restore()
+        public override bool Restore()
         {
             bool result = false;
             if (GotValue)
@@ -435,23 +466,36 @@ namespace Snapshot
         }
     }
 
-    public class TrackPropertyStateGroup : IGroup<PropertyStateGroup>, IValueContainer
+    public class TrackPropertyStateGroup : PropertyBase, IGroup<PropertyStateGroup>
     {
         public TrackPropertyStateGroup(string name)
         {
             Name = name;
+            Slot = 0;
             Children = new List<PropertyStateGroup>();
         }
 
-        public string Name { get; }
+        public override string Name { get; }
 
         public List<PropertyStateGroup> Children { get; }
 
-        public bool GotValue { get; private set; }
+        public override int Slot
+        {
+            get => m_slot;
+            set
+            {
+                if (m_slot != value)
+                {
+                    m_slot = value;
+                    foreach (PropertyStateGroup g in Children)
+                    {
+                        g.Slot = value;
+                    }
+                }
+            }
+        }
 
-        public event EventHandler<StateChangedEventArgs> ValChanged;
-
-        public bool Capture()
+        public override bool Capture()
         {
             foreach (PropertyStateGroup pg in Children)
             {
@@ -460,7 +504,7 @@ namespace Snapshot
             return GotValue;
         }
 
-        public bool CaptureMissing()
+        public override bool CaptureMissing()
         {
             foreach (PropertyStateGroup pg in Children)
             {
@@ -469,7 +513,7 @@ namespace Snapshot
             return GotValue;
         }
 
-        public void Clear()
+        public override void Clear()
         {
             if (GotValue)
             {
@@ -481,12 +525,7 @@ namespace Snapshot
             }
         }
 
-        public void OnValChanged(StateChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Restore()
+        public override bool Restore()
         {
             bool result = false;
             if (GotValue)
@@ -499,7 +538,7 @@ namespace Snapshot
             return result;
         }
 
-        public void Purge()
+        public override void Purge()
         {
             bool statesRemaining = false;
 
@@ -522,6 +561,7 @@ namespace Snapshot
         {
             Machine = m;
             GotState = false;
+            Slot = 0;
 
             _allProperties = new List<IPropertyState>();
 
@@ -574,8 +614,25 @@ namespace Snapshot
 
         public IMachine Machine { get; private set; }
 
-        // True if anything is stored
+        // True if anything is stored in current slot
         public bool GotState { get; private set; }
+
+        private int m_slot;
+        public int Slot
+        {
+            get => m_slot;
+            set
+            {
+                if(m_slot != value)
+                {
+                    m_slot = value;
+                    if (DataStates != null) DataStates.Slot = value;
+                    if (GlobalStates != null) GlobalStates.Slot = value;
+                    if (TrackStates != null) TrackStates.Slot = value;
+                    if (AttributeStates != null) AttributeStates.Slot = value;
+                }
+            }
+        }
 
         // How many selected states have not been captured
         public int SelCount

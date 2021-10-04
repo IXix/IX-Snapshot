@@ -74,7 +74,6 @@ namespace Snapshot
                 OnMachineAdded(m);
             }
 
-
             Global.Buzz.Song.MachineAdded += (m) => { OnMachineAdded(m); };
             Global.Buzz.Song.MachineRemoved += (m) => { OnMachineRemoved(m); };
         }
@@ -173,11 +172,21 @@ namespace Snapshot
         [ParameterDecl(IsStateless = false, MinValue = 1, MaxValue = 128, DefValue = 1, Description = "Active slot", Name = "Slot")]
         public int Slot
         {
-            get { return m_slot; }
+            get => m_slot;
             set
             {
-                m_slot = value;
-                // FIXME: Do something useful
+                if (m_slot != value)
+                {
+                    OnSlotChanging();
+
+                    m_slot = value;
+                    foreach (MachineState s in States)
+                    {
+                        s.Slot = value;
+                    }
+
+                    OnSlotChanged();
+                }
             }
         }
 
@@ -234,6 +243,25 @@ namespace Snapshot
                 }
                 GotState = false;
             }
+        }
+
+        // Called before the slot is changed
+        internal void OnSlotChanging()
+        {
+            if(CaptureOnSlotChange)
+            {
+                Capture();
+            }
+        }
+
+        // Called after the slot has changed
+        internal void OnSlotChanged()
+        {
+            if(RestoreOnSlotChange)
+            {
+                Restore();
+            }
+            // FIXME: Refresh treeview
         }
 
         #endregion Commands
