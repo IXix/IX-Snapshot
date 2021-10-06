@@ -22,38 +22,39 @@ namespace Snapshot
     {
         IBuzzMachineHost host;
 
-        public ObservableCollection<MachineState> States { get; set; }
+        public ObservableCollection<MachineState> States { get; private set; }
 
         public SnapshotVM VM { get; }
 
         private List<IPropertyState> _allProperties;
 
-        public bool GotState { get; private set; }
+        public bool GotState => _allProperties.Count(x => x.GotValue) > 0;
+
         public bool SelectNewMachines { get; set; }
         public bool CaptureOnSlotChange { get; set; }
         public bool RestoreOnSlotChange { get; set; }
         public bool RestoreOnSongLoad { get; set; }
         public bool RestoreOnStop { get; set; }
 
-        // How many states are selected
+        // How many properties are selected
         public int SelCount
         {
             get { return _allProperties.Count(x => x.Selected == true); }
         }
 
-        // How many states have been captured
+        // How many properties have been captured
         public int StoredCount
         {
             get { return _allProperties.Count(x => x.GotValue == true); }
         }
 
-        // How many states are stored that aren't selected
+        // How many properties are stored that aren't selected
         public int RedundantCount
         {
             get { return _allProperties.Count(x => x.Selected == false && x.GotValue == true); }
         }
 
-        // How many selected states have not been captured
+        // How many selected properties have not been captured
         public int MissingCount
         {
             get { return _allProperties.Count(x => x.Selected == true && x.GotValue == false); }
@@ -198,7 +199,7 @@ namespace Snapshot
         {
             foreach (MachineState s in States)
             {
-                if (s.Capture()) GotState = true;
+                s.Capture();
             }
         }
 
@@ -206,7 +207,7 @@ namespace Snapshot
         {
             foreach (MachineState s in States)
             {
-                if(s.CaptureMissing()) GotState = true;
+                s.CaptureMissing();
             }
         }
 
@@ -228,7 +229,6 @@ namespace Snapshot
                 foreach (var s in States)
                 {
                     s.Purge();
-                    if (s.GotState) GotState = true;
                 }
             }
         }
@@ -241,7 +241,6 @@ namespace Snapshot
                 {
                     s.Clear();
                 }
-                GotState = false;
             }
         }
 

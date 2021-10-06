@@ -5,6 +5,7 @@ Implement
 	RestoreOnSongLoad
 
 Styling of list items based on whether a value is stored/not stored/missing
+	Currently properties that have stored values are bold. Might be nice to have some sort if indicator graphic instead.
 
 Selecting (not checking) items in the treeview is very sluggish and doesn't work for mouse-clicks
 	Probably fires loads of unused events or something.

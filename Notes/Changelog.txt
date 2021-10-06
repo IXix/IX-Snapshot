@@ -1,6 +1,8 @@
 2021.09.05
 	Treeview items bold when value stored
-		Sort of working but sort of not. Hurting my head.
+		Improved GotState for the container types
+		Possibly added unnecessary events while floundering around trying to fix treeview update
+	Tidying up of inherited stuff
 
 2021.09.04
 	Improved GUI control size stretch/fit etc.

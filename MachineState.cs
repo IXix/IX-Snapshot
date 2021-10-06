@@ -53,6 +53,13 @@ namespace Snapshot
 
     public class PropertyBase : IPropertyState
     {
+        public PropertyBase()
+        {
+            Selected = false;
+            Slot = 0;
+            Track = null;
+        }
+
         virtual public int? Track { get; protected set; }
 
         virtual public bool Selected { get; set; }
@@ -127,8 +134,6 @@ namespace Snapshot
         public ParameterState(IParameter param, int? track = null)
         {
             Parameter = param;
-            Selected = false;
-            Slot = 0;
             Track = track;
             m_values = new int?[128];
         }
@@ -198,8 +203,6 @@ namespace Snapshot
         public AttributeState(IAttribute attr)
         {
             Attribute = attr;
-            Selected = false;
-            Slot = 0;
             m_values = new int?[128];
         }
 
@@ -268,8 +271,6 @@ namespace Snapshot
         public DataState(IMachine machine)
         {
             _machine = machine;
-            Selected = false;
-            Slot = 0;
             m_values = new byte[128][];
         }
 
@@ -384,11 +385,15 @@ namespace Snapshot
         public PropertyStateGroup(string name)
         {
             Name = name;
-            Slot = 0;
             Children = new List<IPropertyState>();
         }
 
         public override string Name { get; }
+
+        public override bool GotValue
+        {
+            get { return Children.Count(x => x.GotValue) > 0; }
+        }
 
         public List<IPropertyState> Children { get; }
 
@@ -412,7 +417,7 @@ namespace Snapshot
         {
             foreach (IPropertyState ps in Children)
             {
-                if (ps.Capture()) GotValue = true;
+                ps.Capture();
             }
             return GotValue;
         }
@@ -421,7 +426,7 @@ namespace Snapshot
         {
             foreach (IPropertyState ps in Children)
             {
-                if (ps.CaptureMissing()) GotValue = true;
+                ps.CaptureMissing();
             }
             return GotValue;
         }
@@ -434,7 +439,6 @@ namespace Snapshot
                 {
                     ps.Clear();
                 }
-                GotValue = false;
             }
         }
 
@@ -446,7 +450,6 @@ namespace Snapshot
                 foreach (IPropertyState ps in Children)
                 {
                     ps.Purge();
-                    if (ps.GotValue) statesRemaining = true;
                 }
             }
             GotValue = statesRemaining;
@@ -459,7 +462,7 @@ namespace Snapshot
             {
                 foreach (IPropertyState ps in Children)
                 {
-                    if (ps.Restore()) result = true;
+                    ps.Restore();
                 }
             }
             return result;
@@ -476,6 +479,11 @@ namespace Snapshot
         }
 
         public override string Name { get; }
+
+        public override bool GotValue
+        {
+            get { return Children.Count(x => x.GotValue) > 0; }
+        }
 
         public List<PropertyStateGroup> Children { get; }
 
@@ -499,7 +507,7 @@ namespace Snapshot
         {
             foreach (PropertyStateGroup pg in Children)
             {
-                if (pg.Capture()) GotValue = true;
+                pg.Capture();
             }
             return GotValue;
         }
@@ -508,7 +516,7 @@ namespace Snapshot
         {
             foreach (PropertyStateGroup pg in Children)
             {
-                if (pg.CaptureMissing()) GotValue = true;
+                pg.CaptureMissing();
             }
             return GotValue;
         }
@@ -521,7 +529,6 @@ namespace Snapshot
                 {
                     pg.Clear();
                 }
-                GotValue = false;
             }
         }
 
@@ -532,7 +539,7 @@ namespace Snapshot
             {
                 foreach (PropertyStateGroup pg in Children)
                 {
-                    if (pg.Restore()) result = true;
+                    pg.Restore();
                 }
             }
             return result;
@@ -540,18 +547,13 @@ namespace Snapshot
 
         public override void Purge()
         {
-            bool statesRemaining = false;
-
             if (GotValue)
             {
                 foreach (PropertyStateGroup pg in Children)
                 {
                     pg.Purge();
-                    if (pg.GotValue) statesRemaining = true;
                 }
             }
-
-            GotValue = statesRemaining;
         }
     }
 
@@ -560,7 +562,6 @@ namespace Snapshot
         public MachineState(IMachine m)
         {
             Machine = m;
-            GotState = false;
             Slot = 0;
 
             _allProperties = new List<IPropertyState>();
@@ -615,7 +616,7 @@ namespace Snapshot
         public IMachine Machine { get; private set; }
 
         // True if anything is stored in current slot
-        public bool GotState { get; private set; }
+        public bool GotState => _allProperties.Count(x => x.GotValue) > 0;
 
         private int m_slot;
         public int Slot
@@ -634,25 +635,31 @@ namespace Snapshot
             }
         }
 
-        // How many selected states have not been captured
+        // How many selected properies have not been captured
         public int SelCount
         {
             get { return _allProperties.Count(x => x.Selected == true); }
         }
 
-        // How many states are stored that aren't selected
+        // How many properties have been captured
+        public int StoredCount
+        {
+            get { return _allProperties.Count(x => x.GotValue == true); }
+        }
+
+        // How many properties are stored that aren't selected
         public int RedundantCount
         {
             get { return _allProperties.Count(x => x.Selected == false && x.GotValue == true); }
         }
 
-        // How many selected states have not been captured
+        // How many selected properties have not been captured
         public int MissingCount
         {
             get { return _allProperties.Count(x => x.Selected == true && x.GotValue == false); }
         }
 
-        // State storage. The publics are for the treeview
+        // Storage. The publics are for the treeview
         // the private is to make capture etc. simpler
         public DataState DataStates { get; set; }
         public PropertyStateGroup GlobalStates { get; private set; }
@@ -663,26 +670,26 @@ namespace Snapshot
 
         public bool Capture()
         {
-            if(DataStates != null && DataStates.Capture()) GotState = true;
+            if(DataStates != null) DataStates.Capture();
 
-            if (AttributeStates.Capture()) GotState = true;
+            AttributeStates.Capture();
 
-            if (GlobalStates.Capture()) GotState = true;
+            GlobalStates.Capture();
 
-            if (TrackStates.Capture()) GotState = true;
+            TrackStates.Capture();
 
             return GotState;
         }
 
         public bool CaptureMissing()
         {
-            if (DataStates != null && DataStates.CaptureMissing()) GotState = true;
+            if (DataStates != null) DataStates.CaptureMissing();
 
-            if (AttributeStates.CaptureMissing()) GotState = true;
+            AttributeStates.CaptureMissing();
 
-            if (GlobalStates.CaptureMissing()) GotState = true;
+            GlobalStates.CaptureMissing();
 
-            if (TrackStates.CaptureMissing()) GotState = true;
+            TrackStates.CaptureMissing();
 
             return GotState;
         }
@@ -711,8 +718,6 @@ namespace Snapshot
             GlobalStates.Clear();
 
             TrackStates.Clear();
-
-            GotState = false;
         }
 
         public void Purge()

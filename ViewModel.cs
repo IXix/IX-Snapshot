@@ -176,6 +176,8 @@ namespace Snapshot
         {
             OnPropertyChanged("Name");
             OnPropertyChanged("GotValue");
+            if(_parent != null)
+                _parent.OnValChanged(sender, e);
         }
 
         /// <summary>
@@ -254,8 +256,13 @@ namespace Snapshot
 
         private void OnSlotChanged(object sender, EventArgs e)
         {
-            foreach(var s in States)
+            NotifyPropertyChanged("GotValue");
+            foreach(MachineStateVM s in States)
             {
+                foreach(var c in s.Children)
+                {
+                    c.OnPropertyChanged("GotValue");
+                }
                 s.OnPropertyChanged("GotValue");
             }
         }
@@ -272,12 +279,12 @@ namespace Snapshot
 
         #endregion
 
-        Machine Owner { get; set; }
+        private Machine Owner { get; set; }
 
         private string selectionInfoText;
         public string SelectionInfo
         {
-            get { return selectionInfoText; }
+            get => selectionInfoText;
             set
             {
                 selectionInfoText = value;
