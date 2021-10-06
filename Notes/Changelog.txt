@@ -3,6 +3,10 @@
 		Improved GotState for the container types
 		Possibly added unnecessary events while floundering around trying to fix treeview update
 	Tidying up of inherited stuff
+	Fixed Slot off-by-one error 
+	Added size data to the information display
+		Added various Size and TotalSize properties
+		Moved ToSize() method into a new class so we can use it more generally
 
 2021.09.04
 	Improved GUI control size stretch/fit etc.

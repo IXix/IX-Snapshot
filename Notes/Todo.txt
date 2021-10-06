@@ -1,7 +1,14 @@
+Slot names
+
+Slot size and total size
+
 Implement
 	Save/Load machine data to song
 	CaptureOnSlotChange
 	RestoreOnSlotChange
+		Might not be possible to do this from a parameter.
+		Getting an exception saying another thread owns the thing. See if there's anything like mi::Lock() in BuzzGUI
+
 	RestoreOnSongLoad
 
 Styling of list items based on whether a value is stored/not stored/missing

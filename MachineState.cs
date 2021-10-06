@@ -5,9 +5,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Snapshot
 {
+    public class Misc
+    {
+        // Byte count to formatted string solution - https://stackoverflow.com/a/48467634
+        private static string[] suffixes = new[] { "b", "K", "M", "G", "T", "P" };
+        public static string ToSize(double number, int precision = 2)
+        {
+            // unit is the number of bytes
+            const double unit = 1024;
+
+            // suffix counter
+            int i = 0;
+
+            // as long as we're bigger than a unit, keep going
+            while (number > unit)
+            {
+                number /= unit;
+                i++;
+            }
+
+            // apply precision and current suffix
+            return Math.Round(number, precision) + suffixes[i];
+        }
+    }
+
     public class StateChangedEventArgs : EventArgs
     {
         public IPropertyState Property { get; set; }
@@ -30,6 +55,8 @@ namespace Snapshot
     {
         bool GotValue { get; }
         int Slot { get; set; }
+        Int32 Size { get; }
+        Int32 TotalSize { get; }
 
         bool Capture();
         bool CaptureMissing();
@@ -67,6 +94,10 @@ namespace Snapshot
         virtual public string Name => throw new NotImplementedException();
 
         virtual public bool GotValue { get; protected set; }
+
+        virtual public int Size => throw new NotImplementedException();
+
+        virtual public int TotalSize => throw new NotImplementedException();
 
         protected int m_slot;
         virtual public int Slot
@@ -151,6 +182,21 @@ namespace Snapshot
 
         public override bool GotValue => Value.HasValue;
 
+        public override int Size => Value.HasValue ? Marshal.SizeOf(Value) : 0;
+
+        public override int TotalSize
+        {
+            get
+            {
+                int size = 0;
+                for(int i = 0; i <  m_values.Length; i++)
+                {
+                    size += m_values[i] != null ? Marshal.SizeOf(m_values[i]) : 0;
+                }
+                return size;
+            }
+        }
+
         public override bool Capture()
         {
             if(Selected)
@@ -219,6 +265,21 @@ namespace Snapshot
 
         public override bool GotValue => Value.HasValue;
 
+        public override int Size => Value.HasValue ? Marshal.SizeOf(Value) : 0;
+
+        public override int TotalSize
+        {
+            get
+            {
+                int size = 0;
+                for (int i = 0; i < m_values.Length; i++)
+                {
+                    size += m_values[i] != null ? Marshal.SizeOf(m_values[i]) : 0;
+                }
+                return size;
+            }
+        }
+
         public override bool Capture()
         {
             if (Selected)
@@ -281,27 +342,6 @@ namespace Snapshot
             set => m_values[Slot] = value;
         }
 
-        // Byte count to formatted string solution - https://stackoverflow.com/a/48467634
-        private static string[] suffixes = new[] { "b", "K", "M", "G", "T", "P" };
-        public static string ToSize(double number, int precision = 2)
-        {
-            // unit is the number of bytes
-            const double unit = 1024;
-
-            // suffix counter
-            int i = 0;
-
-            // as long as we're bigger than a unit, keep going
-            while (number > unit)
-            {
-                number /= unit;
-                i++;
-            }
-
-            // apply precision and current suffix
-            return Math.Round(number, precision) + suffixes[i];
-        }
-
         public override string Name
         {
             get
@@ -311,7 +351,7 @@ namespace Snapshot
                 {
                     if(Machine.Data != null)
                     {
-                        size = string.Format("Data ({0})", ToSize(Machine.Data.Length));
+                        size = string.Format("Data ({0})", Misc.ToSize(Machine.Data.Length));
                     }
                     else
                     {
@@ -320,7 +360,7 @@ namespace Snapshot
                 }
                 else
                 {
-                    size = string.Format("Data - {0}", ToSize(Value.Length));
+                    size = string.Format("Data - {0}", Misc.ToSize(Value.Length));
                 }
                 return size;
             }
@@ -332,6 +372,21 @@ namespace Snapshot
         public override int? Track => null;
 
         public override bool GotValue => Value != null;
+
+        public override int Size => Value != null ? Value.Length : 0;
+
+        public override int TotalSize
+        {
+            get
+            {
+                int size = 0;
+                for (int i = 0; i < m_values.Length; i++)
+                {
+                    size += m_values[i] != null ? m_values[i].Length : 0;
+                }
+                return size;
+            }
+        }
 
         public override bool Capture()
         {
@@ -617,6 +672,32 @@ namespace Snapshot
 
         // True if anything is stored in current slot
         public bool GotState => _allProperties.Count(x => x.GotValue) > 0;
+
+        public int SlotSize
+        {
+            get
+            {
+                int v = 0;
+                foreach(IPropertyState s in _allProperties)
+                {
+                    v += s.Size;
+                }
+                return v;
+            }
+        }
+
+        public int TotalSize
+        {
+            get
+            {
+                int v = 0;
+                foreach (IPropertyState s in _allProperties)
+                {
+                    v += s.TotalSize;
+                }
+                return v;
+            }
+        }
 
         private int m_slot;
         public int Slot

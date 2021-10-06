@@ -459,6 +459,10 @@ namespace Snapshot
 
         public override bool GotValue => _property.GotValue;
 
+        public int Size => _property.Size;
+
+        public int TotalSize => _property.TotalSize;
+
         protected override void OnCheckChanged()
         {
             _property.Selected = (bool)IsChecked;

@@ -60,6 +60,34 @@ namespace Snapshot
             get { return _allProperties.Count(x => x.Selected == true && x.GotValue == false); }
         }
 
+        // Size of data in current slot
+        public int Size
+        {
+            get
+            {
+                int size = 0;
+                foreach(IPropertyState s in _allProperties)
+                {
+                    size += s.Size;
+                }
+                return size;
+            }
+        }
+
+        // Size of data in all slots
+        public int TotalSize
+        {
+            get
+            {
+                int size = 0;
+                foreach (IPropertyState s in _allProperties)
+                {
+                    size += s.TotalSize;
+                }
+                return size;
+            }
+        }
+
         #region IBuzzMachine
 
         public Machine(IBuzzMachineHost host)
@@ -153,7 +181,7 @@ namespace Snapshot
 
         private void OnStateChanged(object sender, StateChangedEventArgs e)
         {
-            VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant", SelCount, _allProperties.Count, StoredCount, MissingCount, RedundantCount);
+            VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, _allProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
         }
 
         private void OnMachineRemoved(IMachine m)
@@ -176,14 +204,14 @@ namespace Snapshot
             get => m_slot;
             set
             {
-                if (m_slot != value)
+                if (m_slot != value - 1)
                 {
                     OnSlotChanging();
 
-                    m_slot = value;
+                    m_slot = value - 1;
                     foreach (MachineState s in States)
                     {
-                        s.Slot = value;
+                        s.Slot = m_slot;
                     }
 
                     OnSlotChanged();
