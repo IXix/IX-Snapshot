@@ -147,6 +147,11 @@ namespace Snapshot
             }
         }
 
+        public virtual bool GotValue
+        {
+            get => false;
+        }
+
         void UpdateTreeCheck()
         {
             var c = Children.Count(x => x.IsChecked == true);
@@ -165,6 +170,12 @@ namespace Snapshot
             }
 
             IsChecked = null;
+        }
+
+        public void OnValChanged(object sender, StateChangedEventArgs e)
+        {
+            OnPropertyChanged("Name");
+            OnPropertyChanged("GotValue");
         }
 
         /// <summary>
@@ -191,7 +202,7 @@ namespace Snapshot
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        public virtual void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
@@ -210,6 +221,8 @@ namespace Snapshot
                 (from state in Owner.States
                  select new MachineStateVM(state))
                 .ToList());
+
+            Owner.SlotChanged += OnSlotChanged;
 
             cmdCapture = new SimpleCommand
             {
@@ -237,6 +250,14 @@ namespace Snapshot
                 ExecuteDelegate = x => Owner.Purge()
             };
 
+        }
+
+        private void OnSlotChanged(object sender, EventArgs e)
+        {
+            foreach(var s in States)
+            {
+                s.OnPropertyChanged("GotValue");
+            }
         }
 
         #region INotifyPropertyChanged
@@ -328,6 +349,8 @@ namespace Snapshot
             LoadChildren();
         }
 
+        public override bool GotValue => _state.GotState;
+
         public string MachineName
         {
             get { return _state.Machine.Name; }
@@ -336,16 +359,28 @@ namespace Snapshot
         protected override void LoadChildren()
         {
             if(_state.DataStates != null)
-                Children.Add(new PropertyStateVM(_state.DataStates, this));
+            {
+                var s = new PropertyStateVM(_state.DataStates, this);
+                Children.Add(s);
+            }
 
             if (_state.AttributeStates.Children.Count > 0)
-                Children.Add(new PropertyStateGroupVM(_state.AttributeStates, this));
+            {
+                var s = new PropertyStateGroupVM(_state.AttributeStates, this);
+                Children.Add(s);
+            }
 
             if (_state.GlobalStates.Children.Count > 0)
-                Children.Add(new PropertyStateGroupVM(_state.GlobalStates, this));
+            {
+                var s = new PropertyStateGroupVM(_state.GlobalStates, this);
+                Children.Add(s);
+            }
 
             if (_state.TrackStates.Children.Count > 0)
-                Children.Add(new TrackPropertyStateGroupVM(_state.TrackStates, this));
+            {
+                var s = new TrackPropertyStateGroupVM(_state.TrackStates, this);
+                Children.Add(s);
+            }
         }
     }
 
@@ -372,6 +407,8 @@ namespace Snapshot
             foreach (var p in _group.Children)
                 Children.Add(new PropertyStateVM(p, this));
         }
+
+        public override bool GotValue => _group.GotValue;
     }
 
     // Groups
@@ -397,6 +434,8 @@ namespace Snapshot
             foreach (var pg in _group.Children)
                 Children.Add(new PropertyStateGroupVM(pg, this));
         }
+
+        public override bool GotValue => _group.GotValue;
     }
 
     public class PropertyStateVM : TreeViewItemViewModel
@@ -411,10 +450,7 @@ namespace Snapshot
             _property.ValChanged += OnValChanged;
         }
 
-        private void OnValChanged(object sender, StateChangedEventArgs e)
-        {
-            OnPropertyChanged("Name");
-        }
+        public override bool GotValue => _property.GotValue;
 
         protected override void OnCheckChanged()
         {

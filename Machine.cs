@@ -245,6 +245,7 @@ namespace Snapshot
             }
         }
 
+
         // Called before the slot is changed
         internal void OnSlotChanging()
         {
@@ -255,13 +256,19 @@ namespace Snapshot
         }
 
         // Called after the slot has changed
+        public EventHandler SlotChanged;
         internal void OnSlotChanged()
         {
             if(RestoreOnSlotChange)
             {
                 Restore();
             }
-            // FIXME: Refresh treeview
+
+            EventHandler handler = SlotChanged;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
         }
 
         #endregion Commands

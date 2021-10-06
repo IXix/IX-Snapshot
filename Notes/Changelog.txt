@@ -1,3 +1,7 @@
+2021.09.05
+	Treeview items bold when value stored
+		Sort of working but sort of not. Hurting my head.
+
 2021.09.04
 	Improved GUI control size stretch/fit etc.
 	Removed MachineState.InputStates
@@ -11,10 +15,6 @@
 	Implemented SelectNewMachines and RestoreOnStop
 	Added base class PropertyBase to reduce some of the code duplication
 	Started trying to implement slots
-		Surprisingly my initial stab seems to work but Selected needs to be a
-		per-slot property. Probably want to use a class to combine Selected
-		and Value in a Slot object so we can have m_slots[128].
-		Can't call it Slot though as it will clash with the Slot property.
 
 2021.09.03
 	Implemented Capture, CaptureMissing, Restore, Clear and Purge 

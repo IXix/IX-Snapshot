@@ -1,10 +1,3 @@
-Slots
-	Either:
-		a. Convert stored values into arrays of values
-			Avoids duplication of machine state structures
-		b. Add a MachineState for each slot
-			Easier but less efficient.
-
 Implement
 	Save/Load machine data to song
 	CaptureOnSlotChange
