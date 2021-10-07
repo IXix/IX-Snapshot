@@ -93,7 +93,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <TextBlock x:Name="txtSelCount" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock>Slot Name</TextBlock>
+                <ComboBox ItemsSource="{Binding SlotNames}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" />
+                <TextBlock x:Name="txtInfoDisplay" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
                 <CheckBox x:Name="chkSelNew" Content="Select new machines" IsChecked="{Binding SelectNewMachines}"/>

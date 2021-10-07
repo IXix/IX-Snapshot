@@ -22,6 +22,9 @@ namespace Snapshot
     {
         IBuzzMachineHost host;
 
+        private IMachine ThisMachine { get; set; }
+        private IParameter SlotParam { get; set; }
+
         public ObservableCollection<MachineState> States { get; private set; }
 
         public SnapshotVM VM { get; }
@@ -29,6 +32,17 @@ namespace Snapshot
         private List<IPropertyState> _allProperties;
 
         public bool GotState => _allProperties.Count(x => x.GotValue) > 0;
+
+        public ObservableCollection<string> SlotNames { get; set; }
+        public string SlotName
+        {
+            get => SlotNames.ElementAt(Slot);
+            set
+            {
+                if(value != null)
+                    SlotNames[Slot] = value;
+            }
+        }
 
         public bool SelectNewMachines { get; set; }
         public bool CaptureOnSlotChange { get; set; }
@@ -93,6 +107,13 @@ namespace Snapshot
         public Machine(IBuzzMachineHost host)
         {
             this.host = host;
+
+            SlotNames = new ObservableCollection<string>();
+            for(int i = 0; i < 128; i++)
+            {
+                SlotNames.Add(string.Format("Slot {0}", i));
+            }
+
             States = new ObservableCollection<MachineState>();
             VM = new SnapshotVM(this);
             _allProperties = new List<IPropertyState>();
@@ -177,6 +198,11 @@ namespace Snapshot
                 States.Add(ms);
                 VM.AddState(ms);
             }
+            else
+            {
+                ThisMachine = host.Machine;
+                SlotParam = ThisMachine.ParameterGroups[1].Parameters[0];
+            }
         }
 
         private void OnStateChanged(object sender, StateChangedEventArgs e)
@@ -198,21 +224,28 @@ namespace Snapshot
         #region Global Parameters
         // Global params
         int m_slot;
-        [ParameterDecl(IsStateless = false, MinValue = 1, MaxValue = 128, DefValue = 1, Description = "Active slot", Name = "Slot")]
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 1, Description = "Active slot", Name = "Slot")]
         public int Slot
         {
             get => m_slot;
             set
             {
-                if (m_slot != value - 1)
+                if (m_slot != value)
                 {
                     OnSlotChanging();
 
-                    m_slot = value - 1;
+                    m_slot = value;
                     foreach (MachineState s in States)
                     {
                         s.Slot = m_slot;
                     }
+
+                    // This is to update the parameter if the slot change comes from the combo
+                    // FIXME: seems to cause deadlock
+                    //if (SlotParam != null && SlotParam.GetValue(0) != m_slot)
+                    //{
+                    //    SlotParam.SetValue(0, m_slot);
+                    //}
 
                     OnSlotChanged();
                 }
@@ -286,7 +319,7 @@ namespace Snapshot
         public EventHandler SlotChanged;
         internal void OnSlotChanged()
         {
-            if(RestoreOnSlotChange)
+            if (RestoreOnSlotChange)
             {
                 Restore();
             }

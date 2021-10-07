@@ -1,3 +1,6 @@
+2021.09.07
+	Added slot names
+
 2021.09.05
 	Treeview items bold when value stored
 		Improved GotState for the container types

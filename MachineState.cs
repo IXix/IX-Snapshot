@@ -621,7 +621,7 @@ namespace Snapshot
 
             _allProperties = new List<IPropertyState>();
 
-            if(Machine.Data != null)
+            if((Machine.DLL.Info.Flags & MachineInfoFlags.LOAD_DATA_RUNTIME) == MachineInfoFlags.LOAD_DATA_RUNTIME && Machine.Data != null)
             {
                 DataStates = new DataState(m);
                 _allProperties.Add(DataStates);

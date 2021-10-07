@@ -251,11 +251,12 @@ namespace Snapshot
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Purge()
             };
-
         }
 
         private void OnSlotChanged(object sender, EventArgs e)
         {
+            NotifyPropertyChanged("SlotName");
+            NotifyPropertyChanged("SlotNames");
             NotifyPropertyChanged("GotValue");
             foreach(MachineStateVM s in States)
             {
@@ -313,7 +314,20 @@ namespace Snapshot
         #endregion Commands
 
         #region Properties
-
+        public int Slot
+        {
+            get => Owner.Slot;
+            set => Owner.Slot = value;
+        }
+        public string SlotName
+        {
+            get => Owner.SlotName;
+            set => Owner.SlotName = value;
+        }
+        public ObservableCollection<string> SlotNames
+        {
+            get => Owner.SlotNames;
+        }
         public bool SelectNewMachines
         {
             get => Owner.SelectNewMachines;

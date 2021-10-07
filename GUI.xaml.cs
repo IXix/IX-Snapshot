@@ -115,6 +115,12 @@ namespace Snapshot
             var VM = chk.DataContext as TreeViewItemViewModel;
             VM.OnClick();
         }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox cb = sender as ComboBox;
+            Owner.Slot = cb.SelectedIndex + 1;
+        }
     }
 }
 
