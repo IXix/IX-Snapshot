@@ -627,6 +627,52 @@ namespace Snapshot
         }
     }
 
+    public class MachineSnapshot
+    {
+        public MachineSnapshot()
+        {
+            ParamValues = new Dictionary<Tuple<IParameter, int>, int>();
+            DataValues = new Dictionary<IMachine, byte[]>();
+        }
+
+        // Collect any stored values so we can give them to Buzz in one shot
+        public void AddState(MachineState state)
+        {
+            foreach (ParameterState ps in state.GlobalStates.Children.Where(x => x.GotValue))
+            {
+                ParamValues.Add(new Tuple<IParameter,int>(ps.Parameter, 0), ps.Value.Value);
+            }
+
+            foreach (PropertyStateGroup pg in state.TrackStates.Children.Where(x => x.GotValue))
+            {
+                foreach (ParameterState ps in pg.Children.Where(x => x.GotValue))
+                {
+                    ParamValues.Add(new Tuple<IParameter, int>(ps.Parameter, ps.Track.Value), ps.Value.Value);
+                }
+            }
+
+            if(state.DataStates != null && state.DataStates.GotValue)
+            {
+                DataValues.Add(state.Machine, state.DataStates.Value);
+            }
+        }
+
+        public void Apply()
+        {
+            foreach(var v in ParamValues)
+            {
+                v.Key.Item1.SetValue(v.Key.Item2, v.Value);
+            }
+            foreach (var v in DataValues)
+            {
+                v.Key.Data = v.Value;
+            }
+        }
+
+        readonly Dictionary<Tuple<IParameter, int /*track*/>, int /*value*/> ParamValues;
+        readonly Dictionary<IMachine, byte[]> DataValues;
+    }
+
     public class MachineState
     {
         public MachineState(IMachine m)

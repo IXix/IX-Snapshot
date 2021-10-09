@@ -4,7 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using System.Windows.Forms;
+using System.Windows;
+using System.Windows.Threading;
 
 using BuzzGUI.Common;
 using Buzz.MachineInterface;
@@ -276,10 +277,20 @@ namespace Snapshot
         {
             if (GotState)
             {
+                /*
                 foreach (MachineState s in States)
                 {
                     s.Restore();
                 }
+                */
+
+                MachineSnapshot sn = new MachineSnapshot();
+                foreach (MachineState s in States)
+                {
+                    sn.AddState(s);
+                }
+
+                Application.Current.Dispatcher.BeginInvoke((Action)(() => { sn.Apply(); }), DispatcherPriority.Send);
             }
         }
 

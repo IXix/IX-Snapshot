@@ -1,3 +1,7 @@
+CaptureOnSlotChange should probably work but needs testing
+
+RestoreOnSlotChange works but can it be optimised?
+
 Implement
 	Save/Load machine data to song
 		slot names
@@ -7,15 +11,6 @@ Implement
 				name
 				selected
 				slot values
-
-	CaptureOnSlotChange
-	RestoreOnSlotChange
-		Working but a bit glitchy, possibly because we're issuing tons of Actions
-		Look at packaging all the patram/data/attribute changes into a single event
-			Rapid slot changes can lead to Buzz trying to apply a value
-			from the wrong source so we need to fix the values before sending
-
-
 	RestoreOnSongLoad
 
 Some kind of slot manager
