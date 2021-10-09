@@ -10,8 +10,11 @@ Implement
 
 	CaptureOnSlotChange
 	RestoreOnSlotChange
-		Might not be possible to do this from a parameter.
-		Getting an exception saying another thread owns the thing. See if there's anything like mi::Lock() in BuzzGUI
+		Working but a bit glitchy, possibly because we're issuing tons of Actions
+		Look at packaging all the patram/data/attribute changes into a single event
+			Rapid slot changes can lead to Buzz trying to apply a value
+			from the wrong source so we need to fix the values before sending
+
 
 	RestoreOnSongLoad
 

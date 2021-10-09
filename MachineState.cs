@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Snapshot
 {
@@ -223,7 +225,13 @@ namespace Snapshot
         {
             if (Selected && GotValue)
             {
-                Parameter.SetValue(Track ?? 0, Value.Value);
+                int t = Track ?? 0;
+                int v = Value.Value;
+                Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    Parameter.SetValue(t, v);
+                }), DispatcherPriority.Send
+                );
                 return true;
             }
             return false;
@@ -306,8 +314,12 @@ namespace Snapshot
         {
             if (Selected && GotValue)
             {
-                Attribute.Value = Value.Value;
-                return true;
+                int v = Value.Value;
+                Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    Attribute.Value = v;
+                }), DispatcherPriority.Send
+                );
             }
             return false;
         }
@@ -414,8 +426,11 @@ namespace Snapshot
         {
             if (Selected && GotValue)
             {
-                Machine.Data = Value;
-                return true;
+                byte [] v = Value;
+                Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+                {
+                    Machine.Data = v;
+                }), DispatcherPriority.Send);
             }
             return false;
         }
@@ -778,15 +793,16 @@ namespace Snapshot
         public bool Restore()
         {
             bool result = false;
+            if (GotState)
+            {
+                if (DataStates != null && DataStates.Restore()) result = true;
 
-            if (DataStates != null && DataStates.Restore()) result = true;
+                if (AttributeStates.Restore()) result = true;
 
-            if (AttributeStates.Restore()) result = true;
+                if (GlobalStates.Restore()) result = true;
 
-            if (GlobalStates.Restore()) result = true;
-
-            if (TrackStates.Restore()) result = true;
-
+                if (TrackStates.Restore()) result = true;
+            }
             return result;
         }
 
