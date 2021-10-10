@@ -492,7 +492,7 @@ namespace Snapshot
         // Called before the slot is changed
         internal void OnSlotChanging()
         {
-            if(CaptureOnSlotChange)
+            if(CaptureOnSlotChange && !loading)
             {
                 Capture();
             }
@@ -504,7 +504,7 @@ namespace Snapshot
 
         internal void OnSlotChanged()
         {
-            if (RestoreOnSlotChange)
+            if (RestoreOnSlotChange && !loading)
             {
                 Restore();
             }

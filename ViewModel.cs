@@ -356,8 +356,8 @@ namespace Snapshot
         }
         public bool RestoreOnSongLoad
         {
-            get => Owner.RestoreOnSlotChange;
-            set => Owner.RestoreOnSlotChange = value;
+            get => Owner.RestoreOnSongLoad;
+            set => Owner.RestoreOnSongLoad = value;
         }
         public bool RestoreOnStop
         {

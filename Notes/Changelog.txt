@@ -1,6 +1,8 @@
 2021.09.10
 	Implemented save/load to song
 	Slot param now follows combo
+	Fixed RestoreOnSongLoad
+	Prevented auto capture/restore when slot changes due to song load
 
 2021.09.09
 	Restore on slot change working

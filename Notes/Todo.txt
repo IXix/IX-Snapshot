@@ -1,5 +1,4 @@
-CaptureOnSlotChange should probably work but needs testing
-RestoreOnSongLoad should probably work but needs testing
+Make combobox items bold if slot has data
 
 RestoreOnSlotChange works but can it be optimised?
 
