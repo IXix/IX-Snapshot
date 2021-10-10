@@ -172,7 +172,12 @@ namespace Snapshot
             IsChecked = null;
         }
 
-        public void OnValChanged(object sender, StateChangedEventArgs e)
+        protected void OnSelChanged(object sender, StateChangedEventArgs e)
+        {
+            IsChecked = e.Selected;
+        }
+
+        protected void OnValChanged(object sender, StateChangedEventArgs e)
         {
             OnPropertyChanged("Name");
             OnPropertyChanged("GotValue");
@@ -225,6 +230,7 @@ namespace Snapshot
                 .ToList());
 
             Owner.SlotChanged += OnSlotChanged;
+            Owner.PropertyChanged += OwnerPropertyChanged;
 
             cmdCapture = new SimpleCommand
             {
@@ -251,6 +257,11 @@ namespace Snapshot
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Purge()
             };
+        }
+
+        private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            NotifyPropertyChanged(e.PropertyName);
         }
 
         private void OnSlotChanged(object sender, EventArgs e)
@@ -324,7 +335,7 @@ namespace Snapshot
             get => Owner.SlotName;
             set => Owner.SlotName = value;
         }
-        public ObservableCollection<string> SlotNames
+        public List<string> SlotNames
         {
             get => Owner.SlotNames;
         }
@@ -469,11 +480,12 @@ namespace Snapshot
             _property = property;
             IsChecked = _property.Selected;
             _property.ValChanged += OnValChanged;
+            _property.SelChanged += OnSelChanged;
         }
 
         public override bool GotValue => _property.GotValue;
 
-        public int Size => _property.Size;
+        virtual public string Size => (_property.GetType().ToString() == "Snapshot.DataState" && _property.Size > 0) ? string.Format(" - {0}", Misc.ToSize(_property.Size)) : "";
 
         public int TotalSize => _property.TotalSize;
 

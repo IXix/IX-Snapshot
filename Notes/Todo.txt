@@ -1,17 +1,7 @@
 CaptureOnSlotChange should probably work but needs testing
+RestoreOnSongLoad should probably work but needs testing
 
 RestoreOnSlotChange works but can it be optimised?
-
-Implement
-	Save/Load machine data to song
-		slot names
-		MachineState
-			name
-			Properties
-				name
-				selected
-				slot values
-	RestoreOnSongLoad
 
 Some kind of slot manager
 	Tab or separate window? Probably tab.
@@ -20,9 +10,6 @@ Some kind of slot manager
 		Maybe even edit values?
 	Set current slot
 	Copy/paste/duplicate/clear slots
-
-Enable Fixupdate of slot param when selecting from the combo
-	Causes deadlocks now.
 
 Styling of list items based on whether a value is stored/not stored/missing
 	Currently properties that have stored values are bold. Might be nice to have some sort if indicator graphic instead.

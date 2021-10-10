@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using BuzzGUI.Common;
 using Buzz.MachineInterface;
 using BuzzGUI.Interfaces;
+using System.IO;
 
 namespace Snapshot
 {
@@ -19,7 +20,7 @@ namespace Snapshot
     }
 
     [MachineDecl(Name = "IX Snapshot", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
-    public class Machine : IBuzzMachine
+    public class Machine : IBuzzMachine, INotifyPropertyChanged
     {
         IBuzzMachineHost host;
 
@@ -34,7 +35,20 @@ namespace Snapshot
 
         public bool GotState => _allProperties.Count(x => x.GotValue) > 0;
 
-        public ObservableCollection<string> SlotNames { get; set; }
+        private List<string> m_slotNames;
+        public List<string> SlotNames
+        {
+            get => m_slotNames;
+            private set
+            {
+                m_slotNames = value;
+                if(!loading)
+                {
+                    OnPropertyChanged("SlotNames");
+                    OnPropertyChanged("SlotName");
+                }
+            }
+        }
         public string SlotName
         {
             get => SlotNames.ElementAt(Slot);
@@ -45,11 +59,75 @@ namespace Snapshot
             }
         }
 
-        public bool SelectNewMachines { get; set; }
-        public bool CaptureOnSlotChange { get; set; }
-        public bool RestoreOnSlotChange { get; set; }
-        public bool RestoreOnSongLoad { get; set; }
-        public bool RestoreOnStop { get; set; }
+        private bool m_selectNewMachines;
+        public bool SelectNewMachines
+        {
+            get => m_selectNewMachines;
+            set
+            {
+                if(m_selectNewMachines != value)
+                {
+                    m_selectNewMachines = value;
+                    OnPropertyChanged("SelectNewMachines");
+                }
+            }
+        }
+
+        private bool m_captureOnSlotChange;
+        public bool CaptureOnSlotChange
+        {
+            get => m_captureOnSlotChange;
+            set
+            {
+                if (m_captureOnSlotChange != value)
+                {
+                    m_captureOnSlotChange = value;
+                    OnPropertyChanged("CaptureOnSlotChange");
+                }
+            }
+        }
+
+        private bool m_restoreOnSlotChange;
+        public bool RestoreOnSlotChange
+        {
+            get => m_restoreOnSlotChange;
+            set
+            {
+                if (m_restoreOnSlotChange != value)
+                {
+                    m_restoreOnSlotChange = value;
+                    OnPropertyChanged("RestoreOnSlotChange");
+                }
+            }
+        }
+
+        private bool m_restoreOnSongLoad;
+        public bool RestoreOnSongLoad
+        {
+            get => m_restoreOnSongLoad;
+            set
+            {
+                if (m_restoreOnSongLoad != value)
+                {
+                    m_restoreOnSongLoad = value;
+                    OnPropertyChanged("RestoreOnSongLoad");
+                }
+            }
+        }
+
+        private bool m_restoreOnStop;
+        public bool RestoreOnStop
+        {
+            get => m_restoreOnStop;
+            set
+            {
+                if (m_restoreOnStop != value)
+                {
+                    m_restoreOnStop = value;
+                    OnPropertyChanged("RestoreOnStop");
+                }
+            }
+        }
 
         // How many properties are selected
         public int SelCount
@@ -108,16 +186,17 @@ namespace Snapshot
         public Machine(IBuzzMachineHost host)
         {
             this.host = host;
+            m_loadedState = new MachineStateData();
 
-            SlotNames = new ObservableCollection<string>();
+            SlotNames = new List<string>();
             for(int i = 0; i < 128; i++)
             {
                 SlotNames.Add(string.Format("Slot {0}", i));
             }
 
             States = new ObservableCollection<MachineState>();
-            VM = new SnapshotVM(this);
             _allProperties = new List<IPropertyState>();
+            VM = new SnapshotVM(this);
 
             ReadOnlyCollection<IMachine> machines = Global.Buzz.Song.Machines;
             foreach (IMachine m in machines)
@@ -133,32 +212,70 @@ namespace Snapshot
         // It will be dumped as a byte array
         public class MachineStateData
         {
-            public UInt16 Version = 1;
-            // FIXME: Find an appropriate storage class to dump data into.
-            // Can't rely on the structure staying the same so thinking version number
-            // is the only named property and everything else gets stored as raw bytes.
-            // Look at binaryWriter
+            public MachineStateData()
+            {
+                data = new byte[0];
+            }
+
+            public MachineStateData(Machine m)
+            {
+                MemoryStream stream = new MemoryStream();
+                BinaryWriter w = new BinaryWriter(stream);
+
+                // Options
+                w.Write(m.SelectNewMachines);
+                w.Write(m.CaptureOnSlotChange);
+                w.Write(m.RestoreOnSlotChange);
+                w.Write(m.RestoreOnSongLoad);
+                w.Write(m.RestoreOnStop);
+
+                // Slot names
+                foreach (string s in m.SlotNames)
+                {
+                    w.Write(s);
+                }
+
+                // State data
+                foreach (MachineState s in m.States)
+                {
+                    w.Write(s.Machine.Name);
+                    var saveProperties = s.AllProperties.Where(x => x.Selected || x.NonEmpty);
+                    w.Write((Int32)saveProperties.Count());
+                    foreach(PropertyBase p in saveProperties)
+                    {
+                        p.WriteData(w);
+                    }
+                }
+
+                data = stream.ToArray();
+            }
+
+            public Byte version = 1;
+            public byte [] data;
         }
 
         // This is how Save/Load/Init get handled
         // MachineState can be any class at all, 'MachineStateData' isn't part of the spec.
         // get calls CMachineInterfaceEx::Load() and CMachineInterface::Init() if there's data to restore
         // set calls CMachineInterface::Save() 
+        private MachineStateData m_loadedState;
+        private bool loading = false;
         public MachineStateData MachineState
         {
             get
             {
-                return new MachineStateData();
+                return new MachineStateData(this);
             }
             set
             {
-                switch(value.Version)
+                try
                 {
-                    case 1:                        
-                        break; // FIXME: Load stuff
-
-                    default:                       
-                        break; // FIXME: Error
+                    loading = true;
+                    m_loadedState = value;
+                }
+                catch(Exception e)
+                {
+                    m_loadedState = new MachineStateData(this);
                 }
             }
         }
@@ -171,14 +288,69 @@ namespace Snapshot
             }
         }
 
+        private void RestoreLoadedData()
+        {
+            if (m_loadedState.data.Length == 0) return;
+
+            if (m_loadedState.version > 1) throw new Exception("Version mismatch");
+
+            MemoryStream stream = new MemoryStream(m_loadedState.data);
+            BinaryReader r = new BinaryReader(stream);
+
+            // Options
+            SelectNewMachines = r.ReadBoolean();
+            CaptureOnSlotChange = r.ReadBoolean();
+            RestoreOnSlotChange = r.ReadBoolean();
+            RestoreOnSongLoad = r.ReadBoolean();
+            RestoreOnStop = r.ReadBoolean();
+
+            // Slot names
+            for (int i = 0; i < 128; i++)
+            {
+                SlotNames[i] = r.ReadString();
+            }
+
+            // State data
+            while(r.PeekChar() > -1)
+            {
+                string name = r.ReadString(); // Machine name
+                try
+                {
+                    MachineState s = States.Single(x => x.Machine.Name == name);
+
+                    Int32 count = r.ReadInt32(); // Number of saved properties
+                    for(Int32 i = 0; i < count; i++)
+                    {
+                        name = r.ReadString();
+                        try
+                        {
+                            IPropertyState ps = s.AllProperties.Single(x => x.Name == name);
+                            ps.ReadData(r, m_loadedState.version);
+                        }
+                        catch (Exception e)
+                        {
+                            continue;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    return;
+                }
+            }
+        }
+
         // Called after song load or template drop
         public void ImportFinished(IDictionary<string, string> machineNameMap)
         {
-            // FIXME - Remap stored states to correct machines using machineNameMap
-            //if(RestoreOnSongLoad)
-            //{
-            //    Restore();
-            //}
+            RestoreLoadedData();
+
+            loading = false;
+
+            if(RestoreOnSongLoad)
+            {
+                Restore();
+            }
         }
 
         #endregion IBuzzMachine
@@ -208,7 +380,8 @@ namespace Snapshot
 
         private void OnStateChanged(object sender, StateChangedEventArgs e)
         {
-            VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, _allProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
+            if(VM != null)
+                VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, _allProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
         }
 
         private void OnMachineRemoved(IMachine m)
@@ -242,11 +415,10 @@ namespace Snapshot
                     }
 
                     // This is to update the parameter if the slot change comes from the combo
-                    // FIXME: seems to cause deadlock
-                    //if (SlotParam != null && SlotParam.GetValue(0) != m_slot)
-                    //{
-                    //    SlotParam.SetValue(0, m_slot);
-                    //}
+                    if (SlotParam != null && SlotParam.GetValue(0) != m_slot)
+                    {
+                        Application.Current.Dispatcher.BeginInvoke((Action)(() => { SlotParam.SetValue(0, m_slot); }), DispatcherPriority.Send);
+                    }
 
                     OnSlotChanged();
                 }
@@ -328,6 +500,8 @@ namespace Snapshot
 
         // Called after the slot has changed
         public EventHandler SlotChanged;
+
+
         internal void OnSlotChanged()
         {
             if (RestoreOnSlotChange)
@@ -343,5 +517,12 @@ namespace Snapshot
         }
 
         #endregion Commands
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public virtual void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

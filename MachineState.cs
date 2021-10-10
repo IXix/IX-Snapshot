@@ -73,6 +73,9 @@ namespace Snapshot
     public interface IPropertyState : ISelectable, IValueContainer
     {
         int? Track { get; }
+        bool NonEmpty { get; }
+        bool ReadData(BinaryReader r, Byte version);
+        bool WriteData(BinaryWriter w);
     }
 
     public interface IGroup<T> : INamed
@@ -97,9 +100,40 @@ namespace Snapshot
 
         virtual public bool GotValue { get; protected set; }
 
+        virtual public bool NonEmpty => throw new NotImplementedException();
+
         virtual public int Size => throw new NotImplementedException();
 
         virtual public int TotalSize => throw new NotImplementedException();
+
+        virtual public bool ReadData(BinaryReader r, Byte version)
+        {
+            /* Note:
+             * Not reading name here, used by the caalling
+             * routine to find the correct property.
+             */
+
+            int? track = r.ReadInt32();
+            if (track == -1) track = null;
+
+            if (track != Track) throw new Exception("Data mismatch");
+
+            Selected = r.ReadBoolean();
+
+            return r.ReadBoolean(); // non-empty, more stuff to load
+        }
+
+        virtual public bool WriteData(BinaryWriter w)
+        {
+            bool nonEmpty = NonEmpty;
+
+            w.Write(Name);
+            w.Write((Int32)(Track ?? -1));
+            w.Write(Selected);
+            w.Write(nonEmpty);
+
+            return nonEmpty;
+        }
 
         protected int m_slot;
         virtual public int Slot
@@ -184,6 +218,8 @@ namespace Snapshot
 
         public override bool GotValue => Value.HasValue;
 
+        public override bool NonEmpty => m_values.Count(x => x.HasValue) > 0;
+
         public override int Size => Value.HasValue ? Marshal.SizeOf(Value) : 0;
 
         public override int TotalSize
@@ -197,6 +233,46 @@ namespace Snapshot
                 }
                 return size;
             }
+        }
+
+        public override bool ReadData(BinaryReader r, Byte version)
+        {
+            bool result = false;
+            if (base.ReadData(r, version))
+            {
+                result = true;
+                Int32 count = r.ReadInt32(); // Number of filled slots
+                for (Int32 c = 0; c < count; c++)
+                {
+                    Byte i = r.ReadByte();
+                    m_values[i] = r.ReadInt32();
+                }
+
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                OnSelChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+            }
+            return result;
+        }
+
+        public override bool WriteData(BinaryWriter w)
+        {
+            bool result = false;
+            if (base.WriteData(w))
+            {
+                result = true;
+                Int32 count = m_values.Count(x => x.HasValue); // Number of filled slots
+                w.Write(count);
+                for (Byte i = 0; i < 128; i++)
+                {
+                    if (m_values[i].HasValue)
+                    {
+                        w.Write(i);
+                        w.Write((Int32)m_values[i].Value);
+                        result = true;
+                    }
+                }
+            }
+            return result;
         }
 
         public override bool Capture()
@@ -273,6 +349,8 @@ namespace Snapshot
 
         public override bool GotValue => Value.HasValue;
 
+        public override bool NonEmpty => m_values.Count(x => x.HasValue) > 0;
+
         public override int Size => Value.HasValue ? Marshal.SizeOf(Value) : 0;
 
         public override int TotalSize
@@ -286,6 +364,46 @@ namespace Snapshot
                 }
                 return size;
             }
+        }
+
+        public override bool ReadData(BinaryReader r, Byte version)
+        {
+            bool result = false;
+            if (base.ReadData(r, version))
+            {
+                result = true;
+                Int32 count = r.ReadInt32(); // Number of filled slots
+                for (Int32 c = 0; c < count; c++)
+                {
+                    Byte i = r.ReadByte();
+                    m_values[i] = r.ReadInt32();
+                }
+
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                OnSelChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+            }
+            return result;
+        }
+
+        public override bool WriteData(BinaryWriter w)
+        {
+            bool result = false;
+            if (base.WriteData(w))
+            {
+                result = true;
+                Int32 count = m_values.Count(x => x.HasValue); // Number of filled slots
+                w.Write(count);
+                for (Byte i = 0; i < 128; i++)
+                {
+                    if (m_values[i].HasValue)
+                    {
+                        w.Write(i);
+                        w.Write((Int32)m_values[i].Value);
+                        result = true;
+                    }
+                }
+            }
+            return result;
         }
 
         public override bool Capture()
@@ -354,29 +472,7 @@ namespace Snapshot
             set => m_values[Slot] = value;
         }
 
-        public override string Name
-        {
-            get
-            {
-                string size = "";
-                if(Value == null)
-                {
-                    if(Machine.Data != null)
-                    {
-                        size = string.Format("Data ({0})", Misc.ToSize(Machine.Data.Length));
-                    }
-                    else
-                    {
-                        size = "Data (none)";
-                    }
-                }
-                else
-                {
-                    size = string.Format("Data - {0}", Misc.ToSize(Value.Length));
-                }
-                return size;
-            }
-        }
+        public override string Name => "Data";
 
         private IMachine _machine;
         public IMachine Machine => _machine;
@@ -384,6 +480,8 @@ namespace Snapshot
         public override int? Track => null;
 
         public override bool GotValue => Value != null;
+
+        public override bool NonEmpty => m_values.Count(x => x != null) > 0;
 
         public override int Size => Value != null ? Value.Length : 0;
 
@@ -398,6 +496,48 @@ namespace Snapshot
                 }
                 return size;
             }
+        }
+
+        public override bool ReadData(BinaryReader r, Byte version)
+        {
+            bool result = false;
+            if (base.ReadData(r, version))
+            {
+                result = true;
+                Int32 count = r.ReadInt32(); // Number of filled slots
+                for (Int32 c = 0; c < count; c++)
+                {
+                    Byte i = r.ReadByte();
+                    Int32 size = r.ReadInt32();
+                    m_values[i] = r.ReadBytes(size);
+                }
+
+                OnValChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                OnSelChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+            }
+            return result;
+        }
+
+        public override bool WriteData(BinaryWriter w)
+        {
+            bool result = false;
+            if (base.WriteData(w))
+            {
+                result = true;
+                Int32 count = m_values.Count(x => x != null); // Number of filled slots
+                w.Write(count);
+                for (Byte i = 0; i < 128; i++)
+                {
+                    if (m_values[i] != null)
+                    {
+                        w.Write(i);
+                        w.Write((Int32)m_values[i].Length);
+                        w.Write(m_values[i]);
+                        result = true;
+                    }
+                }
+            }
+            return result;
         }
 
         public override bool Capture()

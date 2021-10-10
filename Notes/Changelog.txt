@@ -1,3 +1,7 @@
+2021.09.10
+	Implemented save/load to song
+	Slot param now follows combo
+
 2021.09.09
 	Restore on slot change working
 		Added class MachineSnapshot so we can pass all changes to Buzz in one call
