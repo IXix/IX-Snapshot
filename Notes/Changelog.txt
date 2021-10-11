@@ -1,3 +1,6 @@
+2021.09.11
+	Slot names in combo appear bold if slot has data
+
 2021.09.10
 	Implemented save/load to song
 	Slot param now follows combo

@@ -335,9 +335,9 @@ namespace Snapshot
             get => Owner.SlotName;
             set => Owner.SlotName = value;
         }
-        public List<string> SlotNames
+        public List<Machine.SlotInfo> SlotDetails
         {
-            get => Owner.SlotNames;
+            get => Owner.SlotDetails;
         }
         public bool SelectNewMachines
         {

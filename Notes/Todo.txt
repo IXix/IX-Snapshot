@@ -1,4 +1,10 @@
-Make combobox items bold if slot has data
+Selecting slot from combo dropdown breaks slot name in combo edit field
+
+Rework things so that slots are contained in a List<MachineSnapshot>
+	Should make a bunch of stuff less complicated.
+	All the current IPropertyState stuff can stay as that's useful for the treeview.
+	Individual value storage and all the capture/restore/clear etc. methods can go
+	GotValue would need to be pulled from the current snapshot somehow
 
 RestoreOnSlotChange works but can it be optimised?
 

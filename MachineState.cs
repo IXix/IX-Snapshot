@@ -55,16 +55,19 @@ namespace Snapshot
 
     public interface IValueContainer
     {
-        bool GotValue { get; }
+        bool GotValue { get; } // True if current slot has data
+        bool NonEmpty { get; } // True if any slot clontains data
         int Slot { get; set; }
-        Int32 Size { get; }
-        Int32 TotalSize { get; }
+
+        Int32 Size { get; }         // Size of data in current slot
+        Int32 TotalSize { get; }    // Size of data in all slots
 
         bool Capture();
         bool CaptureMissing();
         bool Restore();
         void Clear();
         void Purge();
+        bool SlotHasData(int index);
 
         event EventHandler<StateChangedEventArgs> ValChanged;
         void OnValChanged(StateChangedEventArgs e);
@@ -73,7 +76,6 @@ namespace Snapshot
     public interface IPropertyState : ISelectable, IValueContainer
     {
         int? Track { get; }
-        bool NonEmpty { get; }
         bool ReadData(BinaryReader r, Byte version);
         bool WriteData(BinaryWriter w);
     }
@@ -191,6 +193,11 @@ namespace Snapshot
         }
 
         virtual public bool Restore()
+        {
+            throw new NotImplementedException();
+        }
+
+        virtual public bool SlotHasData(int index)
         {
             throw new NotImplementedException();
         }
@@ -326,6 +333,11 @@ namespace Snapshot
                 Clear();
             }
         }
+
+        public override bool SlotHasData(int index)
+        {
+            return m_values[index].HasValue;
+        }
     }
 
     public class AttributeState : PropertyBase
@@ -454,6 +466,11 @@ namespace Snapshot
             {
                 Clear();
             }
+        }
+
+        public override bool SlotHasData(int index)
+        {
+            return m_values[index].HasValue;
         }
     }
 
@@ -587,6 +604,11 @@ namespace Snapshot
             {
                 Clear();
             }
+        }
+
+        public override bool SlotHasData(int index)
+        {
+            return m_values[index] != null;
         }
     }
 

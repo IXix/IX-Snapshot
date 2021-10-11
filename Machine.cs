@@ -35,27 +35,38 @@ namespace Snapshot
 
         public bool GotState => _allProperties.Count(x => x.GotValue) > 0;
 
-        private List<string> m_slotNames;
-        public List<string> SlotNames
+        public class SlotInfo
         {
-            get => m_slotNames;
-            private set
+            public SlotInfo(Machine owner, int index)
             {
-                m_slotNames = value;
-                if(!loading)
-                {
-                    OnPropertyChanged("SlotNames");
-                    OnPropertyChanged("SlotName");
-                }
+                m_owner = owner;
+                Index = index;
+                Name = string.Format("Slot {0}", Index);
+            }
+
+            private readonly Machine m_owner;
+            public int Index { get; private set; }
+            public string Name { get; set; }
+            public bool HasData
+            {
+                get => m_owner.SlotHasData(Index);
             }
         }
+
+        private List<SlotInfo> m_slotDetails;
+        public List<SlotInfo> SlotDetails => m_slotDetails;
+
         public string SlotName
         {
-            get => SlotNames.ElementAt(Slot);
+            get => m_slotDetails[m_slot].Name;
             set
             {
-                if(value != null)
-                    SlotNames[Slot] = value;
+                if(value != null && value != SlotDetails[m_slot].Name)
+                {
+                    m_slotDetails[m_slot].Name = value;
+                    OnPropertyChanged("SlotName");
+                    OnPropertyChanged("SlotDetails");
+                }
             }
         }
 
@@ -181,6 +192,11 @@ namespace Snapshot
             }
         }
 
+        public bool SlotHasData(int index)
+        {
+            return _allProperties.Count(x => x.SlotHasData(index)) > 0;
+        }
+
         #region IBuzzMachine
 
         public Machine(IBuzzMachineHost host)
@@ -188,10 +204,10 @@ namespace Snapshot
             this.host = host;
             m_loadedState = new MachineStateData();
 
-            SlotNames = new List<string>();
+            m_slotDetails = new List<SlotInfo>();
             for(int i = 0; i < 128; i++)
             {
-                SlotNames.Add(string.Format("Slot {0}", i));
+                m_slotDetails.Add(new SlotInfo(this, i));
             }
 
             States = new ObservableCollection<MachineState>();
@@ -230,9 +246,9 @@ namespace Snapshot
                 w.Write(m.RestoreOnStop);
 
                 // Slot names
-                foreach (string s in m.SlotNames)
+                foreach (SlotInfo s in m.SlotDetails)
                 {
-                    w.Write(s);
+                    w.Write(s.Name);
                 }
 
                 // State data
@@ -307,7 +323,7 @@ namespace Snapshot
             // Slot names
             for (int i = 0; i < 128; i++)
             {
-                SlotNames[i] = r.ReadString();
+                m_slotDetails[i].Name = r.ReadString();
             }
 
             // State data
@@ -338,6 +354,9 @@ namespace Snapshot
                     return;
                 }
             }
+
+            OnPropertyChanged("SlotName");
+            OnPropertyChanged("SlotDetails");
         }
 
         // Called after song load or template drop
@@ -404,6 +423,8 @@ namespace Snapshot
             get => m_slot;
             set
             {
+                if (value < 0 || value > 127) return;
+
                 if (m_slot != value)
                 {
                     OnSlotChanging();
