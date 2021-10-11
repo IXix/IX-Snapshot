@@ -1,4 +1,9 @@
 2021.09.11
+	Complete overhaul. Possibly a bad idea.
+		Stored values are now held in a CMachineSnapshot rather than the individual properties
+		Quite broken, work in progress.
+
+2021.09.11
 	Slot names in combo appear bold if slot has data
 
 2021.09.10

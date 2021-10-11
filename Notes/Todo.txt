@@ -1,12 +1,12 @@
+Finish overhaul
+	Implement save/load of snapshot data
+	Fix/re-implement GUI stuff that got broken
+
 Selecting slot from combo dropdown breaks slot name in combo edit field
 
-Rework things so that slots are contained in a List<MachineSnapshot>
-	Should make a bunch of stuff less complicated.
-	All the current IPropertyState stuff can stay as that's useful for the treeview.
-	Individual value storage and all the capture/restore/clear etc. methods can go
-	GotValue would need to be pulled from the current snapshot somehow
-
 RestoreOnSlotChange works but can it be optimised?
+
+MIDI note/cc to change slot
 
 Some kind of slot manager
 	Tab or separate window? Probably tab.
@@ -15,6 +15,10 @@ Some kind of slot manager
 		Maybe even edit values?
 	Set current slot
 	Copy/paste/duplicate/clear slots
+
+Filter visibility of properties in the treeview somehow.
+
+Select new machines option could be broken into separate options for attributes, globals. track and data.
 
 Styling of list items based on whether a value is stored/not stored/missing
 	Currently properties that have stored values are bold. Might be nice to have some sort if indicator graphic instead.

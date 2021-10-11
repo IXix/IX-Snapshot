@@ -14,169 +14,126 @@ using System.IO;
 
 namespace Snapshot
 {
-    public class MachineGUIFactory : IMachineGUIFactory
+    public class CMachineGUIFactory : IMachineGUIFactory
     {
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
     [MachineDecl(Name = "IX Snapshot", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
-    public class Machine : IBuzzMachine, INotifyPropertyChanged
+    public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         IBuzzMachineHost host;
 
         private IMachine ThisMachine { get; set; }
         private IParameter SlotParam { get; set; }
 
-        public ObservableCollection<MachineState> States { get; private set; }
+        public ObservableCollection<CMachineState> States { get; private set; }
 
-        public SnapshotVM VM { get; }
+        public CSnapshotVM VM { get; }
 
-        private List<IPropertyState> _allProperties;
+        public List<IPropertyState> AllProperties { get; private set; }
 
-        public bool GotState => _allProperties.Count(x => x.GotValue) > 0;
-
-        public class SlotInfo
-        {
-            public SlotInfo(Machine owner, int index)
-            {
-                m_owner = owner;
-                Index = index;
-                Name = string.Format("Slot {0}", Index);
-            }
-
-            private readonly Machine m_owner;
-            public int Index { get; private set; }
-            public string Name { get; set; }
-            public bool HasData
-            {
-                get => m_owner.SlotHasData(Index);
-            }
-        }
-
-        private List<SlotInfo> m_slotDetails;
-        public List<SlotInfo> SlotDetails => m_slotDetails;
+        private List<CMachineSnapshot> _slots;
+        public List<CMachineSnapshot> Slots => _slots;
 
         public string SlotName
         {
-            get => m_slotDetails[m_slot].Name;
+            get => _slots[_slot].Name;
             set
             {
-                if(value != null && value != SlotDetails[m_slot].Name)
+                if(value != null && value != _slots[_slot].Name)
                 {
-                    m_slotDetails[m_slot].Name = value;
+                    _slots[_slot].Name = value;
                     OnPropertyChanged("SlotName");
                     OnPropertyChanged("SlotDetails");
                 }
             }
         }
 
-        private bool m_selectNewMachines;
+        private bool _selectNewMachines;
         public bool SelectNewMachines
         {
-            get => m_selectNewMachines;
+            get => _selectNewMachines;
             set
             {
-                if(m_selectNewMachines != value)
+                if(_selectNewMachines != value)
                 {
-                    m_selectNewMachines = value;
+                    _selectNewMachines = value;
                     OnPropertyChanged("SelectNewMachines");
                 }
             }
         }
 
-        private bool m_captureOnSlotChange;
+        private bool _captureOnSlotChange;
         public bool CaptureOnSlotChange
         {
-            get => m_captureOnSlotChange;
+            get => _captureOnSlotChange;
             set
             {
-                if (m_captureOnSlotChange != value)
+                if (_captureOnSlotChange != value)
                 {
-                    m_captureOnSlotChange = value;
+                    _captureOnSlotChange = value;
                     OnPropertyChanged("CaptureOnSlotChange");
                 }
             }
         }
 
-        private bool m_restoreOnSlotChange;
+        private bool _restoreOnSlotChange;
         public bool RestoreOnSlotChange
         {
-            get => m_restoreOnSlotChange;
+            get => _restoreOnSlotChange;
             set
             {
-                if (m_restoreOnSlotChange != value)
+                if (_restoreOnSlotChange != value)
                 {
-                    m_restoreOnSlotChange = value;
+                    _restoreOnSlotChange = value;
                     OnPropertyChanged("RestoreOnSlotChange");
                 }
             }
         }
 
-        private bool m_restoreOnSongLoad;
+        private bool _restoreOnSongLoad;
         public bool RestoreOnSongLoad
         {
-            get => m_restoreOnSongLoad;
+            get => _restoreOnSongLoad;
             set
             {
-                if (m_restoreOnSongLoad != value)
+                if (_restoreOnSongLoad != value)
                 {
-                    m_restoreOnSongLoad = value;
+                    _restoreOnSongLoad = value;
                     OnPropertyChanged("RestoreOnSongLoad");
                 }
             }
         }
 
-        private bool m_restoreOnStop;
+        private bool _restoreOnStop;
         public bool RestoreOnStop
         {
-            get => m_restoreOnStop;
+            get => _restoreOnStop;
             set
             {
-                if (m_restoreOnStop != value)
+                if (_restoreOnStop != value)
                 {
-                    m_restoreOnStop = value;
+                    _restoreOnStop = value;
                     OnPropertyChanged("RestoreOnStop");
                 }
             }
         }
 
         // How many properties are selected
-        public int SelCount
-        {
-            get { return _allProperties.Count(x => x.Selected == true); }
-        }
+        public int SelCount => AllProperties.Count(x => x.Selected);
 
         // How many properties have been captured
-        public int StoredCount
-        {
-            get { return _allProperties.Count(x => x.GotValue == true); }
-        }
+        public int StoredCount => _slots[_slot].StoredCount;
 
         // How many properties are stored that aren't selected
-        public int RedundantCount
-        {
-            get { return _allProperties.Count(x => x.Selected == false && x.GotValue == true); }
-        }
+        public int RedundantCount => _slots[_slot].RedundantCount;
 
         // How many selected properties have not been captured
-        public int MissingCount
-        {
-            get { return _allProperties.Count(x => x.Selected == true && x.GotValue == false); }
-        }
+        public int MissingCount => AllProperties.Count(x => x.Selected) - _slots[_slot].StoredCount;
 
         // Size of data in current slot
-        public int Size
-        {
-            get
-            {
-                int size = 0;
-                foreach(IPropertyState s in _allProperties)
-                {
-                    size += s.Size;
-                }
-                return size;
-            }
-        }
+        public int Size => _slots[_slot].Size;
 
         // Size of data in all slots
         public int TotalSize
@@ -184,35 +141,32 @@ namespace Snapshot
             get
             {
                 int size = 0;
-                foreach (IPropertyState s in _allProperties)
+                foreach (CMachineSnapshot s in _slots)
                 {
-                    size += s.TotalSize;
+                    size += s.Size;
                 }
                 return size;
             }
         }
 
-        public bool SlotHasData(int index)
-        {
-            return _allProperties.Count(x => x.SlotHasData(index)) > 0;
-        }
+        public bool SlotHasData(int index) => _slots[_slot].StoredCount > 0;
 
         #region IBuzzMachine
 
-        public Machine(IBuzzMachineHost host)
+        public CMachine(IBuzzMachineHost host)
         {
             this.host = host;
-            m_loadedState = new MachineStateData();
+            _loadedState = new CMachineStateData();
 
-            m_slotDetails = new List<SlotInfo>();
+            _slots = new List<CMachineSnapshot>();
             for(int i = 0; i < 128; i++)
             {
-                m_slotDetails.Add(new SlotInfo(this, i));
+                _slots.Add(new CMachineSnapshot(this, i));
             }
 
-            States = new ObservableCollection<MachineState>();
-            _allProperties = new List<IPropertyState>();
-            VM = new SnapshotVM(this);
+            States = new ObservableCollection<CMachineState>();
+            AllProperties = new List<IPropertyState>();
+            VM = new CSnapshotVM(this);
 
             ReadOnlyCollection<IMachine> machines = Global.Buzz.Song.Machines;
             foreach (IMachine m in machines)
@@ -226,14 +180,14 @@ namespace Snapshot
 
         // Class to hold whatever we eventually decide needs saving to the song
         // It will be dumped as a byte array
-        public class MachineStateData
+        public class CMachineStateData
         {
-            public MachineStateData()
+            public CMachineStateData()
             {
                 data = new byte[0];
             }
 
-            public MachineStateData(Machine m)
+            public CMachineStateData(CMachine m)
             {
                 MemoryStream stream = new MemoryStream();
                 BinaryWriter w = new BinaryWriter(stream);
@@ -245,22 +199,25 @@ namespace Snapshot
                 w.Write(m.RestoreOnSongLoad);
                 w.Write(m.RestoreOnStop);
 
-                // Slot names
-                foreach (SlotInfo s in m.SlotDetails)
-                {
-                    w.Write(s.Name);
-                }
-
-                // State data
-                foreach (MachineState s in m.States)
+                // Property data
+                foreach (CMachineState s in m.States)
                 {
                     w.Write(s.Machine.Name);
-                    var saveProperties = s.AllProperties.Where(x => x.Selected || x.NonEmpty);
-                    w.Write((Int32)saveProperties.Count());
-                    foreach(PropertyBase p in saveProperties)
+
+                    // Save the selected properties
+                    var selectedProperties = s.AllProperties.Where(x => x.Selected);
+                    w.Write((Int32)selectedProperties.Count());
+                    foreach(CPropertyBase p in selectedProperties)
                     {
-                        p.WriteData(w);
+                        w.Write(p.Name);
+                        w.Write((Int32)(p.Track ?? -1));
                     }
+                }
+
+                // Save slot data
+                foreach (CMachineSnapshot s in m.Slots)
+                {
+                    s.WriteData(w);
                 }
 
                 data = stream.ToArray();
@@ -274,24 +231,24 @@ namespace Snapshot
         // MachineState can be any class at all, 'MachineStateData' isn't part of the spec.
         // get calls CMachineInterfaceEx::Load() and CMachineInterface::Init() if there's data to restore
         // set calls CMachineInterface::Save() 
-        private MachineStateData m_loadedState;
+        private CMachineStateData _loadedState;
         private bool loading = false;
-        public MachineStateData MachineState
+        public CMachineStateData MachineState
         {
             get
             {
-                return new MachineStateData(this);
+                return new CMachineStateData(this);
             }
             set
             {
                 try
                 {
                     loading = true;
-                    m_loadedState = value;
+                    _loadedState = value;
                 }
                 catch(Exception e)
                 {
-                    m_loadedState = new MachineStateData(this);
+                    _loadedState = new CMachineStateData(this);
                 }
             }
         }
@@ -306,11 +263,11 @@ namespace Snapshot
 
         private void RestoreLoadedData()
         {
-            if (m_loadedState.data.Length == 0) return;
+            if (_loadedState.data.Length == 0) return;
 
-            if (m_loadedState.version > 1) throw new Exception("Version mismatch");
+            if (_loadedState.version > 1) throw new Exception("Version mismatch");
 
-            MemoryStream stream = new MemoryStream(m_loadedState.data);
+            MemoryStream stream = new MemoryStream(_loadedState.data);
             BinaryReader r = new BinaryReader(stream);
 
             // Options
@@ -320,38 +277,42 @@ namespace Snapshot
             RestoreOnSongLoad = r.ReadBoolean();
             RestoreOnStop = r.ReadBoolean();
 
-            // Slot names
-            for (int i = 0; i < 128; i++)
-            {
-                m_slotDetails[i].Name = r.ReadString();
-            }
-
-            // State data
+            // Property data
             while(r.PeekChar() > -1)
             {
                 string name = r.ReadString(); // Machine name
                 try
                 {
-                    MachineState s = States.Single(x => x.Machine.Name == name);
+                    CMachineState s = States.Single(x => x.Machine.Name == name);
 
                     Int32 count = r.ReadInt32(); // Number of saved properties
                     for(Int32 i = 0; i < count; i++)
                     {
                         name = r.ReadString();
+                        int? track = r.ReadInt32();
+                        if (track < 0) track = null;
                         try
                         {
-                            IPropertyState ps = s.AllProperties.Single(x => x.Name == name);
-                            ps.ReadData(r, m_loadedState.version);
+                            IPropertyState ps = s.AllProperties.Single(x => x.Name == name && x.Track.Value == track);
+                            ps.Selected = true; ;
                         }
                         catch (Exception e)
                         {
+                            MessageBox.Show(e.Message);
                             continue;
                         }
                     }
                 }
                 catch (Exception e)
                 {
+                    MessageBox.Show(e.Message);
                     return;
+                }
+
+                // Read slot data
+                foreach (CMachineSnapshot s in _slots)
+                {
+                    s.ReadData(r);
                 }
             }
 
@@ -379,13 +340,12 @@ namespace Snapshot
         {
             if (m.ManagedMachine != this)
             {
-                MachineState ms = new MachineState(m);
+                CMachineState ms = new CMachineState(m);
                 foreach (IPropertyState s in ms.AllProperties)
                 {
                     s.SelChanged += OnStateChanged;
-                    s.ValChanged += OnStateChanged;
                     s.Selected = SelectNewMachines;
-                    _allProperties.Add(s);
+                    AllProperties.Add(s);
                 }
                 States.Add(ms);
                 VM.AddState(ms);
@@ -400,14 +360,14 @@ namespace Snapshot
         private void OnStateChanged(object sender, StateChangedEventArgs e)
         {
             if(VM != null)
-                VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, _allProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
+                VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
         }
 
         private void OnMachineRemoved(IMachine m)
         {
             if (m != host.Machine)
             {
-                MachineState s = States[States.FindIndex(x => x.Machine == m)];
+                CMachineState s = States[States.FindIndex(x => x.Machine == m)];
                 States.Remove(s);
                 VM.RemoveState(s);
             }
@@ -416,29 +376,25 @@ namespace Snapshot
 
         #region Global Parameters
         // Global params
-        int m_slot;
+        int _slot;
         [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 1, Description = "Active slot", Name = "Slot")]
         public int Slot
         {
-            get => m_slot;
+            get => _slot;
             set
             {
                 if (value < 0 || value > 127) return;
 
-                if (m_slot != value)
+                if (_slot != value)
                 {
                     OnSlotChanging();
 
-                    m_slot = value;
-                    foreach (MachineState s in States)
-                    {
-                        s.Slot = m_slot;
-                    }
+                    _slot = value;
 
                     // This is to update the parameter if the slot change comes from the combo
-                    if (SlotParam != null && SlotParam.GetValue(0) != m_slot)
+                    if (SlotParam != null && SlotParam.GetValue(0) != _slot)
                     {
-                        Application.Current.Dispatcher.BeginInvoke((Action)(() => { SlotParam.SetValue(0, m_slot); }), DispatcherPriority.Send);
+                        Application.Current.Dispatcher.BeginInvoke((Action)(() => { SlotParam.SetValue(0, _slot); }), DispatcherPriority.Send);
                     }
 
                     OnSlotChanged();
@@ -452,63 +408,32 @@ namespace Snapshot
 
         internal void Capture()
         {
-            foreach (MachineState s in States)
-            {
-                s.Capture();
-            }
+            _slots[_slot].Capture();
         }
 
         internal void CaptureMissing()
         {
-            foreach (MachineState s in States)
-            {
-                s.CaptureMissing();
-            }
+            _slots[_slot].CaptureMissing();
         }
 
         internal void Restore()
         {
-            if (GotState)
+            CMachineSnapshot s = _slots[_slot];
+            if(s.HasData)
             {
-                /*
-                foreach (MachineState s in States)
-                {
-                    s.Restore();
-                }
-                */
-
-                MachineSnapshot sn = new MachineSnapshot();
-                foreach (MachineState s in States)
-                {
-                    sn.AddState(s);
-                }
-
-                Application.Current.Dispatcher.BeginInvoke((Action)(() => { sn.Apply(); }), DispatcherPriority.Send);
+                Application.Current.Dispatcher.BeginInvoke((Action)(() => { s.Restore(); }), DispatcherPriority.Send);
             }
         }
 
         internal void Purge()
         {
-            if (GotState)
-            {
-                foreach (var s in States)
-                {
-                    s.Purge();
-                }
-            }
+            throw new NotImplementedException(); // FIXME
         }
 
         internal void Clear()
         {
-            if (GotState)
-            {
-                foreach (MachineState s in States)
-                {
-                    s.Clear();
-                }
-            }
+            _slots[_slot].Purge();
         }
-
 
         // Called before the slot is changed
         internal void OnSlotChanging()
@@ -521,8 +446,6 @@ namespace Snapshot
 
         // Called after the slot has changed
         public EventHandler SlotChanged;
-
-
         internal void OnSlotChanged()
         {
             if (RestoreOnSlotChange && !loading)
@@ -544,6 +467,30 @@ namespace Snapshot
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class Misc
+    {
+        // Byte count to formatted string solution - https://stackoverflow.com/a/48467634
+        private static string[] suffixes = new[] { "b", "K", "M", "G", "T", "P" };
+        public static string ToSize(double number, int precision = 2)
+        {
+            // unit is the number of bytes
+            const double unit = 1024;
+
+            // suffix counter
+            int i = 0;
+
+            // as long as we're bigger than a unit, keep going
+            while (number > unit)
+            {
+                number /= unit;
+                i++;
+            }
+
+            // apply precision and current suffix
+            return Math.Round(number, precision) + suffixes[i];
         }
     }
 }

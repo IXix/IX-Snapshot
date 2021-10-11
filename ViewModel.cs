@@ -19,12 +19,12 @@ namespace Snapshot
     /// Base class for all ViewModel classes displayed by TreeViewItems.  
     /// This acts as an adapter between a raw data object and a TreeViewItem.
     /// </summary>
-    public class TreeViewItemViewModel : INotifyPropertyChanged
+    public class CTreeViewItemVM : INotifyPropertyChanged
     {
         #region Data
 
-        readonly ObservableCollection<TreeViewItemViewModel> _children;
-        readonly TreeViewItemViewModel _parent;
+        readonly ObservableCollection<CTreeViewItemVM> _children;
+        readonly CTreeViewItemVM _parent;
 
         bool _isExpanded;
         bool _isSelected;
@@ -35,11 +35,11 @@ namespace Snapshot
 
         #region Constructors
 
-        protected TreeViewItemViewModel(TreeViewItemViewModel parent, bool preventManualIndeterminate)
+        protected CTreeViewItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate)
         {
             _parent = parent;
             _preventManualIndeterminate = preventManualIndeterminate;
-            _children = new ObservableCollection<TreeViewItemViewModel>();
+            _children = new ObservableCollection<CTreeViewItemVM>();
         }
 
         #endregion // Constructors
@@ -49,7 +49,7 @@ namespace Snapshot
         /// <summary>
         /// Returns the logical child items of this object.
         /// </summary>
-        public ObservableCollection<TreeViewItemViewModel> Children
+        public ObservableCollection<CTreeViewItemVM> Children
         {
             get { return _children; }
         }
@@ -198,7 +198,7 @@ namespace Snapshot
 
         }
 
-        public TreeViewItemViewModel Parent
+        public CTreeViewItemVM Parent
         {
             get { return _parent; }
         }
@@ -219,14 +219,14 @@ namespace Snapshot
     }
 
     // Main interaction for GUI
-    public class SnapshotVM : INotifyPropertyChanged
+    public class CSnapshotVM : INotifyPropertyChanged
     {
-        public SnapshotVM(Machine owner)
+        public CSnapshotVM(CMachine owner)
         {
             Owner = owner;
-            States = new ObservableCollection<MachineStateVM>(
+            States = new ObservableCollection<CMachineStateVM>(
                 (from state in Owner.States
-                 select new MachineStateVM(state))
+                 select new CMachineStateVM(state))
                 .ToList());
 
             Owner.SlotChanged += OnSlotChanged;
@@ -269,7 +269,7 @@ namespace Snapshot
             NotifyPropertyChanged("SlotName");
             NotifyPropertyChanged("SlotNames");
             NotifyPropertyChanged("GotValue");
-            foreach(MachineStateVM s in States)
+            foreach(CMachineStateVM s in States)
             {
                 foreach(var c in s.Children)
                 {
@@ -291,7 +291,7 @@ namespace Snapshot
 
         #endregion
 
-        private Machine Owner { get; set; }
+        private CMachine Owner { get; set; }
 
         private string selectionInfoText;
         public string SelectionInfo
@@ -304,17 +304,17 @@ namespace Snapshot
             }
         }
 
-        public void AddState(MachineState state)
+        public void AddState(CMachineState state)
         {
-            States.Add(new MachineStateVM(state));
+            States.Add(new CMachineStateVM(state));
         }
 
-        public void RemoveState(MachineState state)
+        public void RemoveState(CMachineState state)
         {
             States.RemoveAt(States.FindIndex(x => x._state == state));
         }
 
-        public ObservableCollection<MachineStateVM> States { get; }
+        public ObservableCollection<CMachineStateVM> States { get; }
 
         #region Commands
         public SimpleCommand cmdCapture { get; private set; }
@@ -335,9 +335,9 @@ namespace Snapshot
             get => Owner.SlotName;
             set => Owner.SlotName = value;
         }
-        public List<Machine.SlotInfo> SlotDetails
+        public List<CMachineSnapshot> Slots
         {
-            get => Owner.SlotDetails;
+            get => Owner.Slots;
         }
         public bool SelectNewMachines
         {
@@ -369,19 +369,17 @@ namespace Snapshot
     }
 
     // Machines
-    public class MachineStateVM : TreeViewItemViewModel
+    public class CMachineStateVM : CTreeViewItemVM
     {
-        public readonly MachineState _state;
+        public readonly CMachineState _state;
 
-        public MachineStateVM(MachineState state)
+        public CMachineStateVM(CMachineState state)
             : base(null, true)
         {
             _state = state;
             IsChecked = false;
             LoadChildren();
         }
-
-        public override bool GotValue => _state.GotState;
 
         public string MachineName
         {
@@ -390,38 +388,38 @@ namespace Snapshot
 
         protected override void LoadChildren()
         {
-            if(_state.DataStates != null)
+            if(_state.DataState != null)
             {
-                var s = new PropertyStateVM(_state.DataStates, this);
+                var s = new CPropertyStateVM(_state.DataState, this);
                 Children.Add(s);
             }
 
             if (_state.AttributeStates.Children.Count > 0)
             {
-                var s = new PropertyStateGroupVM(_state.AttributeStates, this);
+                var s = new CPropertyStateGroupVM(_state.AttributeStates, this);
                 Children.Add(s);
             }
 
             if (_state.GlobalStates.Children.Count > 0)
             {
-                var s = new PropertyStateGroupVM(_state.GlobalStates, this);
+                var s = new CPropertyStateGroupVM(_state.GlobalStates, this);
                 Children.Add(s);
             }
 
             if (_state.TrackStates.Children.Count > 0)
             {
-                var s = new TrackPropertyStateGroupVM(_state.TrackStates, this);
+                var s = new CTrackPropertyStateGroupVM(_state.TrackStates, this);
                 Children.Add(s);
             }
         }
     }
 
     // Groups
-    public class PropertyStateGroupVM : TreeViewItemViewModel
+    public class CPropertyStateGroupVM : CTreeViewItemVM
     {
-        readonly PropertyStateGroup _group;
+        readonly CPropertyStateGroup _group;
 
-        public PropertyStateGroupVM(PropertyStateGroup group, TreeViewItemViewModel parentMachine)
+        public CPropertyStateGroupVM(CPropertyStateGroup group, CTreeViewItemVM parentMachine)
             : base(parentMachine, true)
         {
             _group = group;
@@ -437,18 +435,16 @@ namespace Snapshot
         protected override void LoadChildren()
         {
             foreach (var p in _group.Children)
-                Children.Add(new PropertyStateVM(p, this));
+                Children.Add(new CPropertyStateVM(p, this));
         }
-
-        public override bool GotValue => _group.GotValue;
     }
 
     // Groups
-    public class TrackPropertyStateGroupVM : TreeViewItemViewModel
+    public class CTrackPropertyStateGroupVM : CTreeViewItemVM
     {
-        readonly TrackPropertyStateGroup _group;
+        readonly CTrackPropertyStateGroup _group;
 
-        public TrackPropertyStateGroupVM(TrackPropertyStateGroup group, TreeViewItemViewModel parent)
+        public CTrackPropertyStateGroupVM(CTrackPropertyStateGroup group, CTreeViewItemVM parent)
             : base(parent, true)
         {
             _group = group;
@@ -464,30 +460,23 @@ namespace Snapshot
         protected override void LoadChildren()
         {
             foreach (var pg in _group.Children)
-                Children.Add(new PropertyStateGroupVM(pg, this));
+                Children.Add(new CPropertyStateGroupVM(pg, this));
         }
-
-        public override bool GotValue => _group.GotValue;
     }
 
-    public class PropertyStateVM : TreeViewItemViewModel
+    public class CPropertyStateVM : CTreeViewItemVM
     {
         readonly IPropertyState _property;
 
-        public PropertyStateVM(IPropertyState property, TreeViewItemViewModel parent)
+        public CPropertyStateVM(IPropertyState property, CTreeViewItemVM parent)
             : base(parent, false)
         {
             _property = property;
             IsChecked = _property.Selected;
-            _property.ValChanged += OnValChanged;
             _property.SelChanged += OnSelChanged;
         }
 
-        public override bool GotValue => _property.GotValue;
-
         virtual public string Size => (_property.GetType().ToString() == "Snapshot.DataState" && _property.Size > 0) ? string.Format(" - {0}", Misc.ToSize(_property.Size)) : "";
-
-        public int TotalSize => _property.TotalSize;
 
         protected override void OnCheckChanged()
         {

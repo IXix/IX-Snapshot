@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
-             xmlns:local="clr-namespace:Snapshot" d:DataContext="{d:DesignInstance Type=local:SnapshotVM}"
+             xmlns:local="clr-namespace:Snapshot" d:DataContext="{d:DesignInstance Type=local:CSnapshotVM}"
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
              d:DesignHeight="500" d:DesignWidth="500" Height="500">
     <UserControl.Resources>
@@ -53,7 +53,7 @@
                 </TreeView.ItemContainerStyle>
 
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type local:MachineStateVM}" ItemsSource="{Binding Children}">
+                    <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                         <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding MachineName}" />
@@ -61,7 +61,7 @@
                         </CheckBox>
                     </HierarchicalDataTemplate>
 
-                    <HierarchicalDataTemplate DataType="{x:Type local:PropertyStateGroupVM}" ItemsSource="{Binding Children}">
+                    <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                         <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" />
@@ -69,7 +69,7 @@
                         </CheckBox>
                     </HierarchicalDataTemplate>
 
-                    <HierarchicalDataTemplate DataType="{x:Type local:TrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
+                    <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                         <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" />
@@ -77,7 +77,7 @@
                         </CheckBox>
                     </HierarchicalDataTemplate>
 
-                    <DataTemplate DataType="{x:Type local:PropertyStateVM}">
+                    <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                         <CheckBox IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Name}" />

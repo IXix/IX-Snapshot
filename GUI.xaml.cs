@@ -28,7 +28,7 @@ namespace Snapshot
             InitializeComponent();
         }
 
-        public Machine Owner { get; set; }
+        public CMachine Owner { get; set; }
 
         IMachine machine;
         public IMachine Machine
@@ -40,7 +40,7 @@ namespace Snapshot
 
                 if (machine != null)
                 {
-                    Owner = machine.ManagedMachine as Machine;
+                    Owner = machine.ManagedMachine as CMachine;
                     DataContext = Owner.VM;
 
                     InitControl();
@@ -112,7 +112,7 @@ namespace Snapshot
         private void OnThreeStateClick(object sender, RoutedEventArgs e)
         {
             var chk = sender as CheckBox;
-            var VM = chk.DataContext as TreeViewItemViewModel;
+            var VM = chk.DataContext as CTreeViewItemVM;
             VM.OnClick();
         }
 
