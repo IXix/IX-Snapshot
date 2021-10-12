@@ -36,19 +36,23 @@ namespace Snapshot
         private List<CMachineSnapshot> _slots;
         public List<CMachineSnapshot> Slots => _slots;
 
+        public CMachineSnapshot CurrentSlot => _slots[_slot];
+
         public string SlotName
         {
-            get => _slots[_slot].Name;
+            get => CurrentSlot.Name;
             set
             {
-                if(value != null && value != _slots[_slot].Name)
+                if(value != null && value != CurrentSlot.Name)
                 {
-                    _slots[_slot].Name = value;
+                    CurrentSlot.Name = value;
                     OnPropertyChanged("SlotName");
                     OnPropertyChanged("SlotDetails");
                 }
             }
         }
+
+        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
 
         private bool _selectNewMachines;
         public bool SelectNewMachines
@@ -124,16 +128,16 @@ namespace Snapshot
         public int SelCount => AllProperties.Count(x => x.Selected);
 
         // How many properties have been captured
-        public int StoredCount => _slots[_slot].StoredCount;
+        public int StoredCount => CurrentSlot.StoredCount;
 
         // How many properties are stored that aren't selected
-        public int RedundantCount => _slots[_slot].RedundantCount;
+        public int RedundantCount => CurrentSlot.RedundantCount;
 
         // How many selected properties have not been captured
-        public int MissingCount => AllProperties.Count(x => x.Selected) - _slots[_slot].StoredCount;
+        public int MissingCount => AllProperties.Where(x => x.Selected).Except(CurrentSlot.StoredProperties).Count();
 
         // Size of data in current slot
-        public int Size => _slots[_slot].Size;
+        public int Size => CurrentSlot.Size;
 
         // Size of data in all slots
         public int TotalSize
@@ -149,7 +153,7 @@ namespace Snapshot
             }
         }
 
-        public bool SlotHasData(int index) => _slots[_slot].StoredCount > 0;
+        public bool SlotHasData(int index) => CurrentSlot.StoredCount > 0;
 
         #region IBuzzMachine
 
@@ -340,10 +344,10 @@ namespace Snapshot
         {
             if (m.ManagedMachine != this)
             {
-                CMachineState ms = new CMachineState(m);
+                CMachineState ms = new CMachineState(this, m);
                 foreach (IPropertyState s in ms.AllProperties)
                 {
-                    s.SelChanged += OnStateChanged;
+                    s.SelChanged += OnSelChanged;
                     s.Selected = SelectNewMachines;
                     AllProperties.Add(s);
                 }
@@ -357,10 +361,9 @@ namespace Snapshot
             }
         }
 
-        private void OnStateChanged(object sender, StateChangedEventArgs e)
+        private void OnSelChanged(object sender, StateChangedEventArgs e)
         {
-            if(VM != null)
-                VM.SelectionInfo = string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
+            OnPropertyChanged("SelectionInfo");
         }
 
         private void OnMachineRemoved(IMachine m)
@@ -408,17 +411,23 @@ namespace Snapshot
 
         internal void Capture()
         {
-            _slots[_slot].Capture();
+            CurrentSlot.Capture();
+            OnPropertyChanged("Slots");
+            OnPropertyChanged("SelectionInfo");
+            OnPropertyChanged("States");
         }
 
         internal void CaptureMissing()
         {
-            _slots[_slot].CaptureMissing();
+            CurrentSlot.CaptureMissing();
+            OnPropertyChanged("Slots");
+            OnPropertyChanged("SelectionInfo");
+            OnPropertyChanged("States");
         }
 
         internal void Restore()
         {
-            CMachineSnapshot s = _slots[_slot];
+            CMachineSnapshot s = CurrentSlot;
             if(s.HasData)
             {
                 Application.Current.Dispatcher.BeginInvoke((Action)(() => { s.Restore(); }), DispatcherPriority.Send);
@@ -427,12 +436,18 @@ namespace Snapshot
 
         internal void Purge()
         {
-            throw new NotImplementedException(); // FIXME
+            CurrentSlot.Purge();
+            OnPropertyChanged("Slots");
+            OnPropertyChanged("SelectionInfo");
+            OnPropertyChanged("States");
         }
 
         internal void Clear()
         {
-            _slots[_slot].Purge();
+            CurrentSlot.Clear();
+            OnPropertyChanged("Slots");
+            OnPropertyChanged("SelectionInfo");
+            OnPropertyChanged("States");
         }
 
         // Called before the slot is changed

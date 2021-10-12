@@ -33,6 +33,7 @@ namespace Snapshot
     {
         int? Track { get; }
         int Size { get; }
+        bool GotValue { get; }
     }
 
     public interface IGroup<T> : INamed
@@ -42,13 +43,18 @@ namespace Snapshot
 
     public class CPropertyBase : IPropertyState
     {
-        public CPropertyBase()
+        public CPropertyBase(CMachine owner)
         {
+            _owner = owner;
             m_selected = false;
             Track = null;
         }
 
+        public readonly CMachine _owner;
+
         virtual public int? Track { get; protected set; }
+
+        virtual public bool GotValue => _owner.CurrentSlot.ContainsProperty(this);
 
         virtual public int Size => 0;
 
@@ -81,7 +87,8 @@ namespace Snapshot
 
     public class CParameterState : CPropertyBase
     {
-        public CParameterState(IParameter param, int? track = null)
+        public CParameterState(CMachine owner, IParameter param, int? track = null)
+            : base(owner)
         {
             Parameter = param;
             Track = track;
@@ -96,7 +103,8 @@ namespace Snapshot
 
     public class CAttributeState : CPropertyBase
     {
-        public CAttributeState(IAttribute attr)
+        public CAttributeState(CMachine owner, IAttribute attr)
+            : base(owner)
         {
             Attribute = attr;
         }
@@ -110,7 +118,8 @@ namespace Snapshot
 
     public class CDataState : CPropertyBase
     {
-        public CDataState(IMachine machine)
+        public CDataState(CMachine owner, IMachine machine)
+            : base(owner)
         {
             Machine = machine;
         }
@@ -126,7 +135,8 @@ namespace Snapshot
 
     public class CPropertyStateGroup : CPropertyBase, IGroup<IPropertyState>
     {
-        public CPropertyStateGroup(string name)
+        public CPropertyStateGroup(CMachine owner, string name)
+            : base(owner)
         {
             Name = name;
             Children = new List<IPropertyState>();
@@ -134,12 +144,29 @@ namespace Snapshot
 
         public override string Name { get; }
 
+        public override bool GotValue
+        {
+            get
+            {
+                try
+                {
+                    IPropertyState v = Children.First(x => x.GotValue);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         public List<IPropertyState> Children { get; }
     }
 
     public class CTrackPropertyStateGroup : CPropertyBase, IGroup<CPropertyStateGroup>
     {
-        public CTrackPropertyStateGroup(string name)
+        public CTrackPropertyStateGroup(CMachine owner, string name)
+            : base(owner)
         {
             Name = name;
             Children = new List<CPropertyStateGroup>();
@@ -147,64 +174,95 @@ namespace Snapshot
 
         public override string Name { get; }
 
+        public override bool GotValue
+        {
+            get
+            {
+                try
+                {
+                    IPropertyState v = Children.First(x => x.GotValue);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         public List<CPropertyStateGroup> Children { get; }
     }
 
     public class CMachineState
     {
-        public CMachineState(IMachine m)
+        public CMachineState(CMachine owner, IMachine m)
         {
             Machine = m;
+            _owner = owner;
 
             _allProperties = new List<IPropertyState>();
 
             if((Machine.DLL.Info.Flags & MachineInfoFlags.LOAD_DATA_RUNTIME) == MachineInfoFlags.LOAD_DATA_RUNTIME && Machine.Data != null)
             {
-                DataState = new CDataState(m);
+                DataState = new CDataState(owner, m);
                 _allProperties.Add(DataState);
             }
 
-            GlobalStates = new CPropertyStateGroup("Global");
+            GlobalStates = new CPropertyStateGroup(owner, "Global");
             foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
-                    var ps = new CParameterState(p);
+                    var ps = new CParameterState(owner, p);
                     GlobalStates.Children.Add(ps);
                     _allProperties.Add(ps);
                 }
             }
 
-            TrackStates = new CTrackPropertyStateGroup("Track");
+            TrackStates = new CTrackPropertyStateGroup(owner, "Track");
             var tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
             foreach (var p in tracks.Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
-                    var pg = new CPropertyStateGroup(p.Name);
+                    var pg = new CPropertyStateGroup(owner, p.Name);
                     TrackStates.Children.Add(pg);
                     for(int i = 0; i < tracks.TrackCount; i++)
                     {
-                        var ps = new CParameterState(p, i);
+                        var ps = new CParameterState(owner, p, i);
                         pg.Children.Add(ps);
                         _allProperties.Add(ps);
                     }
                 }
             }
 
-            AttributeStates = new CPropertyStateGroup("Attributes");
+            AttributeStates = new CPropertyStateGroup(owner, "Attributes");
             foreach (var a in Machine.Attributes)
             {
-                var ats = new CAttributeState(a);
+                var ats = new CAttributeState(owner, a);
                 AttributeStates.Children.Add(ats);
                 _allProperties.Add(ats);
             }
         }
 
         public IMachine Machine { get; private set; }
+        readonly CMachine _owner;
 
-        // How many properties are selected
-        public int SelCount => _allProperties.Count(x => x.Selected);
+        public bool GotValue
+        {
+            get
+            {
+                try
+                {
+                    IPropertyState v = AllProperties.First(x => x.GotValue);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
         // Storage. The publics are for the treeview
         // the private is to make capture etc. simpler

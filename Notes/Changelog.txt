@@ -1,3 +1,6 @@
+2021.09.12
+	Fixing stuff that was broken
+
 2021.09.11
 	Complete overhaul. Possibly a bad idea.
 		Stored values are now held in a CMachineSnapshot rather than the individual properties

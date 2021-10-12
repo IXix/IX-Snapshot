@@ -44,7 +44,7 @@
                         <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                         <Setter Property="FontWeight" Value="Normal" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding GotValue}"
+                            <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}"
                                  Value="True">
                                 <Setter Property="FontWeight" Value="Bold"/>
                             </DataTrigger>
@@ -95,7 +95,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
                 <TextBlock>Slot Name</TextBlock>
-                <ComboBox ItemsSource="{Binding SlotDetails, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}">
+                <ComboBox ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}">
                     <ComboBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ComboBoxItem}">
                             <Setter Property="FontWeight" Value="Normal" />

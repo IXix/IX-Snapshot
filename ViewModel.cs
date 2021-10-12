@@ -268,6 +268,7 @@ namespace Snapshot
         {
             NotifyPropertyChanged("SlotName");
             NotifyPropertyChanged("SlotNames");
+            NotifyPropertyChanged("SelectionInfo");
             NotifyPropertyChanged("GotValue");
             foreach(CMachineStateVM s in States)
             {
@@ -293,16 +294,7 @@ namespace Snapshot
 
         private CMachine Owner { get; set; }
 
-        private string selectionInfoText;
-        public string SelectionInfo
-        {
-            get => selectionInfoText;
-            set
-            {
-                selectionInfoText = value;
-                NotifyPropertyChanged("SelectionInfo");
-            }
-        }
+        public string SelectionInfo => Owner.SelectionInfo;
 
         public void AddState(CMachineState state)
         {
@@ -386,6 +378,8 @@ namespace Snapshot
             get { return _state.Machine.Name; }
         }
 
+        public override bool GotValue => _state.GotValue;
+
         protected override void LoadChildren()
         {
             if(_state.DataState != null)
@@ -432,6 +426,8 @@ namespace Snapshot
             get { return _group.Name; }
         }
 
+        public override bool GotValue => _group.GotValue;
+
         protected override void LoadChildren()
         {
             foreach (var p in _group.Children)
@@ -457,6 +453,8 @@ namespace Snapshot
             get { return _group.Name; }
         }
 
+        public override bool GotValue => _group.GotValue;
+
         protected override void LoadChildren()
         {
             foreach (var pg in _group.Children)
@@ -477,6 +475,8 @@ namespace Snapshot
         }
 
         virtual public string Size => (_property.GetType().ToString() == "Snapshot.DataState" && _property.Size > 0) ? string.Format(" - {0}", Misc.ToSize(_property.Size)) : "";
+
+        public override bool GotValue => _property.GotValue;
 
         protected override void OnCheckChanged()
         {
