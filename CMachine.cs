@@ -412,17 +412,13 @@ namespace Snapshot
         internal void Capture()
         {
             CurrentSlot.Capture();
-            OnPropertyChanged("Slots");
-            OnPropertyChanged("SelectionInfo");
-            OnPropertyChanged("States");
+            OnPropertyChanged("State");
         }
 
         internal void CaptureMissing()
         {
             CurrentSlot.CaptureMissing();
-            OnPropertyChanged("Slots");
-            OnPropertyChanged("SelectionInfo");
-            OnPropertyChanged("States");
+            OnPropertyChanged("State");
         }
 
         internal void Restore()
@@ -437,17 +433,13 @@ namespace Snapshot
         internal void Purge()
         {
             CurrentSlot.Purge();
-            OnPropertyChanged("Slots");
-            OnPropertyChanged("SelectionInfo");
-            OnPropertyChanged("States");
+            OnPropertyChanged("State");
         }
 
         internal void Clear()
         {
             CurrentSlot.Clear();
-            OnPropertyChanged("Slots");
-            OnPropertyChanged("SelectionInfo");
-            OnPropertyChanged("States");
+            OnPropertyChanged("State");
         }
 
         // Called before the slot is changed
@@ -460,7 +452,6 @@ namespace Snapshot
         }
 
         // Called after the slot has changed
-        public EventHandler SlotChanged;
         internal void OnSlotChanged()
         {
             if (RestoreOnSlotChange && !loading)
@@ -468,11 +459,7 @@ namespace Snapshot
                 Restore();
             }
 
-            EventHandler handler = SlotChanged;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            OnPropertyChanged("State");
         }
 
         #endregion Commands

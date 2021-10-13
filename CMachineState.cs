@@ -75,6 +75,7 @@ namespace Snapshot
         virtual public string Name => throw new NotImplementedException();
 
         public event EventHandler<StateChangedEventArgs> SelChanged;
+
         public void OnSelChanged(StateChangedEventArgs e)
         {
             EventHandler<StateChangedEventArgs> handler = SelChanged;

@@ -81,7 +81,7 @@ namespace Snapshot
                     StoredProperties.Add(s);
                 }
 
-                foreach (CPropertyStateGroup pg in state.TrackStates.Children.Where(x => x.Selected))
+                foreach (CPropertyStateGroup pg in state.TrackStates.Children)
                 {
                     foreach (CParameterState s in pg.Children.Where(x => x.Selected))
                     {
@@ -128,7 +128,7 @@ namespace Snapshot
                     }
                 }
 
-                foreach (CPropertyStateGroup pg in state.TrackStates.Children.Where(x => x.Selected))
+                foreach (CPropertyStateGroup pg in state.TrackStates.Children)
                 {
                     foreach (CParameterState s in pg.Children.Where(x => x.Selected))
                     {
@@ -182,22 +182,25 @@ namespace Snapshot
             // list = list.Except(list.Where(x => x.Key.Selected == false));
 
             var attrList = AttributeValues.Where(x => x.Key.Selected == false).ToList();
-            foreach(var item in attrList)
+            foreach(KeyValuePair<CAttributeState, int> item in attrList)
             {
-                AttributeValues.Remove(item.Key);
-                StoredProperties.Remove(item.Key);
+                CAttributeState p = item.Key;
+                AttributeValues.Remove(p);
+                StoredProperties.Remove(p);
             }
             var paraList = ParameterValues.Where(x => x.Key.Selected == false).ToList();
-            foreach (var item in paraList)
+            foreach (KeyValuePair<CParameterState, Tuple<int, int>> item in paraList)
             {
-                ParameterValues.Remove(item.Key);
-                StoredProperties.Remove(item.Key);
+                CParameterState p = item.Key;
+                ParameterValues.Remove(p);
+                StoredProperties.Remove(p);
             }
             var dataList = DataValues.Where(x => x.Key.Selected == false).ToList();
-            foreach (var item in dataList)
+            foreach (KeyValuePair<CDataState, byte[]> item in dataList)
             {
-                DataValues.Remove(item.Key);
-                StoredProperties.Remove(item.Key);
+                CDataState p = item.Key;
+                DataValues.Remove(p);
+                StoredProperties.Remove(p);
             }
         }
 

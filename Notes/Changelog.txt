@@ -1,3 +1,6 @@
+2021.09.13
+	Fixed more broken stuff. Think everything except save/load is working now.
+
 2021.09.12
 	Fixing stuff that was broken
 

@@ -1,7 +1,4 @@
-Finish overhaul
-	Implement save/load of snapshot data
-	Fix GotValue for properties not updating the list properly
-		Parent items reference it to determine their own state so it obviously works. Why don't the properties go bold?
+
 
 Selecting slot from combo dropdown breaks slot name in combo edit field
 

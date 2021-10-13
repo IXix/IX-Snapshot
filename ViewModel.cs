@@ -177,14 +177,6 @@ namespace Snapshot
             IsChecked = e.Selected;
         }
 
-        protected void OnValChanged(object sender, StateChangedEventArgs e)
-        {
-            OnPropertyChanged("Name");
-            OnPropertyChanged("GotValue");
-            if(_parent != null)
-                _parent.OnValChanged(sender, e);
-        }
-
         /// <summary>
         /// Invoked when the child items need to be loaded on demand.
         /// Subclasses can override this to populate the Children collection.
@@ -212,7 +204,13 @@ namespace Snapshot
         public virtual void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                foreach(var c in Children)
+                {
+                    c.OnPropertyChanged(propertyName);
+                }
+            }
         }
 
         #endregion // INotifyPropertyChanged Members
@@ -229,7 +227,6 @@ namespace Snapshot
                  select new CMachineStateVM(state))
                 .ToList());
 
-            Owner.SlotChanged += OnSlotChanged;
             Owner.PropertyChanged += OwnerPropertyChanged;
 
             cmdCapture = new SimpleCommand
@@ -261,22 +258,21 @@ namespace Snapshot
 
         private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            NotifyPropertyChanged(e.PropertyName);
-        }
-
-        private void OnSlotChanged(object sender, EventArgs e)
-        {
-            NotifyPropertyChanged("SlotName");
-            NotifyPropertyChanged("SlotNames");
-            NotifyPropertyChanged("SelectionInfo");
-            NotifyPropertyChanged("GotValue");
-            foreach(CMachineStateVM s in States)
+            switch(e.PropertyName)
             {
-                foreach(var c in s.Children)
-                {
-                    c.OnPropertyChanged("GotValue");
-                }
-                s.OnPropertyChanged("GotValue");
+                case "State":
+                    NotifyPropertyChanged("SlotName");
+                    NotifyPropertyChanged("SlotNames");
+                    NotifyPropertyChanged("SelectionInfo");
+                    foreach (CMachineStateVM s in States)
+                    {
+                        s.OnPropertyChanged("GotValue");
+                    }
+                    break;
+
+                default:
+                    NotifyPropertyChanged(e.PropertyName);
+                    break;
             }
         }
 
@@ -476,7 +472,7 @@ namespace Snapshot
 
         virtual public string Size => (_property.GetType().ToString() == "Snapshot.DataState" && _property.Size > 0) ? string.Format(" - {0}", Misc.ToSize(_property.Size)) : "";
 
-        public override bool GotValue => _property.GotValue;
+        public override bool GotValue => _property.GotValue;            
 
         protected override void OnCheckChanged()
         {
