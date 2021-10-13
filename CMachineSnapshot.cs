@@ -36,6 +36,11 @@ namespace Snapshot
             return StoredProperties.Exists(x => x == p);
         }
 
+        public bool ContainsMachine(CMachineState s)
+        {
+            return StoredProperties.Exists(x => x.Parent == s);
+        }
+
         public int Size
         {
             get
@@ -182,7 +187,7 @@ namespace Snapshot
             // list = list.Except(list.Where(x => x.Key.Selected == false));
 
             var attrList = AttributeValues.Where(x => x.Key.Selected == false).ToList();
-            foreach(KeyValuePair<CAttributeState, int> item in attrList)
+            foreach (KeyValuePair<CAttributeState, int> item in attrList)
             {
                 CAttributeState p = item.Key;
                 AttributeValues.Remove(p);
@@ -204,6 +209,57 @@ namespace Snapshot
             }
         }
 
+        internal void ReadProperty(IPropertyState p, BinaryReader r)
+        {
+            Type t = p.GetType();
+            switch (t.FullName)
+            {
+                case "Snapshot.CDataState":
+                    Int32 l = r.ReadInt32();
+                    DataValues[p as Snapshot.CDataState] = r.ReadBytes(l);
+                    break;
+
+                case "Snapshot.CAttributeState":
+                    AttributeValues[p as Snapshot.CAttributeState] = r.ReadInt32();
+                    break;
+
+                case "Snapshot.CParameterState":
+                    ParameterValues[p as Snapshot.CParameterState] = new Tuple<int, int>(p.Track ?? -1, r.ReadInt32());
+                    break;
+
+                default:
+                    throw new Exception("Unknown property type.");
+            }
+            StoredProperties.Add(p);
+        }
+
+        public void WriteProperty(CPropertyBase p, BinaryWriter w)
+        {
+            if (ContainsProperty(p))
+            {
+                Type t = p.GetType();
+                switch (t.FullName)
+                {
+                    case "Snapshot.CDataState":
+                        byte[] data = DataValues[p as Snapshot.CDataState];
+                        w.Write(data.Length);
+                        w.Write(data);
+                        break;
+
+                    case "Snapshot.CAttributeState":
+                        w.Write(AttributeValues[p as Snapshot.CAttributeState]);
+                        break;
+
+                    case "Snapshot.CParameterState":
+                        w.Write(ParameterValues[p as Snapshot.CParameterState].Item2); // Value
+                        break;
+
+                    default:
+                        throw new Exception("Unknown property type.");
+                }
+            }
+        }
+
         public void Clear()
         {
             AttributeValues.Clear();
@@ -212,14 +268,14 @@ namespace Snapshot
             StoredProperties.Clear();
         }
 
-        internal void WriteData(BinaryWriter w)
+        public void WriteData(BinaryWriter w)
         {
-            throw new NotImplementedException();
+            w.Write(Name);
         }
 
-        internal void ReadData(BinaryReader r)
+        public void ReadData(BinaryReader r)
         {
-            throw new NotImplementedException();
+            Name = r.ReadString();
         }
     }
 }

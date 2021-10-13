@@ -16,6 +16,8 @@ Some kind of slot manager
 
 Filter visibility of properties in the treeview somehow.
 
+Some way of setting default property selection for individual machines would be nice
+
 Select new machines option could be broken into separate options for attributes, globals. track and data.
 
 Styling of list items based on whether a value is stored/not stored/missing

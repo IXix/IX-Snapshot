@@ -34,6 +34,8 @@ namespace Snapshot
         int? Track { get; }
         int Size { get; }
         bool GotValue { get; }
+        CMachine Owner { get; }
+        CMachineState Parent { get; }
     }
 
     public interface IGroup<T> : INamed
@@ -43,14 +45,19 @@ namespace Snapshot
 
     public class CPropertyBase : IPropertyState
     {
-        public CPropertyBase(CMachine owner)
+        public CPropertyBase(CMachine owner, CMachineState parent)
         {
             _owner = owner;
+            _parent = parent;
             m_selected = false;
             Track = null;
         }
 
-        public readonly CMachine _owner;
+        private readonly CMachine _owner;
+        public CMachine Owner => _owner;
+
+        private readonly CMachineState _parent;
+        public CMachineState Parent => _parent;
 
         virtual public int? Track { get; protected set; }
 
@@ -88,8 +95,8 @@ namespace Snapshot
 
     public class CParameterState : CPropertyBase
     {
-        public CParameterState(CMachine owner, IParameter param, int? track = null)
-            : base(owner)
+        public CParameterState(CMachine owner, CMachineState parent, IParameter param, int? track = null)
+            : base(owner, parent)
         {
             Parameter = param;
             Track = track;
@@ -104,8 +111,8 @@ namespace Snapshot
 
     public class CAttributeState : CPropertyBase
     {
-        public CAttributeState(CMachine owner, IAttribute attr)
-            : base(owner)
+        public CAttributeState(CMachine owner, CMachineState parent, IAttribute attr)
+            : base(owner, parent)
         {
             Attribute = attr;
         }
@@ -119,8 +126,8 @@ namespace Snapshot
 
     public class CDataState : CPropertyBase
     {
-        public CDataState(CMachine owner, IMachine machine)
-            : base(owner)
+        public CDataState(CMachine owner, CMachineState parent, IMachine machine)
+            : base(owner, parent)
         {
             Machine = machine;
         }
@@ -136,8 +143,8 @@ namespace Snapshot
 
     public class CPropertyStateGroup : CPropertyBase, IGroup<IPropertyState>
     {
-        public CPropertyStateGroup(CMachine owner, string name)
-            : base(owner)
+        public CPropertyStateGroup(CMachine owner, CMachineState parent, string name)
+            : base(owner, parent)
         {
             Name = name;
             Children = new List<IPropertyState>();
@@ -166,8 +173,8 @@ namespace Snapshot
 
     public class CTrackPropertyStateGroup : CPropertyBase, IGroup<CPropertyStateGroup>
     {
-        public CTrackPropertyStateGroup(CMachine owner, string name)
-            : base(owner)
+        public CTrackPropertyStateGroup(CMachine owner, CMachineState parent, string name)
+            : base(owner, parent)
         {
             Name = name;
             Children = new List<CPropertyStateGroup>();
@@ -205,42 +212,42 @@ namespace Snapshot
 
             if((Machine.DLL.Info.Flags & MachineInfoFlags.LOAD_DATA_RUNTIME) == MachineInfoFlags.LOAD_DATA_RUNTIME && Machine.Data != null)
             {
-                DataState = new CDataState(owner, m);
+                DataState = new CDataState(owner, this, m);
                 _allProperties.Add(DataState);
             }
 
-            GlobalStates = new CPropertyStateGroup(owner, "Global");
+            GlobalStates = new CPropertyStateGroup(owner, this, "Global");
             foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
-                    var ps = new CParameterState(owner, p);
+                    var ps = new CParameterState(owner, this, p);
                     GlobalStates.Children.Add(ps);
                     _allProperties.Add(ps);
                 }
             }
 
-            TrackStates = new CTrackPropertyStateGroup(owner, "Track");
+            TrackStates = new CTrackPropertyStateGroup(owner, this, "Track");
             var tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
             foreach (var p in tracks.Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
-                    var pg = new CPropertyStateGroup(owner, p.Name);
+                    var pg = new CPropertyStateGroup(owner, this, p.Name);
                     TrackStates.Children.Add(pg);
                     for(int i = 0; i < tracks.TrackCount; i++)
                     {
-                        var ps = new CParameterState(owner, p, i);
+                        var ps = new CParameterState(owner, this, p, i);
                         pg.Children.Add(ps);
                         _allProperties.Add(ps);
                     }
                 }
             }
 
-            AttributeStates = new CPropertyStateGroup(owner, "Attributes");
+            AttributeStates = new CPropertyStateGroup(owner, this, "Attributes");
             foreach (var a in Machine.Attributes)
             {
-                var ats = new CAttributeState(owner, a);
+                var ats = new CAttributeState(owner, this, a);
                 AttributeStates.Children.Add(ats);
                 _allProperties.Add(ats);
             }

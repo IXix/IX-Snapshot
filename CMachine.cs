@@ -191,6 +191,25 @@ namespace Snapshot
                 data = new byte[0];
             }
 
+            /* FILE STRUCTURE
+             * 
+             * SelectNewMachines
+             * CaptureOnSlotChange
+             * RestoreOnSlotChange
+             * RestoreOnSongLoad
+             * RestoreOnStop
+             * Slot data (CMachineSnapshot.WriteData() x 128)
+             * number of saved states
+             * * State name
+             * * Machine DLL name
+             * * number of properties saved
+             * * * Property name
+             * * * Property track (-1 if null)
+             * * * Property selected
+             * * * number of saved snapshot values
+             * * * * snapshot index
+             * * * * Snapshot data for property (CMachineSnapshot.WriteProperty())
+             */
             public CMachineStateData(CMachine m)
             {
                 MemoryStream stream = new MemoryStream();
@@ -203,25 +222,52 @@ namespace Snapshot
                 w.Write(m.RestoreOnSongLoad);
                 w.Write(m.RestoreOnStop);
 
-                // Property data
-                foreach (CMachineState s in m.States)
+                // Save slot data
+                for (int i = 0; i < 128; i++)
                 {
-                    w.Write(s.Machine.Name);
-
-                    // Save the selected properties
-                    var selectedProperties = s.AllProperties.Where(x => x.Selected);
-                    w.Write((Int32)selectedProperties.Count());
-                    foreach(CPropertyBase p in selectedProperties)
-                    {
-                        w.Write(p.Name);
-                        w.Write((Int32)(p.Track ?? -1));
-                    }
+                    m._slots[i].WriteData(w);
                 }
 
-                // Save slot data
-                foreach (CMachineSnapshot s in m.Slots)
+                // Build a list of states to save by finding which are referred to by snapshots
+                List<CMachineState> saveStates = new List<CMachineState>();
+                foreach (CMachineState s in m.States)
                 {
-                    s.WriteData(w);
+                    if(m._slots.Exists(x => x.ContainsMachine(s)))
+                    {
+                        saveStates.Add(s);
+                    }
+                }
+                w.Write((Int32)saveStates.Count()); 
+                foreach (CMachineState s in saveStates)
+                {
+                    w.Write(s.Machine.Name);
+                    w.Write(s.Machine.DLL.Name);
+
+                    // Build a dictionary of properties to save and the snapshots they're referenced by
+                    Dictionary<CPropertyBase, List<CMachineSnapshot>> saveProperties = new Dictionary<CPropertyBase, List<CMachineSnapshot>>();
+                    foreach(CPropertyBase ps in s.AllProperties)
+                    {
+                        List<CMachineSnapshot> slots = m._slots.Where(x => x.ContainsProperty(ps)).ToList();
+                        if(slots.Count() > 0 || ps.Selected)
+                        {
+                            saveProperties[ps] = slots;
+                        }
+                    }
+                    w.Write((Int32)saveProperties.Count());
+                    foreach(KeyValuePair<CPropertyBase, List<CMachineSnapshot>> item in saveProperties)
+                    {
+                        CPropertyBase p = item.Key;
+                        List<CMachineSnapshot> slots = item.Value;
+                        w.Write(p.Name);
+                        w.Write(p.Track ?? -1);
+                        w.Write(p.Selected);
+                        w.Write((Int32)slots.Count());
+                        foreach(CMachineSnapshot snapshot in slots)
+                        {
+                            w.Write((Int32)snapshot.Index);
+                            snapshot.WriteProperty(p, w);
+                        }
+                    }
                 }
 
                 data = stream.ToArray();
@@ -281,29 +327,40 @@ namespace Snapshot
             RestoreOnSongLoad = r.ReadBoolean();
             RestoreOnStop = r.ReadBoolean();
 
-            // Property data
-            while(r.PeekChar() > -1)
+            // Slot data (CMachineSnapshot.WriteData() x 128)
+            for (int i = 0; i < 128; i++)
             {
-                string name = r.ReadString(); // Machine name
+                _slots[i].ReadData(r);
+            }
+
+            // number of saved states
+            Int32 numStates = r.ReadInt32();
+            for(int n = 0; n < numStates; n++)
+            {
+                string name = r.ReadString(); // State name
+                string dllname = r.ReadString(); // Machine DLL name
                 try
                 {
-                    CMachineState s = States.Single(x => x.Machine.Name == name);
+                    // Should be one and only one state matching both name and dllname. Exception if not.
+                    CMachineState s = States.Single(x => x.Machine.Name == name && x.Machine.DLL.Name == dllname);
 
-                    Int32 count = r.ReadInt32(); // Number of saved properties
-                    for(Int32 i = 0; i < count; i++)
+                    Int32 count = r.ReadInt32(); // number of properties saved
+                    for (Int32 i = 0; i < count; i++)
                     {
-                        name = r.ReadString();
-                        int? track = r.ReadInt32();
+                        name = r.ReadString(); // Property name
+                        int? track = r.ReadInt32(); // Property track (-1 if null)
                         if (track < 0) track = null;
-                        try
+
+                        // Should be one and only one property matching name and track. Exception if not.
+                        IPropertyState ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
+
+                        ps.Selected = r.ReadBoolean(); //Property selected
+
+                        Int32 numslots = r.ReadInt32(); // number of saved snapshot values
+                        for (int j = 0; j < numslots; j++)
                         {
-                            IPropertyState ps = s.AllProperties.Single(x => x.Name == name && x.Track.Value == track);
-                            ps.Selected = true; ;
-                        }
-                        catch (Exception e)
-                        {
-                            MessageBox.Show(e.Message);
-                            continue;
+                            Int32 slot = r.ReadInt32(); // snapshot index
+                            _slots[slot].ReadProperty(ps, r); // Snapshot data (CMachineSnapshot.WriteProperty())
                         }
                     }
                 }
@@ -312,16 +369,9 @@ namespace Snapshot
                     MessageBox.Show(e.Message);
                     return;
                 }
-
-                // Read slot data
-                foreach (CMachineSnapshot s in _slots)
-                {
-                    s.ReadData(r);
-                }
             }
 
-            OnPropertyChanged("SlotName");
-            OnPropertyChanged("SlotDetails");
+            OnPropertyChanged("State");
         }
 
         // Called after song load or template drop
