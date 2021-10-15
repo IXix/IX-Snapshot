@@ -107,7 +107,7 @@ namespace Snapshot
             }
         }
 
-        internal void CaptureMissing()
+        public void CaptureMissing()
         {
             foreach (CMachineState state in m_owner.States)
             {
@@ -190,7 +190,7 @@ namespace Snapshot
                 );
         }
 
-        internal void Purge()
+        public void Purge()
         {
             // Could use List.Except() but these lists are readonly and not sure if bindings etc. would be preserved
             // Need testing at some point
@@ -219,7 +219,15 @@ namespace Snapshot
             }
         }
 
-        internal void ReadProperty(IPropertyState p, BinaryReader r)
+        public void Clear()
+        {
+            AttributeValues.Clear();
+            ParameterValues.Clear();
+            DataValues.Clear();
+            StoredProperties.Clear();
+        }
+
+        public void ReadProperty(IPropertyState p, BinaryReader r)
         {
             Type t = p.GetType();
             switch (t.FullName)
@@ -268,14 +276,6 @@ namespace Snapshot
                         throw new Exception("Unknown property type.");
                 }
             }
-        }
-
-        public void Clear()
-        {
-            AttributeValues.Clear();
-            ParameterValues.Clear();
-            DataValues.Clear();
-            StoredProperties.Clear();
         }
 
         public void WriteData(BinaryWriter w)

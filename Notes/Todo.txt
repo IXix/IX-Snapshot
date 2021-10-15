@@ -1,13 +1,6 @@
-Implement UI for MIDI mappings
-	Needs a dialog
-		Text or title showing action being mapped eg. "Slot 4 Capture"
-		Channel combo including "Any"
-		Event type = note-on, note-off or CC
-		Value Edit/spinner constrained 0-127, disabled if type != CC
-		Populate/store dialog settings in CMidiEvent objects
-			Need one object for every mappable action
-				Snapshot already has them for Capture/Restore but might need a rethink as we'll need them for
-				all the machine level actions too and might want to add CaptureMissing etc. to snapshots
+Finish implementation of CMappingDialog
+	Implement learning from MIDI input
+	Make the dialog nicer.
 
 Selecting slot from combo dropdown breaks slot name in combo edit field
 

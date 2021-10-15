@@ -254,6 +254,14 @@ namespace Snapshot
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Purge()
             };
+            cmdMap = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.MapCommand(x.ToString(), false)
+            };
+            cmdMapSpecific = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.MapCommand(x.ToString(), true)
+            };
         }
 
         private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -310,6 +318,8 @@ namespace Snapshot
         public SimpleCommand cmdRestore { get; private set; }
         public SimpleCommand cmdClear { get; private set; }
         public SimpleCommand cmdPurge { get; private set; }
+        public SimpleCommand cmdMap { get; private set; }
+        public SimpleCommand cmdMapSpecific { get; private set; }
         #endregion Commands
 
         #region Properties

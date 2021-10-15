@@ -123,13 +123,48 @@
                 <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}"/>
                 <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}"/>
                 <Separator Height="9" />
-                <Button x:Name="btnCapture" Command="{Binding cmdCapture}">Capture</Button>
-                <Button x:Name="btnCaptureMissing" Command="{Binding cmdCaptureMissing}">Capture Missing</Button>
+                <Button x:Name="btnCapture" >
+                    <Button.InputBindings>
+                        <MouseBinding Command="{Binding cmdCapture}" MouseAction="LeftClick" />
+                        <MouseBinding Command="{Binding cmdMap}" CommandParameter="Capture" Gesture="RightClick"/>
+                        <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Capture" Gesture="Ctrl+RightClick"/>
+                    </Button.InputBindings>
+                    Capture
+                </Button>
+                <Button x:Name="btnCaptureMissing">
+                    <Button.InputBindings>
+                        <MouseBinding Command="{Binding cmdCaptureMissing}" MouseAction="LeftClick" />
+                        <MouseBinding Command="{Binding cmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick"/>
+                        <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="CaptureMissing" Gesture="Ctrl+RightClick"/>
+                    </Button.InputBindings>
+                    Capture Missing
+                </Button>
                 <Separator Height="9" />
-                <Button x:Name="btnRestore" Command="{Binding cmdRestore}">Restore</Button>
+                <Button x:Name="btnRestore">
+                    <Button.InputBindings>
+                        <MouseBinding Command="{Binding cmdRestore}" MouseAction="LeftClick" />
+                        <MouseBinding Command="{Binding cmdMap}" CommandParameter="Restore" Gesture="RightClick"/>
+                        <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Restore" Gesture="Ctrl+RightClick"/>
+                    </Button.InputBindings>
+                    Restore
+                </Button>
                 <Separator Height="9" />
-                <Button x:Name="btnClear" Command="{Binding cmdClear}">Clear</Button>
-                <Button x:Name="btnPurge" Command="{Binding cmdPurge}">Purge</Button>
+                <Button x:Name="btnClear">
+                    <Button.InputBindings>
+                        <MouseBinding Command="{Binding cmdClear}" MouseAction="LeftClick" />
+                        <MouseBinding Command="{Binding cmdMap}" CommandParameter="Clear" Gesture="RightClick"/>
+                        <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick"/>
+                    </Button.InputBindings>
+                    Clear
+                </Button>
+                <Button x:Name="btnPurge">
+                    <Button.InputBindings>
+                        <MouseBinding Command="{Binding cmdPurge}" MouseAction="LeftClick" />
+                        <MouseBinding Command="{Binding cmdMap}" CommandParameter="Purge" Gesture="RightClick"/>
+                        <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Purge" Gesture="Ctrl+RightClick"/>
+                    </Button.InputBindings>
+                    Purge
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>

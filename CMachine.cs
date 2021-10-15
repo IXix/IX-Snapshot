@@ -160,7 +160,7 @@ namespace Snapshot
         public Dictionary<Action, CMidiEvent> MidiMap { get; private set; }
 
         // This is the mechanism to trigger UI actions in response to MIDI events
-        private Dictionary<Action, int? /*code*/> _midiMapping;
+        private Dictionary<Action, UInt32 /*code*/> _midiMapping;
 
         #region IBuzzMachine
 
@@ -168,7 +168,7 @@ namespace Snapshot
         {
             this.host = host;
             MidiMap = new Dictionary<Action, CMidiEvent>();
-            _midiMapping = new Dictionary<Action, int?>();
+            _midiMapping = new Dictionary<Action, UInt32>();
 
             _slots = new List<CMachineSnapshot>();
             for (int i = 0; i < 128; i++)
@@ -232,6 +232,53 @@ namespace Snapshot
             if (RestoreOnStop)
             {
                 Restore();
+            }
+        }
+
+        internal void MapCommand(string name, bool specific)
+        {
+            // Find the command
+            object target;
+            Type targetType;
+            MethodInfo method;
+            if (specific)
+            {
+                targetType = CurrentSlot.GetType();
+                method = targetType.GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
+                target = CurrentSlot;
+            }
+            else
+            {
+                targetType = this.GetType();
+                method = targetType.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+                target = this;
+            }
+            Action a = (Action)Delegate.CreateDelegate(typeof(Action), target, method);
+
+            // Retrieve the mapping or use defaults
+            CMidiEvent e;
+            if(MidiMap.ContainsKey(a))
+            {
+                e = MidiMap[a];
+            }
+            else
+            {
+                e = new CMidiEvent();
+            }
+
+            // Show mapping dialog
+            CMappingDialog d = new CMappingDialog(name, e);
+            bool? result = d.ShowDialog();
+
+            // Add/update mapping if necessary
+            if(result == true)
+            {
+                e.Message = (CMidiEvent.MessageType) d.EventType;
+                e.Channel = d.Channel;
+                e.Primary = d.Primary;
+                e.Secondary = d.Secondary;
+                MidiMap[a] = e;
+                _midiMapping[a] = e.Encode();
             }
         }
 
@@ -398,7 +445,7 @@ namespace Snapshot
                 // Restore settings
                 Action a = (Action)Delegate.CreateDelegate(typeof(Action), target, method);
                 MidiMap[a] = e; // settings
-                _midiMapping[a] = e.GetHashCode(); // mapping
+                _midiMapping[a] = e.Encode(); // mapping
             }
 
             // number of saved states
@@ -469,7 +516,7 @@ namespace Snapshot
             }
 
             // Fire off matching actions
-            foreach (KeyValuePair<Action, int?> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2))
+            foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2))
             {
                 item.Key();
             }
@@ -490,7 +537,7 @@ namespace Snapshot
             UInt32 c4 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | 16 /*c=any*/);
 
             // Fire off matching actions
-            foreach (KeyValuePair<Action, int?> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2 || x.Value == c3 || x.Value == c4))
+            foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2 || x.Value == c3 || x.Value == c4))
             {
                 item.Key();
             }

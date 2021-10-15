@@ -60,6 +60,9 @@
     <Compile Include="GUI.xaml.cs">
       <DependentUpon>GUI.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CMappingDialog.xaml.cs">
+      <DependentUpon>CMappingDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +70,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="GUI.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CMappingDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

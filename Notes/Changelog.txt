@@ -5,6 +5,9 @@
 		Save/load done.
 		Implemented MidiNote and MidiControlChange
 		Improved code generation for MIDI stuff including note-off handling (packing values with bitwise ops)
+		Added MappingDialog
+			<ctrl> Right-click on a button (Capture, Restore etc.) to launch
+				Holding control signals that the mapping is for a snapshot command
 
 2021.09.13
 	Fixed more broken stuff.
