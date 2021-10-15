@@ -270,7 +270,7 @@ namespace Snapshot
             {
                 case "State":
                     NotifyPropertyChanged("SlotName");
-                    NotifyPropertyChanged("SlotNames");
+                    NotifyPropertyChanged("Slots");
                     NotifyPropertyChanged("SelectionInfo");
                     foreach (CMachineStateVM s in States)
                     {
@@ -379,10 +379,7 @@ namespace Snapshot
             LoadChildren();
         }
 
-        public string MachineName
-        {
-            get { return _state.Machine.Name; }
-        }
+        public string MachineName => _state.Machine.Name;
 
         public override bool GotValue => _state.GotValue;
 

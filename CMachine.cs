@@ -519,6 +519,7 @@ namespace Snapshot
             foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2))
             {
                 item.Key();
+                OnPropertyChanged("State");
             }
         }
 
@@ -540,6 +541,7 @@ namespace Snapshot
             foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2 || x.Value == c3 || x.Value == c4))
             {
                 item.Key();
+                OnPropertyChanged("State");
             }
         }
 
