@@ -11,6 +11,7 @@ using BuzzGUI.Common;
 using Buzz.MachineInterface;
 using BuzzGUI.Interfaces;
 using System.IO;
+using System.Reflection;
 
 namespace Snapshot
 {
@@ -43,7 +44,7 @@ namespace Snapshot
             get => CurrentSlot.Name;
             set
             {
-                if(value != null && value != CurrentSlot.Name)
+                if (value != null && value != CurrentSlot.Name)
                 {
                     CurrentSlot.Name = value;
                     OnPropertyChanged("SlotName");
@@ -60,7 +61,7 @@ namespace Snapshot
             get => _selectNewMachines;
             set
             {
-                if(_selectNewMachines != value)
+                if (_selectNewMachines != value)
                 {
                     _selectNewMachines = value;
                     OnPropertyChanged("SelectNewMachines");
@@ -155,15 +156,22 @@ namespace Snapshot
 
         public bool SlotHasData(int index) => CurrentSlot.StoredCount > 0;
 
+        // This is the mapping of UI actions to MIDI events
+        public Dictionary<Action, CMidiEvent> MidiMap { get; private set; }
+
+        // This is the mechanism to trigger UI actions in response to MIDI events
+        private Dictionary<Action, int? /*code*/> _midiMapping;
+
         #region IBuzzMachine
 
         public CMachine(IBuzzMachineHost host)
         {
             this.host = host;
-            _loadedState = new CMachineStateData();
+            MidiMap = new Dictionary<Action, CMidiEvent>();
+            _midiMapping = new Dictionary<Action, int?>();
 
             _slots = new List<CMachineSnapshot>();
-            for(int i = 0; i < 128; i++)
+            for (int i = 0; i < 128; i++)
             {
                 _slots.Add(new CMachineSnapshot(this, i));
             }
@@ -182,99 +190,15 @@ namespace Snapshot
             Global.Buzz.Song.MachineRemoved += (m) => { OnMachineRemoved(m); };
         }
 
-        // Class to hold whatever we eventually decide needs saving to the song
-        // It will be dumped as a byte array
+        // Class to hold whatever needs saving to the song
         public class CMachineStateData
         {
             public CMachineStateData()
             {
-                data = new byte[0];
-            }
-
-            /* FILE STRUCTURE
-             * 
-             * SelectNewMachines
-             * CaptureOnSlotChange
-             * RestoreOnSlotChange
-             * RestoreOnSongLoad
-             * RestoreOnStop
-             * Slot data (CMachineSnapshot.WriteData() x 128)
-             * number of saved states
-             * * State name
-             * * Machine DLL name
-             * * number of properties saved
-             * * * Property name
-             * * * Property track (-1 if null)
-             * * * Property selected
-             * * * number of saved snapshot values
-             * * * * snapshot index
-             * * * * Snapshot data for property (CMachineSnapshot.WriteProperty())
-             */
-            public CMachineStateData(CMachine m)
-            {
-                MemoryStream stream = new MemoryStream();
-                BinaryWriter w = new BinaryWriter(stream);
-
-                // Options
-                w.Write(m.SelectNewMachines);
-                w.Write(m.CaptureOnSlotChange);
-                w.Write(m.RestoreOnSlotChange);
-                w.Write(m.RestoreOnSongLoad);
-                w.Write(m.RestoreOnStop);
-
-                // Save slot data
-                for (int i = 0; i < 128; i++)
-                {
-                    m._slots[i].WriteData(w);
-                }
-
-                // Build a list of states to save by finding which are referred to by snapshots
-                List<CMachineState> saveStates = new List<CMachineState>();
-                foreach (CMachineState s in m.States)
-                {
-                    if(m._slots.Exists(x => x.ContainsMachine(s)))
-                    {
-                        saveStates.Add(s);
-                    }
-                }
-                w.Write((Int32)saveStates.Count()); 
-                foreach (CMachineState s in saveStates)
-                {
-                    w.Write(s.Machine.Name);
-                    w.Write(s.Machine.DLL.Name);
-
-                    // Build a dictionary of properties to save and the snapshots they're referenced by
-                    Dictionary<CPropertyBase, List<CMachineSnapshot>> saveProperties = new Dictionary<CPropertyBase, List<CMachineSnapshot>>();
-                    foreach(CPropertyBase ps in s.AllProperties)
-                    {
-                        List<CMachineSnapshot> slots = m._slots.Where(x => x.ContainsProperty(ps)).ToList();
-                        if(slots.Count() > 0 || ps.Selected)
-                        {
-                            saveProperties[ps] = slots;
-                        }
-                    }
-                    w.Write((Int32)saveProperties.Count());
-                    foreach(KeyValuePair<CPropertyBase, List<CMachineSnapshot>> item in saveProperties)
-                    {
-                        CPropertyBase p = item.Key;
-                        List<CMachineSnapshot> slots = item.Value;
-                        w.Write(p.Name);
-                        w.Write(p.Track ?? -1);
-                        w.Write(p.Selected);
-                        w.Write((Int32)slots.Count());
-                        foreach(CMachineSnapshot snapshot in slots)
-                        {
-                            w.Write((Int32)snapshot.Index);
-                            snapshot.WriteProperty(p, w);
-                        }
-                    }
-                }
-
-                data = stream.ToArray();
             }
 
             public Byte version = 1;
-            public byte [] data;
+            public byte[] data;
         }
 
         // This is how Save/Load/Init get handled
@@ -287,7 +211,7 @@ namespace Snapshot
         {
             get
             {
-                return new CMachineStateData(this);
+                return GetStateData();
             }
             set
             {
@@ -296,24 +220,136 @@ namespace Snapshot
                     loading = true;
                     _loadedState = value;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    _loadedState = new CMachineStateData(this);
+                    _loadedState = new CMachineStateData();
                 }
             }
         }
 
         public void Stop()
         {
-            if(RestoreOnStop)
+            if (RestoreOnStop)
             {
                 Restore();
             }
         }
 
+        /* FILE STRUCTURE
+         * 
+         * SelectNewMachines
+         * CaptureOnSlotChange
+         * RestoreOnSlotChange
+         * RestoreOnSongLoad
+         * RestoreOnStop
+         * Slot data (CMachineSnapshot.WriteData() x 128)
+         * number of saved MIDI mappings
+         * * method name
+         * * slot index or -1 for machine
+         * * midi event data (CMidiEvent.WriteData())
+         * number of saved states
+         * * State name
+         * * Machine DLL name
+         * * number of properties saved
+         * * * Property name
+         * * * Property track (-1 if null)
+         * * * Property selected
+         * * * number of saved snapshot values
+         * * * * snapshot index
+         * * * * Snapshot data for property (CMachineSnapshot.WriteProperty())
+         */
+
+        private CMachineStateData GetStateData()
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryWriter w = new BinaryWriter(stream);
+
+            // Options
+            w.Write(SelectNewMachines);
+            w.Write(CaptureOnSlotChange);
+            w.Write(RestoreOnSlotChange);
+            w.Write(RestoreOnSongLoad);
+            w.Write(RestoreOnStop);
+
+            // Save slot data
+            for (int i = 0; i < 128; i++)
+            {
+                _slots[i].WriteData(w);
+            }
+
+            // Save MIDI mapping
+            w.Write(MidiMap.Count());
+            foreach (KeyValuePair<Action, CMidiEvent> item in MidiMap)
+            {
+                Action a = item.Key;
+
+                // if action belongs to a snapshot, we need to save the index
+                int slot = -1;
+                switch (a.Target.GetType().Name)
+                {
+                    case "CMachineSnapshot":
+                        slot = (a.Target as CMachineSnapshot).Index;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                w.Write(a.Method.Name);
+                w.Write(slot);
+                item.Value.WriteData(w);
+            }
+
+            // Build a list of states to save by finding which are referred to by snapshots
+            List<CMachineState> saveStates = new List<CMachineState>();
+            foreach (CMachineState s in States)
+            {
+                if (_slots.Exists(x => x.ContainsMachine(s)))
+                {
+                    saveStates.Add(s);
+                }
+            }
+            w.Write((Int32)saveStates.Count());
+            foreach (CMachineState s in saveStates)
+            {
+                w.Write(s.Machine.Name);
+                w.Write(s.Machine.DLL.Name);
+
+                // Build a dictionary of properties to save and the snapshots they're referenced by
+                Dictionary<CPropertyBase, List<CMachineSnapshot>> saveProperties = new Dictionary<CPropertyBase, List<CMachineSnapshot>>();
+                foreach (CPropertyBase ps in s.AllProperties)
+                {
+                    List<CMachineSnapshot> slots = _slots.Where(x => x.ContainsProperty(ps)).ToList();
+                    if (slots.Count() > 0 || ps.Selected)
+                    {
+                        saveProperties[ps] = slots;
+                    }
+                }
+                w.Write((Int32)saveProperties.Count());
+                foreach (KeyValuePair<CPropertyBase, List<CMachineSnapshot>> item in saveProperties)
+                {
+                    CPropertyBase p = item.Key;
+                    List<CMachineSnapshot> slots = item.Value;
+                    w.Write(p.Name);
+                    w.Write(p.Track ?? -1);
+                    w.Write(p.Selected);
+                    w.Write((Int32)slots.Count());
+                    foreach (CMachineSnapshot snapshot in slots)
+                    {
+                        w.Write((Int32)snapshot.Index);
+                        snapshot.WriteProperty(p, w);
+                    }
+                }
+            }
+
+            CMachineStateData data = new CMachineStateData() { data = stream.ToArray() };
+
+            return data;
+        }
+
         private void RestoreLoadedData()
         {
-            if (_loadedState.data.Length == 0) return;
+            if (_loadedState == null) return;
 
             if (_loadedState.version > 1) throw new Exception("Version mismatch");
 
@@ -333,9 +369,41 @@ namespace Snapshot
                 _slots[i].ReadData(r);
             }
 
+            // MIDI map
+            Int32 numMappings = r.ReadInt32();
+            for (int n = 0; n < numMappings; n++)
+            {
+                string action = r.ReadString();
+                int slot = r.ReadInt32();
+                CMidiEvent e = new CMidiEvent();
+                e.ReadData(r);
+
+                // Restore mapping settings
+                object target;
+                Type targetType;
+                MethodInfo method;
+                if (slot < 0) // machine action
+                {
+                    targetType = typeof(CMachine);
+                    method = targetType.GetMethod(action, BindingFlags.NonPublic | BindingFlags.Instance);
+                    target = this;
+                }
+                else // snapshot action
+                {
+                    targetType = typeof(CMachineSnapshot);
+                    method = targetType.GetMethod(action, BindingFlags.Public | BindingFlags.Instance);
+                    target = _slots[slot];
+                }
+
+                // Restore settings
+                Action a = (Action)Delegate.CreateDelegate(typeof(Action), target, method);
+                MidiMap[a] = e; // settings
+                _midiMapping[a] = e.GetHashCode(); // mapping
+            }
+
             // number of saved states
             Int32 numStates = r.ReadInt32();
-            for(int n = 0; n < numStates; n++)
+            for (int n = 0; n < numStates; n++)
             {
                 string name = r.ReadString(); // State name
                 string dllname = r.ReadString(); // Machine DLL name
@@ -381,9 +449,47 @@ namespace Snapshot
 
             loading = false;
 
-            if(RestoreOnSongLoad)
+            if (RestoreOnSongLoad)
             {
                 Restore();
+            }
+        }
+
+        public void MidiNote(int channel, int value, int velocity)
+        {
+            if (velocity == 0) return; // Not interested in note-off for now
+
+            // This note on this channel
+            int c1 = (channel ^ value ^ -1 /*any velocity*/ ^ (int) CMidiEvent.MessageType.Note).GetHashCode();
+
+            // This note on any channel
+            int c2 = (-1 /*any*/ ^ value ^ -1 /*any velocity*/ ^ (int) CMidiEvent.MessageType.Note).GetHashCode();
+
+            // Fire off matching actions
+            foreach (KeyValuePair<Action, int?> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2))
+            {
+                item.Key();
+            }
+        }
+
+        public void MidiControlChange(int ctrl, int channel, int value)
+        {
+            // This controller on this channel, with this value
+            int c1 = (channel ^ ctrl ^ value ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+
+            // This controller on this channel, with any value
+            int c2 = (channel ^ ctrl ^ -1 /*any value*/ ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+
+            // This controller on any channel, with this value
+            int c3 = (-1 /*any channel*/ ^ ctrl ^ value ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+
+            // This controller on any channel, with any value
+            int c4 = (-1 /*any channel*/ ^ ctrl ^ -1 /*any value*/ ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+
+            // Fire off matching actions
+            foreach (KeyValuePair<Action, int?> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2 || x.Value == c3 || x.Value == c4))
+            {
+                item.Key();
             }
         }
 
@@ -476,7 +582,7 @@ namespace Snapshot
             CMachineSnapshot s = CurrentSlot;
             if(s.HasData)
             {
-                Application.Current.Dispatcher.BeginInvoke((Action)(() => { s.Restore(); }), DispatcherPriority.Send);
+                s.Restore();
             }
         }
 
@@ -519,6 +625,48 @@ namespace Snapshot
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class CMidiEvent
+    {
+        public CMidiEvent()
+        {
+            Channel = -1;
+            Message = MessageType.Undefined;
+            Primary = -1;
+            Secondary = -1;
+        }
+
+        public Int16 Channel { get; set; } // -1 = Any
+
+        public enum MessageType { Undefined = -1, Note = 72, CC = 99 }
+        public MessageType Message { get; set; }
+        
+        public Int16 Primary { get; set; } // Note or CC number. -1 = undefined
+        
+        public Int16 Secondary { get; set; } // Velocity or value. -1 = undefined
+
+        public override int GetHashCode()
+        {
+            int hCode = Channel ^ (short)Message ^ Primary ^ Secondary;
+            return hCode.GetHashCode();
+        }
+
+        internal void ReadData(BinaryReader r)
+        {
+            Channel = r.ReadInt16();
+            Message = (MessageType) r.ReadInt16();
+            Primary = r.ReadInt16();
+            Secondary = r.ReadInt16();
+        }
+
+        internal void WriteData(BinaryWriter w)
+        {
+            w.Write(Channel);
+            w.Write((Int16) Message);
+            w.Write(Primary);
+            w.Write(Secondary);
         }
     }
 

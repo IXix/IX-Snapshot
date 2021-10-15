@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Snapshot
 {
@@ -72,6 +74,8 @@ namespace Snapshot
 
         public void Capture()
         {
+            Clear();
+
             foreach (CMachineState state in m_owner.States)
             {
                 foreach (CAttributeState s in state.AttributeStates.Children.Where(x => x.Selected))
@@ -166,18 +170,24 @@ namespace Snapshot
 
         public void Restore()
         {
-            foreach (var v in AttributeValues)
-            {
-                v.Key.Attribute.Value = v.Value;
-            }
-            foreach (var v in ParameterValues)
-            {
-                v.Key.Parameter.SetValue(v.Value.Item1, v.Value.Item2);
-            }
-            foreach (var v in DataValues)
-            {
-                v.Key.Machine.Data = v.Value;
-            }
+            Application.Current.Dispatcher.BeginInvoke(
+                (Action)(() =>
+                {
+                    foreach (var v in AttributeValues)
+                    {
+                        v.Key.Attribute.Value = v.Value;
+                    }
+                    foreach (var v in ParameterValues)
+                    {
+                        v.Key.Parameter.SetValue(v.Value.Item1, v.Value.Item2);
+                    }
+                    foreach (var v in DataValues)
+                    {
+                        v.Key.Machine.Data = v.Value;
+                    }
+                }),
+                DispatcherPriority.Send
+                );
         }
 
         internal void Purge()
