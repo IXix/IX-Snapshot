@@ -4,6 +4,7 @@
 		_midiMapping is used to fire Actions in response to actual MIDI events
 		Save/load done.
 		Implemented MidiNote and MidiControlChange
+		Improved code generation for MIDI stuff including note-off handling (packing values with bitwise ops)
 
 2021.09.13
 	Fixed more broken stuff.

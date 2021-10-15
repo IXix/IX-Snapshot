@@ -455,15 +455,18 @@ namespace Snapshot
             }
         }
 
-        public void MidiNote(int channel, int value, int velocity)
+        public void MidiNote(int channel, int note, int velocity)
         {
-            if (velocity == 0) return; // Not interested in note-off for now
-
             // This note on this channel
-            int c1 = (channel ^ value ^ -1 /*any velocity*/ ^ (int) CMidiEvent.MessageType.Note).GetHashCode();
+            UInt32 c1 = (UInt32)(((Byte)CMidiEvent.MessageType.Note_On << 24) | (128 /*v=any*/ << 16) | (note << 8) | channel);
 
             // This note on any channel
-            int c2 = (-1 /*any*/ ^ value ^ -1 /*any velocity*/ ^ (int) CMidiEvent.MessageType.Note).GetHashCode();
+            UInt32 c2 = (UInt32)(((Byte)CMidiEvent.MessageType.Note_On << 24) | (128 /*v=any*/ << 16) | (note << 8) | 16 /*c=any*/);
+
+            if (velocity == 0)
+            {
+                c1 = c1 & 0xFFFFFF | ((Byte)CMidiEvent.MessageType.Note_Off << 24);
+            }
 
             // Fire off matching actions
             foreach (KeyValuePair<Action, int?> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2))
@@ -475,16 +478,16 @@ namespace Snapshot
         public void MidiControlChange(int ctrl, int channel, int value)
         {
             // This controller on this channel, with this value
-            int c1 = (channel ^ ctrl ^ value ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+            UInt32 c1 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (value << 16) | (ctrl << 8) | channel);
 
             // This controller on this channel, with any value
-            int c2 = (channel ^ ctrl ^ -1 /*any value*/ ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+            UInt32 c2 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | channel);
 
             // This controller on any channel, with this value
-            int c3 = (-1 /*any channel*/ ^ ctrl ^ value ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+            UInt32 c3 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (value << 16) | (ctrl << 8) | 16 /*c=any*/);
 
             // This controller on any channel, with any value
-            int c4 = (-1 /*any channel*/ ^ ctrl ^ -1 /*any value*/ ^ (int)CMidiEvent.MessageType.CC).GetHashCode();
+            UInt32 c4 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | 16 /*c=any*/);
 
             // Fire off matching actions
             foreach (KeyValuePair<Action, int?> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2 || x.Value == c3 || x.Value == c4))
@@ -632,39 +635,38 @@ namespace Snapshot
     {
         public CMidiEvent()
         {
-            Channel = -1;
+            Channel = 16;
             Message = MessageType.Undefined;
-            Primary = -1;
-            Secondary = -1;
+            Primary = 128;
+            Secondary = 128;
         }
 
-        public Int16 Channel { get; set; } // -1 = Any
+        public Byte Channel { get; set; } // 16 = Any
 
-        public enum MessageType { Undefined = -1, Note = 72, CC = 99 }
+        public enum MessageType { Undefined = 0, Note_On, Note_Off, Controller }
         public MessageType Message { get; set; }
         
-        public Int16 Primary { get; set; } // Note or CC number. -1 = undefined
+        public Byte Primary { get; set; } // Note or CC number. 128 = undefined
         
-        public Int16 Secondary { get; set; } // Velocity or value. -1 = undefined
+        public Byte Secondary { get; set; } // Velocity or value. 128 = undefined
 
-        public override int GetHashCode()
+        public UInt32 Encode()
         {
-            int hCode = Channel ^ (short)Message ^ Primary ^ Secondary;
-            return hCode.GetHashCode();
+            return (UInt32) (((Byte)Message << 24) | (Secondary << 16) | (Primary << 8) | Channel);
         }
 
         internal void ReadData(BinaryReader r)
         {
-            Channel = r.ReadInt16();
-            Message = (MessageType) r.ReadInt16();
-            Primary = r.ReadInt16();
-            Secondary = r.ReadInt16();
+            Channel = r.ReadByte();
+            Message = (MessageType) r.ReadByte();
+            Primary = r.ReadByte();
+            Secondary = r.ReadByte();
         }
 
         internal void WriteData(BinaryWriter w)
         {
             w.Write(Channel);
-            w.Write((Int16) Message);
+            w.Write((Byte) Message);
             w.Write(Primary);
             w.Write(Secondary);
         }
