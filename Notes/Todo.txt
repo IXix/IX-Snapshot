@@ -1,5 +1,6 @@
 Finish implementation of CMappingDialog
-	Implement learning from MIDI input
+	Make learn button stop flashing when a value is captured
+		Not sure how to set up the triggers. Using trogglebutton for now.
 	Make the dialog nicer.
 
 Selecting slot from combo dropdown breaks slot name in combo edit field

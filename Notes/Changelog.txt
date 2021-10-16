@@ -1,3 +1,6 @@
+2021.09.16
+	Implemented MIDI learn.
+
 2021.09.15
 	Implemented core of MIDI mapping system
 		MidiMap links Actions to MIDI event settings for UI interaction

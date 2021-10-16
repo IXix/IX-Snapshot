@@ -13,7 +13,7 @@
             ShowInTaskbar="False"
             WindowStartupLocation="CenterOwner" 
             FocusManager.FocusedElement="{Binding ElementName=btnLearn}"
-            mc:Ignorable="d" Margin="5" WindowStyle="ToolWindow">
+            mc:Ignorable="d" Margin="5" WindowStyle="ToolWindow" Topmost="True">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -21,14 +21,28 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" HorizontalAlignment="Center">
             <TextBlock>Type</TextBlock>
-            <ComboBox Name="cmbType" ItemsSource="{Binding TypeValues}" SelectedIndex="{Binding EventType}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+            <ComboBox Name="cmbType" ItemsSource="{Binding TypeValues}" SelectedIndex="{Binding Settings.Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
             <TextBlock>Channel</TextBlock>
-            <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+            <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Settings.Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
             <TextBlock Name="txtPrimary">Note</TextBlock>
-            <ComboBox Name="cmbPrimary" ItemsSource="{Binding PrimaryValues}" SelectedIndex="{Binding Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+            <ComboBox Name="cmbPrimary" ItemsSource="{Binding PrimaryValues}" SelectedIndex="{Binding Settings.Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
             <TextBlock>Value</TextBlock>
-            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-            <Button Name="btnLearn" Width="200" Margin="0,5">Learn</Button>
+            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+            <ToggleButton Name="btnLearn" Width="200" Margin="0,5" Click="btnLearn_Click">
+                <ToggleButton.Triggers>
+                    <EventTrigger RoutedEvent="ToggleButton.Checked">
+                        <BeginStoryboard x:Name="storyboard">
+                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.2" Duration="0:0:1" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                        <StopStoryboard BeginStoryboardName="storyboard" />
+                    </EventTrigger>
+                </ToggleButton.Triggers>
+                Learn
+            </ToggleButton>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
             <Button Name="btnOkay" IsDefault="True" Width="100" Click="btnOkay_Click">OK</Button>

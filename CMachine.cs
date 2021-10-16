@@ -53,7 +53,7 @@ namespace Snapshot
             }
         }
 
-        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} redundant\nSlot size: {5}\nTotal Size: {6}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
+        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} stored but not selected\nSlot size: {5}\nTotal Size: {6}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
 
         private bool _selectNewMachines;
         public bool SelectNewMachines
@@ -136,6 +136,12 @@ namespace Snapshot
 
         // How many selected properties have not been captured
         public int MissingCount => AllProperties.Where(x => x.Selected).Except(CurrentSlot.StoredProperties).Count();
+
+        public string Name
+        {
+            get => host.Machine.Name;
+            set => host.Machine.Name = value;
+        }
 
         // Size of data in current slot
         public int Size => CurrentSlot.Size;
@@ -235,23 +241,26 @@ namespace Snapshot
             }
         }
 
-        internal void MapCommand(string name, bool specific)
+        internal void MapCommand(string command, bool specific)
         {
             // Find the command
             object target;
             Type targetType;
             MethodInfo method;
+            string owner;
             if (specific)
             {
                 targetType = CurrentSlot.GetType();
-                method = targetType.GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
+                method = targetType.GetMethod(command, BindingFlags.Public | BindingFlags.Instance);
                 target = CurrentSlot;
+                owner = CurrentSlot.Name;
             }
             else
             {
                 targetType = this.GetType();
-                method = targetType.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance);
+                method = targetType.GetMethod(command, BindingFlags.NonPublic | BindingFlags.Instance);
                 target = this;
+                owner = Name;
             }
             Action a = (Action)Delegate.CreateDelegate(typeof(Action), target, method);
 
@@ -267,19 +276,19 @@ namespace Snapshot
             }
 
             // Show mapping dialog
-            CMappingDialog d = new CMappingDialog(name, e);
-            bool? result = d.ShowDialog();
+            _mappingDialog = new CMappingDialog(this, a.Method.Name, owner, e);
+            bool? result = _mappingDialog.ShowDialog();
 
             // Add/update mapping if necessary
             if(result == true)
             {
-                e.Message = (CMidiEvent.MessageType) d.EventType;
-                e.Channel = d.Channel;
-                e.Primary = d.Primary;
-                e.Secondary = d.Secondary;
                 MidiMap[a] = e;
                 _midiMapping[a] = e.Encode();
             }
+
+            // Reset these
+            LearnEvent = null;
+            _mappingDialog = null;
         }
 
         /* FILE STRUCTURE
@@ -515,6 +524,17 @@ namespace Snapshot
                 c1 = c1 & 0xFFFFFF | ((Byte)CMidiEvent.MessageType.Note_Off << 24);
             }
 
+            if(LearnEvent != null)
+            {
+                LearnEvent.Message = velocity > 0 ? CMidiEvent.MessageType.Note_On : CMidiEvent.MessageType.Note_Off;
+                LearnEvent.Channel = (Byte) channel;
+                LearnEvent.Primary = (Byte) note;
+                LearnEvent.Secondary = (Byte) 128; // undefined
+                LearnEvent = null;
+                _mappingDialog.Learning = false;
+                return;
+            }
+
             // Fire off matching actions
             foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2))
             {
@@ -536,6 +556,17 @@ namespace Snapshot
 
             // This controller on any channel, with any value
             UInt32 c4 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | 16 /*c=any*/);
+
+            if (LearnEvent != null)
+            {
+                LearnEvent.Message = CMidiEvent.MessageType.Controller;
+                LearnEvent.Channel = (Byte)channel;
+                LearnEvent.Primary = (Byte)ctrl;
+                LearnEvent.Secondary = (Byte)value;
+                LearnEvent = null;
+                _mappingDialog.Learning = false;
+                return;
+            }
 
             // Fire off matching actions
             foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2 || x.Value == c3 || x.Value == c4))
@@ -588,6 +619,8 @@ namespace Snapshot
         #region Global Parameters
         // Global params
         int _slot;
+        private CMappingDialog _mappingDialog;
+
         [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 1, Description = "Active slot", Name = "Slot")]
         public int Slot
         {
@@ -612,6 +645,8 @@ namespace Snapshot
                 }
             }
         }
+
+        public CMidiEvent LearnEvent { get; internal set; }
 
         #endregion Global Parameters
 

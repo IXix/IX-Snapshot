@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -14,10 +15,12 @@ using System.Windows.Shapes;
 
 namespace Snapshot
 {
-    public partial class CMappingDialog : Window
+    public partial class CMappingDialog : Window, INotifyPropertyChanged
     {
-        public CMappingDialog(string name, CMidiEvent settings)
+        public CMappingDialog(CMachine owner, string command, string target, CMidiEvent settings)
         {
+            _owner = owner;
+
             DataContext = this;
 
             TypeValues = new List<string>();
@@ -47,13 +50,19 @@ namespace Snapshot
             }
             SecondaryValues.Add("Undefined");
 
-            Command = name;
-            EventType = (Byte) settings.Message;
-            Channel = settings.Channel;
-            Primary = settings.Primary;
-            Secondary = settings.Secondary;
+            Command = command;
+            Settings = settings;
 
             InitializeComponent();
+
+            Title = string.Format("{0}->{1}", target, command);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public virtual void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public List<string> TypeValues { get; private set; }
@@ -61,11 +70,25 @@ namespace Snapshot
         public List<string> PrimaryValues { get; private set; }
         public List<string> SecondaryValues { get; private set; }
 
+        readonly CMachine _owner;
+
         public string Command { get; set; }
-        public Byte EventType { get; set; }
-        public Byte Channel { get; set; }
-        public Byte Primary { get; set; }
-        public Byte Secondary { get; set; }
+        public CMidiEvent Settings { get; set; }
+
+        bool _learning;
+        public bool Learning
+        {
+            get => _learning;
+            set
+            {
+                if(value != _learning)
+                {
+                    _learning = value;
+                    OnPropertyChanged("Learning");
+                    OnPropertyChanged("Settings");
+                }
+            }
+        }
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
@@ -75,6 +98,12 @@ namespace Snapshot
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
+        }
+
+        private void btnLearn_Click(object sender, RoutedEventArgs e)
+        {
+            _owner.LearnEvent = Settings;
+            Learning = true;
         }
     }
 }
