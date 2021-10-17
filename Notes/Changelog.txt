@@ -1,6 +1,8 @@
 2021.09.17
 	Various UI improvements
 		Removed CMidiEvent.MessageType because C# enums are a massive pain in the arse.
+	Fixed loading for track params
+		Added DisplayName property so params are saved with their correct name rather than the track number
 
 2021.09.16
 	Implemented MIDI learn.

@@ -80,8 +80,7 @@
                     <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                         <CheckBox IsChecked="{Binding IsChecked}">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Name}" />
-                                <TextBlock Text="{Binding Size}" />
+                                <TextBlock Text="{Binding DisplayName}" />
                             </StackPanel>
                         </CheckBox>
                     </DataTemplate>

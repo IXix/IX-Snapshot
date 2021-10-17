@@ -626,7 +626,7 @@ namespace Snapshot
         int _slot;
         private CMappingDialog _mappingDialog;
 
-        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 1, Description = "Active slot", Name = "Slot")]
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 0, Description = "Active slot", Name = "Slot")]
         public int Slot
         {
             get => _slot;

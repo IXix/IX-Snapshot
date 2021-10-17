@@ -489,5 +489,7 @@ namespace Snapshot
         }
 
         public string Name => _property.Name;
+
+        public string DisplayName => _property.DisplayName;
     }
 }

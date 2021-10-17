@@ -20,6 +20,7 @@ namespace Snapshot
     public interface INamed
     {
         string Name { get; }
+        string DisplayName { get; }
     }
 
     public interface ISelectable : INamed
@@ -81,6 +82,8 @@ namespace Snapshot
 
         virtual public string Name => throw new NotImplementedException();
 
+        virtual public string DisplayName => throw new NotImplementedException();
+
         public event EventHandler<StateChangedEventArgs> SelChanged;
 
         public void OnSelChanged(StateChangedEventArgs e)
@@ -104,7 +107,9 @@ namespace Snapshot
 
         public IParameter Parameter { get; private set; }
 
-        public override string Name => Track == null ? Parameter.Name : Track.ToString();
+        public override string Name => Parameter.Name;
+
+        public override string DisplayName => Track == null ? Parameter.Name : Track.ToString();
 
         public override int Size => sizeof(int);
     }
@@ -121,6 +126,8 @@ namespace Snapshot
 
         public override string Name => Attribute.Name;
 
+        public override string DisplayName => Attribute.Name;
+
         public override int Size => sizeof(int);
     }
 
@@ -135,6 +142,8 @@ namespace Snapshot
         public IMachine Machine { get; private set; }
 
         public override string Name => "Data";
+
+        public override string DisplayName => string.Format("Data - {0}", Misc.ToSize(Size));
 
         public override int? Track => null;
 
