@@ -21,14 +21,14 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" HorizontalAlignment="Center">
             <TextBlock>Type</TextBlock>
-            <ComboBox Name="cmbType" ItemsSource="{Binding TypeValues}" SelectedIndex="{Binding Settings.Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
+            <ComboBox Name="cmbType" ItemsSource="{Binding TypeValues}" SelectedIndex="{Binding Settings.Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5"/>
             <TextBlock>Channel</TextBlock>
-            <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Settings.Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-            <TextBlock Name="txtPrimary">Note</TextBlock>
+            <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Settings.Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5"/>
+            <TextBlock Name="txtPrimary">Note/Controller</TextBlock>
             <ComboBox Name="cmbPrimary" ItemsSource="{Binding PrimaryValues}" SelectedIndex="{Binding Settings.Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-            <TextBlock>Value</TextBlock>
-            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-            <Button Name="btnLearn" Width="200" Margin="0,5" Click="btnLearn_Click">
+            <TextBlock>Velocity/Value</TextBlock>
+            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5"/>
+            <Button Name="btnLearn" Width="200" Margin="0,5" Click="btnLearn_Click" Height="30">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
                         <Setter Property="FontWeight" Value="Normal" />
@@ -44,9 +44,9 @@
                 Learn
             </Button>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
-            <Button Name="btnOkay" IsDefault="True" Width="100" Click="btnOkay_Click">OK</Button>
-            <Button Name="btnCancel" IsCancel="True" Width="100" Click="btnCancel_Click">Cancel</Button>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
+            <Button Name="btnOkay" IsDefault="True" Width="100" Click="btnOkay_Click" Margin="0">OK</Button>
+            <Button Name="btnCancel" IsCancel="True" Width="100" Click="btnCancel_Click" Margin="0">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>
