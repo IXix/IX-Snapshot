@@ -513,20 +513,23 @@ namespace Snapshot
 
         public void MidiNote(int channel, int note, int velocity)
         {
+            const Byte noteOn = 1;
+            const Byte noteOff = 2;
+
             // This note on this channel
-            UInt32 c1 = (UInt32)(((Byte)CMidiEvent.MessageType.Note_On << 24) | (128 /*v=any*/ << 16) | (note << 8) | channel);
+            UInt32 c1 = (UInt32)((noteOn << 24) | (128 /*v=any*/ << 16) | (note << 8) | channel);
 
             // This note on any channel
-            UInt32 c2 = (UInt32)(((Byte)CMidiEvent.MessageType.Note_On << 24) | (128 /*v=any*/ << 16) | (note << 8) | 16 /*c=any*/);
+            UInt32 c2 = (UInt32)((noteOn << 24) | (128 /*v=any*/ << 16) | (note << 8) | 16 /*c=any*/);
 
             if (velocity == 0)
             {
-                c1 = c1 & 0xFFFFFF | ((Byte)CMidiEvent.MessageType.Note_Off << 24);
+                c1 = c1 & 0xFFFFFF | (noteOff << 24);
             }
 
             if(LearnEvent != null)
             {
-                LearnEvent.Message = velocity > 0 ? CMidiEvent.MessageType.Note_On : CMidiEvent.MessageType.Note_Off;
+                LearnEvent.Message = noteOn;
                 LearnEvent.Channel = (Byte) channel;
                 LearnEvent.Primary = (Byte) note;
                 LearnEvent.Secondary = (Byte) 128; // undefined
@@ -545,21 +548,23 @@ namespace Snapshot
 
         public void MidiControlChange(int ctrl, int channel, int value)
         {
+            const Byte msg = 3; // Controller
+
             // This controller on this channel, with this value
-            UInt32 c1 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (value << 16) | (ctrl << 8) | channel);
+            UInt32 c1 = (UInt32)((msg << 24) | (value << 16) | (ctrl << 8) | channel);
 
             // This controller on this channel, with any value
-            UInt32 c2 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | channel);
+            UInt32 c2 = (UInt32)((msg << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | channel);
 
             // This controller on any channel, with this value
-            UInt32 c3 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (value << 16) | (ctrl << 8) | 16 /*c=any*/);
+            UInt32 c3 = (UInt32)((msg << 24) | (value << 16) | (ctrl << 8) | 16 /*c=any*/);
 
             // This controller on any channel, with any value
-            UInt32 c4 = (UInt32)(((Byte)CMidiEvent.MessageType.Controller << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | 16 /*c=any*/);
+            UInt32 c4 = (UInt32)((msg << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | 16 /*c=any*/);
 
             if (LearnEvent != null)
             {
-                LearnEvent.Message = CMidiEvent.MessageType.Controller;
+                LearnEvent.Message = msg;
                 LearnEvent.Channel = (Byte)channel;
                 LearnEvent.Primary = (Byte)ctrl;
                 LearnEvent.Secondary = (Byte)value;
@@ -720,15 +725,15 @@ namespace Snapshot
         public CMidiEvent()
         {
             Channel = 16;
-            Message = MessageType.Undefined;
+            Message = 0; // Undefined;
             Primary = 128;
             Secondary = 128;
         }
 
         public Byte Channel { get; set; } // 16 = Any
 
-        public enum MessageType { Undefined = 0, Note_On, Note_Off, Controller }
-        public MessageType Message { get; set; }
+        // Undefined = 0, Note_On = 1, Note_Off = 2, Controller = 3
+        public Byte Message { get; set; }
         
         public Byte Primary { get; set; } // Note or CC number. 128 = undefined
         
@@ -736,13 +741,13 @@ namespace Snapshot
 
         public UInt32 Encode()
         {
-            return (UInt32) (((Byte)Message << 24) | (Secondary << 16) | (Primary << 8) | Channel);
+            return (UInt32) ((Message << 24) | (Secondary << 16) | (Primary << 8) | Channel);
         }
 
         internal void ReadData(BinaryReader r)
         {
             Channel = r.ReadByte();
-            Message = (MessageType) r.ReadByte();
+            Message = r.ReadByte();
             Primary = r.ReadByte();
             Secondary = r.ReadByte();
         }
@@ -750,7 +755,7 @@ namespace Snapshot
         internal void WriteData(BinaryWriter w)
         {
             w.Write(Channel);
-            w.Write((Byte) Message);
+            w.Write(Message);
             w.Write(Primary);
             w.Write(Secondary);
         }

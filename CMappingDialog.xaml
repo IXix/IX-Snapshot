@@ -28,21 +28,21 @@
             <ComboBox Name="cmbPrimary" ItemsSource="{Binding PrimaryValues}" SelectedIndex="{Binding Settings.Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
             <TextBlock>Value</TextBlock>
             <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-            <ToggleButton Name="btnLearn" Width="200" Margin="0,5" Click="btnLearn_Click">
-                <ToggleButton.Triggers>
-                    <EventTrigger RoutedEvent="ToggleButton.Checked">
-                        <BeginStoryboard x:Name="storyboard">
-                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.2" Duration="0:0:1" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                    <EventTrigger RoutedEvent="ToggleButton.Unchecked">
-                        <StopStoryboard BeginStoryboardName="storyboard" />
-                    </EventTrigger>
-                </ToggleButton.Triggers>
+            <Button Name="btnLearn" Width="200" Margin="0,5" Click="btnLearn_Click">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="FontWeight" Value="Normal" />
+                        <Setter Property="Foreground" Value="Black" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Learning, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="Foreground" Value="Red" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
                 Learn
-            </ToggleButton>
+            </Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,0">
             <Button Name="btnOkay" IsDefault="True" Width="100" Click="btnOkay_Click">OK</Button>

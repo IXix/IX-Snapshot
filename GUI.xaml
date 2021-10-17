@@ -95,7 +95,17 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
                 <TextBlock>Slot Name</TextBlock>
-                <ComboBox ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="False" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}">
+                <ComboBox ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBox.Style>
+                        <Style TargetType="{x:Type ComboBox}">
+                            <Setter Property="FontWeight" Value="Normal" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
                     <ComboBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ComboBoxItem}">
                             <Setter Property="FontWeight" Value="Normal" />

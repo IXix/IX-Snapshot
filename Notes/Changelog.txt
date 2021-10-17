@@ -1,3 +1,7 @@
+2021.09.17
+	Various UI improvements
+		Removed CMidiEvent.MessageType because C# enums are a massive pain in the arse.
+
 2021.09.16
 	Implemented MIDI learn.
 

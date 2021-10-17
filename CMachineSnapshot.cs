@@ -1,6 +1,7 @@
 ﻿using BuzzGUI.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -8,7 +9,7 @@ using System.Windows.Threading;
 
 namespace Snapshot
 {
-    public class CMachineSnapshot
+    public class CMachineSnapshot : INotifyPropertyChanged
     {
         public CMachineSnapshot(CMachine owner, int index)
         {
@@ -21,6 +22,13 @@ namespace Snapshot
             StoredProperties = new List<IPropertyState>();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        public virtual void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         private readonly CMachine m_owner;
         readonly Dictionary<CAttributeState, int /*value*/> AttributeValues;
         readonly Dictionary<CParameterState, Tuple<int /*track*/, int /*value*/>> ParameterValues;
@@ -29,7 +37,19 @@ namespace Snapshot
 
         public int Index { get; private set; }
 
-        public string Name { get; set; }
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if(value != _name)
+                {
+                    _name = value;
+                    OnPropertyChanged("Name");
+                }
+            }
+        }
 
         public bool HasData => (AttributeValues.Count + ParameterValues.Count + DataValues.Count) > 0;
 
@@ -105,6 +125,8 @@ namespace Snapshot
                     StoredProperties.Add(state.DataState);
                 }
             }
+
+            OnPropertyChanged("HasData");
         }
 
         public void CaptureMissing()
@@ -166,6 +188,7 @@ namespace Snapshot
                     }
                 }
             }
+            OnPropertyChanged("HasData");
         }
 
         public void Restore()
@@ -217,6 +240,8 @@ namespace Snapshot
                 DataValues.Remove(p);
                 StoredProperties.Remove(p);
             }
+
+            OnPropertyChanged("HasData");
         }
 
         public void Clear()
@@ -225,6 +250,7 @@ namespace Snapshot
             ParameterValues.Clear();
             DataValues.Clear();
             StoredProperties.Clear();
+            OnPropertyChanged("HasData");
         }
 
         public void ReadProperty(IPropertyState p, BinaryReader r)
@@ -287,5 +313,11 @@ namespace Snapshot
         {
             Name = r.ReadString();
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
     }
 }

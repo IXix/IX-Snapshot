@@ -269,8 +269,8 @@ namespace Snapshot
             switch(e.PropertyName)
             {
                 case "State":
+                    NotifyPropertyChanged("CurrentSlot");
                     NotifyPropertyChanged("SlotName");
-                    NotifyPropertyChanged("Slots");
                     NotifyPropertyChanged("SelectionInfo");
                     foreach (CMachineStateVM s in States)
                     {
@@ -323,6 +323,7 @@ namespace Snapshot
         #endregion Commands
 
         #region Properties
+        public CMachineSnapshot CurrentSlot => Owner.CurrentSlot;
         public int Slot
         {
             get => Owner.Slot;
