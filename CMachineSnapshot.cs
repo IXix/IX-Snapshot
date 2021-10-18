@@ -51,7 +51,7 @@ namespace Snapshot
             }
         }
 
-        public bool HasData => (AttributeValues.Count + ParameterValues.Count + DataValues.Count) > 0;
+        public bool HasData => StoredProperties.Count() > 0;
 
         public bool ContainsProperty(IPropertyState p)
         {
@@ -82,15 +82,10 @@ namespace Snapshot
         public int StoredCount => StoredProperties.Count;
 
         // How many properties are stored that aren't selected
-        public int RedundantCount
-        {
-            get
-            {
-                return AttributeValues.Count(x => x.Key.Selected == false) +
-                       ParameterValues.Count(x => x.Key.Selected == false) +
-                       DataValues.Count(x => x.Key.Selected == false);
-            }
-        }
+        public int RedundantCount => StoredProperties.Count(x => x.Active && x.Selected == false);
+
+        // How many properties are stored that are inactive (machine deleted)
+        public int DeletedCount => StoredProperties.Count(x => x.Active == false);
 
         public void Capture()
         {
@@ -196,15 +191,15 @@ namespace Snapshot
             Application.Current.Dispatcher.BeginInvoke(
                 (Action)(() =>
                 {
-                    foreach (var v in AttributeValues)
+                    foreach (var v in AttributeValues.Where(x => x.Key.Active))
                     {
                         v.Key.Attribute.Value = v.Value;
                     }
-                    foreach (var v in ParameterValues)
+                    foreach (var v in ParameterValues.Where(x => x.Key.Active))
                     {
                         v.Key.Parameter.SetValue(v.Value.Item1, v.Value.Item2);
                     }
-                    foreach (var v in DataValues)
+                    foreach (var v in DataValues.Where(x => x.Key.Active))
                     {
                         v.Key.Machine.Data = v.Value;
                     }
@@ -219,21 +214,21 @@ namespace Snapshot
             // Need testing at some point
             // list = list.Except(list.Where(x => x.Key.Selected == false));
 
-            var attrList = AttributeValues.Where(x => x.Key.Selected == false).ToList();
+            var attrList = AttributeValues.Where(x => x.Key.Active == false || x.Key.Selected == false).ToList();
             foreach (KeyValuePair<CAttributeState, int> item in attrList)
             {
                 CAttributeState p = item.Key;
                 AttributeValues.Remove(p);
                 StoredProperties.Remove(p);
             }
-            var paraList = ParameterValues.Where(x => x.Key.Selected == false).ToList();
+            var paraList = ParameterValues.Where(x => x.Key.Active == false || x.Key.Selected == false).ToList();
             foreach (KeyValuePair<CParameterState, Tuple<int, int>> item in paraList)
             {
                 CParameterState p = item.Key;
                 ParameterValues.Remove(p);
                 StoredProperties.Remove(p);
             }
-            var dataList = DataValues.Where(x => x.Key.Selected == false).ToList();
+            var dataList = DataValues.Where(x => x.Key.Active == false || x.Key.Selected == false).ToList();
             foreach (KeyValuePair<CDataState, byte[]> item in dataList)
             {
                 CDataState p = item.Key;
@@ -279,7 +274,7 @@ namespace Snapshot
 
         public void WriteProperty(CPropertyBase p, BinaryWriter w)
         {
-            if (ContainsProperty(p))
+            if (ContainsProperty(p) && p.Active)
             {
                 Type t = p.GetType();
                 switch (t.FullName)
@@ -318,6 +313,5 @@ namespace Snapshot
         {
             return Name;
         }
-
     }
 }

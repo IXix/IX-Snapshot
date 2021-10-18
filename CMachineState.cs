@@ -35,6 +35,7 @@ namespace Snapshot
         int? Track { get; }
         int Size { get; }
         bool GotValue { get; }
+        bool Active { get; set; }
         CMachine Owner { get; }
         CMachineState Parent { get; }
     }
@@ -50,6 +51,7 @@ namespace Snapshot
         {
             _owner = owner;
             _parent = parent;
+            _active = true;
             m_selected = false;
             Track = null;
         }
@@ -63,6 +65,16 @@ namespace Snapshot
         virtual public int? Track { get; protected set; }
 
         virtual public bool GotValue => _owner.CurrentSlot.ContainsProperty(this);
+
+        protected bool _active;
+        virtual public bool Active
+        {
+            get => _active;
+            set
+            {
+                _active = value;
+            }
+        }
 
         virtual public int Size => 0;
 
@@ -177,6 +189,19 @@ namespace Snapshot
             }
         }
 
+        public override bool Active
+        {
+            get => _active;
+            set
+            {
+                _active = value;
+               foreach(var c in Children)
+                {
+                    c.Active = value;
+                }
+            }
+        }
+
         public List<IPropertyState> Children { get; }
     }
 
@@ -207,6 +232,19 @@ namespace Snapshot
             }
         }
 
+        public override bool Active
+        {
+            get => _active;
+            set
+            {
+                _active = value;
+                foreach (var c in Children)
+                {
+                    c.Active = value;
+                }
+            }
+        }
+
         public List<CPropertyStateGroup> Children { get; }
     }
 
@@ -216,6 +254,7 @@ namespace Snapshot
         {
             Machine = m;
             _owner = owner;
+            _active = true;
 
             _allProperties = new List<IPropertyState>();
 
@@ -262,7 +301,7 @@ namespace Snapshot
             }
         }
 
-        public IMachine Machine { get; private set; }
+        public IMachine Machine { get; internal set; }
         readonly CMachine _owner;
 
         public bool GotValue
@@ -277,6 +316,20 @@ namespace Snapshot
                 catch
                 {
                     return false;
+                }
+            }
+        }
+
+        private bool _active;
+        public bool Active
+        {
+            get => _active;
+            set
+            {
+                _active = value;
+                foreach(IPropertyState p in AllProperties)
+                {
+                    p.Active = value;
                 }
             }
         }

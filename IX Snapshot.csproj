@@ -81,10 +81,15 @@
   <ItemGroup>
     <Content Include="Notes\Changelog.txt" />
     <Content Include="Notes\Todo.txt" />
+    <Content Include="postbuild.files.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="postbuild.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetPath)" "C:\Program Files\Jeskola\Buzz\Gear\Generators\"</PostBuildEvent>
+    <PostBuildEvent>rem copy "$(TargetPath)" "C:\Program Files\Jeskola\Buzz\Gear\Generators\"
+powershell -file "$(SolutionDir)postbuild.ps1" -machinefile "$(TargetPath)" -packageroot "$(SolutionDir)Package" -type "Generator" -platform $(platform)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,3 +1,8 @@
+2021.09.18
+	Support for delete/undelete of machines
+	Various tweaks
+	Added postbuild script. Need to tweak it a bit for 'Any CPU' but it'll do for now.
+
 2021.09.17
 	Various UI improvements
 		Removed CMidiEvent.MessageType because C# enums are a massive pain in the arse.

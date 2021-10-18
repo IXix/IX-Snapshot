@@ -53,7 +53,7 @@ namespace Snapshot
             }
         }
 
-        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} missing\n{4} stored but not selected\nSlot size: {5}\nTotal Size: {6}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
+        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} selected but not stored\n{4} stored but not selected\n{5} stored for missing machines\nSlot size: {6}\nTotal Size: {7}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, DeletedCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
 
         private bool _selectNewMachines;
         public bool SelectNewMachines
@@ -133,6 +133,9 @@ namespace Snapshot
 
         // How many properties are stored that aren't selected
         public int RedundantCount => CurrentSlot.RedundantCount;
+
+        // How many properties are stored but are inactive (machine deleted)
+        public int DeletedCount => CurrentSlot.DeletedCount;
 
         // How many selected properties have not been captured
         public int MissingCount => AllProperties.Where(x => x.Selected).Except(CurrentSlot.StoredProperties).Count();
@@ -586,22 +589,37 @@ namespace Snapshot
         #region events
         private void OnMachineAdded(IMachine m)
         {
-            if (m.ManagedMachine != this)
+            CMachineState ms;
+
+            // Check if machine is being undeleted
+            try
             {
-                CMachineState ms = new CMachineState(this, m);
-                foreach (IPropertyState s in ms.AllProperties)
-                {
-                    s.SelChanged += OnSelChanged;
-                    s.Selected = SelectNewMachines;
-                    AllProperties.Add(s);
-                }
-                States.Add(ms);
+                ms = States.Single(x => x.Machine.Name == m.Name);
+                ms.Machine = m;
+                ms.Active = true;
                 VM.AddState(ms);
+                OnPropertyChanged("State");
             }
-            else
+            catch // Not found, new machine
             {
-                ThisMachine = host.Machine;
-                SlotParam = ThisMachine.ParameterGroups[1].Parameters[0];
+                if (m.ManagedMachine != this)
+                {
+                    ms = new CMachineState(this, m);
+                    foreach (IPropertyState s in ms.AllProperties)
+                    {
+                        s.SelChanged += OnSelChanged;
+                        s.Selected = SelectNewMachines;
+                        AllProperties.Add(s);
+                    }
+                    States.Add(ms);
+                    VM.AddState(ms);
+                    OnPropertyChanged("State");
+                }
+                else
+                {
+                    ThisMachine = host.Machine;
+                    SlotParam = ThisMachine.ParameterGroups[1].Parameters[0];
+                }
             }
         }
 
@@ -615,8 +633,9 @@ namespace Snapshot
             if (m != host.Machine)
             {
                 CMachineState s = States[States.FindIndex(x => x.Machine == m)];
-                States.Remove(s);
+                s.Active = false;
                 VM.RemoveState(s);
+                OnPropertyChanged("State");
             }
         }
         #endregion events
