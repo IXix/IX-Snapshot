@@ -262,6 +262,22 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.MapCommand(x.ToString(), true)
             };
+            cmdSelectAll = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectAll()
+            };
+            cmdSelectNone = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectNone()
+            };
+            cmdSelectStored = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectStored()
+            };
+            cmdSelectInvert = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectInvert()
+            };
         }
 
         private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -320,6 +336,10 @@ namespace Snapshot
         public SimpleCommand cmdPurge { get; private set; }
         public SimpleCommand cmdMap { get; private set; }
         public SimpleCommand cmdMapSpecific { get; private set; }
+        public SimpleCommand cmdSelectAll { get; private set; }
+        public SimpleCommand cmdSelectNone { get; private set; }
+        public SimpleCommand cmdSelectStored { get; private set; }
+        public SimpleCommand cmdSelectInvert { get; private set; }
         #endregion Commands
 
         #region Properties
@@ -337,6 +357,11 @@ namespace Snapshot
         public List<CMachineSnapshot> Slots
         {
             get => Owner.Slots;
+        }
+        public bool SelectionFollowsSlot
+        {
+            get => Owner.SelectionFollowsSlot;
+            set => Owner.SelectionFollowsSlot = value;
         }
         public bool SelectNewMachines
         {

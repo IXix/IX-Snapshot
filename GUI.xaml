@@ -36,56 +36,68 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
-            <TreeView x:Name="MachineList" Grid.Row="0" ItemsSource="{Binding States}">
-                <TreeView.ItemContainerStyle>
-                    <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
-                    <Style TargetType="{x:Type TreeViewItem}">
-                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                        <Setter Property="FontWeight" Value="Normal" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}"
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TreeView x:Name="MachineList" Grid.Row="0" ItemsSource="{Binding States}">
+                    <TreeView.ItemContainerStyle>
+                        <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="FontWeight" Value="Normal" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}"
                                  Value="True">
-                                <Setter Property="FontWeight" Value="Bold"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TreeView.ItemContainerStyle>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
 
-                <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding MachineName}" />
-                            </StackPanel>
-                        </CheckBox>
-                    </HierarchicalDataTemplate>
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding MachineName}" />
+                                </StackPanel>
+                            </CheckBox>
+                        </HierarchicalDataTemplate>
 
-                    <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </CheckBox>
-                    </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </CheckBox>
+                        </HierarchicalDataTemplate>
 
-                    <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                        <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </CheckBox>
-                    </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" />
+                                </StackPanel>
+                            </CheckBox>
+                        </HierarchicalDataTemplate>
 
-                    <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                        <CheckBox IsChecked="{Binding IsChecked}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding DisplayName}" />
-                            </StackPanel>
-                        </CheckBox>
-                    </DataTemplate>
-                </TreeView.Resources>
-            </TreeView>
+                        <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
+                            <CheckBox IsChecked="{Binding IsChecked}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding DisplayName}" />
+                                </StackPanel>
+                            </CheckBox>
+                        </DataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <Button x:Name="btnSelectAll" Command="{Binding cmdSelectAll}" MinWidth="30" Padding="3,1">All</Button>
+                    <Button x:Name="btnSelectNone" Command="{Binding cmdSelectNone}" MinWidth="30" Padding="3,1">None</Button>
+                    <Button x:Name="btnSelectStored" Command="{Binding cmdSelectStored}" MinWidth="30" Padding="3,1">Stored</Button>
+                    <Button x:Name="btnSelectInvert" Command="{Binding cmdSelectInvert}" MinWidth="30" Padding="3,1">Invert</Button>
+                </StackPanel>
+            </Grid>
         </Grid>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -126,6 +138,7 @@
                 <TextBlock x:Name="txtInfoDisplay" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
+                <CheckBox x:Name="chkSelFollowsSlot" Content="Selection follows slot" IsChecked="{Binding SelectionFollowsSlot}"/>
                 <CheckBox x:Name="chkSelNew" Content="Select new machines" IsChecked="{Binding SelectNewMachines}"/>
                 <CheckBox x:Name="chkCaptureOnSlot" Content="Capture on slot change" IsChecked="{Binding CaptureOnSlotChange}"/>
                 <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" IsChecked="{Binding RestoreOnSlotChange}"/>

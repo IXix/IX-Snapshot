@@ -55,6 +55,20 @@ namespace Snapshot
 
         public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} selected but not stored\n{4} stored but not selected\n{5} stored for missing machines\nSlot size: {6}\nTotal Size: {7}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, DeletedCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
 
+        private bool _selectionFollowsSlot;
+        public bool SelectionFollowsSlot
+        {
+            get => _selectionFollowsSlot;
+            set
+            {
+                if (_selectionFollowsSlot != value)
+                {
+                    _selectionFollowsSlot = value;
+                    OnPropertyChanged("SelectionFollowsSlot");
+                }
+            }
+        }
+
         private bool _selectNewMachines;
         public bool SelectNewMachines
         {
@@ -206,7 +220,7 @@ namespace Snapshot
             {
             }
 
-            public Byte version = 1;
+            public Byte version = 2; // Current file version
             public byte[] data;
         }
 
@@ -241,6 +255,38 @@ namespace Snapshot
             if (RestoreOnStop)
             {
                 Restore();
+            }
+        }
+
+        public void SelectAll()
+        {
+            foreach(IPropertyState s in AllProperties)
+            {
+                s.Selected = true;
+            }
+        }
+
+        public void SelectNone()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected = false;
+            }
+        }
+
+        public void SelectStored()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected = s.GotValue;
+            }
+        }
+
+        public void SelectInvert()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected = !s.Selected;
             }
         }
 
@@ -329,6 +375,7 @@ namespace Snapshot
             w.Write(RestoreOnSlotChange);
             w.Write(RestoreOnSongLoad);
             w.Write(RestoreOnStop);
+            w.Write(SelectionFollowsSlot); // new in v2
 
             // Save slot data
             for (int i = 0; i < 128; i++)
@@ -410,7 +457,7 @@ namespace Snapshot
         {
             if (_loadedState == null) return;
 
-            if (_loadedState.version > 1) throw new Exception("Version mismatch");
+            if (_loadedState.version > 2) throw new Exception("Version mismatch");
 
             MemoryStream stream = new MemoryStream(_loadedState.data);
             BinaryReader r = new BinaryReader(stream);
@@ -421,6 +468,10 @@ namespace Snapshot
             RestoreOnSlotChange = r.ReadBoolean();
             RestoreOnSongLoad = r.ReadBoolean();
             RestoreOnStop = r.ReadBoolean();
+            if (_loadedState.version >= 2) // New in file v2
+            {
+                SelectionFollowsSlot = r.ReadBoolean();
+            }
 
             // Slot data (CMachineSnapshot.WriteData() x 128)
             for (int i = 0; i < 128; i++)
@@ -721,9 +772,17 @@ namespace Snapshot
         // Called after the slot has changed
         internal void OnSlotChanged()
         {
-            if (RestoreOnSlotChange && !loading)
+            if (_restoreOnSlotChange && !loading)
             {
                 Restore();
+            }
+
+            if (_selectionFollowsSlot)
+            {
+                foreach(IPropertyState s in AllProperties)
+                {
+                    s.Selected = s.GotValue;
+                }
             }
 
             OnPropertyChanged("State");
