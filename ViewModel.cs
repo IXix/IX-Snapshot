@@ -358,6 +358,11 @@ namespace Snapshot
         {
             get => Owner.Slots;
         }
+        public bool ConfirmClear
+        {
+            get => Owner.ConfirmClear;
+            set => Owner.ConfirmClear = value;
+        }
         public bool SelectionFollowsSlot
         {
             get => Owner.SelectionFollowsSlot;

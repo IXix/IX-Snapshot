@@ -55,6 +55,20 @@ namespace Snapshot
 
         public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} selected but not stored\n{4} stored but not selected\n{5} stored for missing machines\nSlot size: {6}\nTotal Size: {7}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, DeletedCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
 
+        private bool _confirmClear;
+        public bool ConfirmClear
+        {
+            get => _confirmClear;
+            set
+            {
+                if (_confirmClear != value)
+                {
+                    _confirmClear = value;
+                    OnPropertyChanged("ConfirmClear");
+                }
+            }
+        }
+
         private bool _selectionFollowsSlot;
         public bool SelectionFollowsSlot
         {
@@ -192,6 +206,7 @@ namespace Snapshot
             this.host = host;
             MidiMap = new Dictionary<Action, CMidiEvent>();
             _midiMapping = new Dictionary<Action, UInt32>();
+            _confirmClear = true;
 
             _slots = new List<CMachineSnapshot>();
             for (int i = 0; i < 128; i++)
@@ -347,6 +362,8 @@ namespace Snapshot
          * RestoreOnSlotChange
          * RestoreOnSongLoad
          * RestoreOnStop
+         * SelectionFollowsSlot
+         * ConfirmClear
          * Slot data (CMachineSnapshot.WriteData() x 128)
          * number of saved MIDI mappings
          * * method name
@@ -376,6 +393,7 @@ namespace Snapshot
             w.Write(RestoreOnSongLoad);
             w.Write(RestoreOnStop);
             w.Write(SelectionFollowsSlot); // new in v2
+            w.Write(ConfirmClear);         // ^^
 
             // Save slot data
             for (int i = 0; i < 128; i++)
@@ -408,7 +426,7 @@ namespace Snapshot
 
             // Build a list of states to save by finding which are referred to by snapshots
             List<CMachineState> saveStates = new List<CMachineState>();
-            foreach (CMachineState s in States)
+            foreach (CMachineState s in States.Where(x => x.Active))
             {
                 if (_slots.Exists(x => x.ContainsMachine(s)))
                 {
@@ -471,6 +489,7 @@ namespace Snapshot
             if (_loadedState.version >= 2) // New in file v2
             {
                 SelectionFollowsSlot = r.ReadBoolean();
+                ConfirmClear = r.ReadBoolean();
             }
 
             // Slot data (CMachineSnapshot.WriteData() x 128)

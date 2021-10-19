@@ -92,10 +92,10 @@
                     </TreeView.Resources>
                 </TreeView>
                 <StackPanel Grid.Row="1" Orientation="Horizontal">
-                    <Button x:Name="btnSelectAll" Command="{Binding cmdSelectAll}" MinWidth="30" Padding="3,1">All</Button>
-                    <Button x:Name="btnSelectNone" Command="{Binding cmdSelectNone}" MinWidth="30" Padding="3,1">None</Button>
-                    <Button x:Name="btnSelectStored" Command="{Binding cmdSelectStored}" MinWidth="30" Padding="3,1">Stored</Button>
-                    <Button x:Name="btnSelectInvert" Command="{Binding cmdSelectInvert}" MinWidth="30" Padding="3,1">Invert</Button>
+                    <Button x:Name="btnSelectAll" Command="{Binding cmdSelectAll}" MinWidth="30" Padding="3,1" ToolTip="Select all properties.">All</Button>
+                    <Button x:Name="btnSelectNone" Command="{Binding cmdSelectNone}" MinWidth="30" Padding="3,1" ToolTip="Deselect all properties.">None</Button>
+                    <Button x:Name="btnSelectStored" Command="{Binding cmdSelectStored}" MinWidth="30" Padding="3,1" ToolTip="Select only stored properties.">Stored</Button>
+                    <Button x:Name="btnSelectInvert" Command="{Binding cmdSelectInvert}" MinWidth="30" Padding="3,1" ToolTip="Invert the selection.">Invert</Button>
                 </StackPanel>
             </Grid>
         </Grid>
@@ -106,7 +106,7 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
                 <TextBlock>Slot Name</TextBlock>
-                <ComboBox ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <ComboBox ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select/rename current slot.">
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />
@@ -138,14 +138,15 @@
                 <TextBlock x:Name="txtInfoDisplay" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <StackPanel Grid.Row="1">
-                <CheckBox x:Name="chkSelFollowsSlot" Content="Selection follows slot" IsChecked="{Binding SelectionFollowsSlot}"/>
-                <CheckBox x:Name="chkSelNew" Content="Select new machines" IsChecked="{Binding SelectNewMachines}"/>
-                <CheckBox x:Name="chkCaptureOnSlot" Content="Capture on slot change" IsChecked="{Binding CaptureOnSlotChange}"/>
-                <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" IsChecked="{Binding RestoreOnSlotChange}"/>
-                <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}"/>
-                <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}"/>
+                <CheckBox x:Name="chkConfirmClear" Content="Confirm on clear/purge" IsChecked="{Binding ConfirmClear}" ToolTip="Ask for confirmation when discarding stored properties."/>
+                <CheckBox x:Name="chkSelFollowsSlot" Content="Selection follows slot" IsChecked="{Binding SelectionFollowsSlot}" ToolTip="When changing slot, only stored properties will be selected."/>
+                <CheckBox x:Name="chkSelNew" Content="Select new machines" IsChecked="{Binding SelectNewMachines}" ToolTip="Automatically select newly created machines."/>
+                <CheckBox x:Name="chkCaptureOnSlot" Content="Capture on slot change" IsChecked="{Binding CaptureOnSlotChange}" ToolTip="Before changing to a new slot, capture selected properties into current slot."/>
+                <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" IsChecked="{Binding RestoreOnSlotChange}" ToolTip="Automatically restore slot contents after changing to a new slot."/>
+                <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}" ToolTip="Automatically restore current slot content when song is loaded."/>
+                <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}" ToolTip="Automatically restore current slot content when playback stops."/>
                 <Separator Height="9" />
-                <Button x:Name="btnCapture" >
+                <Button x:Name="btnCapture" ToolTip="Capture selected properties.">
                     <Button.InputBindings>
                         <MouseBinding Command="{Binding cmdCapture}" MouseAction="LeftClick" />
                         <MouseBinding Command="{Binding cmdMap}" CommandParameter="Capture" Gesture="RightClick"/>
@@ -153,7 +154,7 @@
                     </Button.InputBindings>
                     Capture
                 </Button>
-                <Button x:Name="btnCaptureMissing">
+                <Button x:Name="btnCaptureMissing" ToolTip="Capture selected properties that are not already stored.">
                     <Button.InputBindings>
                         <MouseBinding Command="{Binding cmdCaptureMissing}" MouseAction="LeftClick" />
                         <MouseBinding Command="{Binding cmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick"/>
@@ -162,7 +163,7 @@
                     Capture Missing
                 </Button>
                 <Separator Height="9" />
-                <Button x:Name="btnRestore">
+                <Button x:Name="btnRestore" ToolTip="Restore all stored properties.">
                     <Button.InputBindings>
                         <MouseBinding Command="{Binding cmdRestore}" MouseAction="LeftClick" />
                         <MouseBinding Command="{Binding cmdMap}" CommandParameter="Restore" Gesture="RightClick"/>
@@ -171,7 +172,7 @@
                     Restore
                 </Button>
                 <Separator Height="9" />
-                <Button x:Name="btnClear">
+                <Button x:Name="btnClear" ToolTip="Discard all stored properties.">
                     <Button.InputBindings>
                         <MouseBinding Command="{Binding cmdClear}" MouseAction="LeftClick" />
                         <MouseBinding Command="{Binding cmdMap}" CommandParameter="Clear" Gesture="RightClick"/>
@@ -179,7 +180,7 @@
                     </Button.InputBindings>
                     Clear
                 </Button>
-                <Button x:Name="btnPurge">
+                <Button x:Name="btnPurge" ToolTip="Discard stored properties that are not selected or belong to missing machines.">
                     <Button.InputBindings>
                         <MouseBinding Command="{Binding cmdPurge}" MouseAction="LeftClick" />
                         <MouseBinding Command="{Binding cmdMap}" CommandParameter="Purge" Gesture="RightClick"/>

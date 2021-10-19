@@ -214,6 +214,17 @@ namespace Snapshot
             // Need testing at some point
             // list = list.Except(list.Where(x => x.Key.Selected == false));
 
+            // Confirm if necessary
+            if (m_owner.ConfirmClear)
+            {
+                string msg = string.Format("Discard {0} stored properties?", StoredProperties.Count(x => x.Selected == false || x.Active == false));
+                MessageBoxResult result = MessageBox.Show("Discard stored", "Confirm purge", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             var attrList = AttributeValues.Where(x => x.Key.Active == false || x.Key.Selected == false).ToList();
             foreach (KeyValuePair<CAttributeState, int> item in attrList)
             {
@@ -241,6 +252,16 @@ namespace Snapshot
 
         public void Clear()
         {
+            // Confirm if necessary
+            if (m_owner.ConfirmClear)
+            {
+                MessageBoxResult result = MessageBox.Show("Discard all stored properties", "Confirm clear", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             AttributeValues.Clear();
             ParameterValues.Clear();
             DataValues.Clear();

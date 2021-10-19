@@ -1,3 +1,9 @@
+2021.09.19
+	Tooltips for most UI buttons
+	Added option "Confirm on clear/purge"
+	Prevent saving states for deleted machines
+	Mapping dialog controls enable/disabled according to selected value in message type combo.
+
 2021.09.18
 	Support for delete/undelete of machines
 	Various tweaks

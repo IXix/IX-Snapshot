@@ -21,13 +21,51 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" HorizontalAlignment="Center">
             <TextBlock>Type</TextBlock>
-            <ComboBox Name="cmbType" ItemsSource="{Binding TypeValues}" SelectedIndex="{Binding Settings.Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5"/>
+            <ComboBox Name="cmbType" ItemsSource="{Binding TypeValues}" SelectedIndex="{Binding Settings.Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="MIDI message type."/>
             <TextBlock>Channel</TextBlock>
-            <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Settings.Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5"/>
+            <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Settings.Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="MIDI channel number.">
+                <ComboBox.Style>
+                    <Style TargetType="{x:Type ComboBox}">
+                        <Setter Property="IsEnabled" Value="True" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="0">
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Setter Property="Foreground" Value="LightGray" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+            </ComboBox>
             <TextBlock Name="txtPrimary">Note/Controller</TextBlock>
-            <ComboBox Name="cmbPrimary" ItemsSource="{Binding PrimaryValues}" SelectedIndex="{Binding Settings.Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200"/>
-            <TextBlock>Velocity/Value</TextBlock>
-            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5"/>
+            <ComboBox Name="cmbPrimary" ItemsSource="{Binding PrimaryValues}" SelectedIndex="{Binding Settings.Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" ToolTip="Note/CC number.">
+                <ComboBox.Style>
+                    <Style TargetType="{x:Type ComboBox}">
+                        <Setter Property="IsEnabled" Value="True" />
+                        <Setter Property="Foreground" Value="Black" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="0">
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Setter Property="Foreground" Value="LightGray" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+            </ComboBox>
+            <TextBlock>Controller Value</TextBlock>
+            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="Controller value.">
+                <ComboBox.Style>
+                    <Style TargetType="{x:Type ComboBox}">
+                        <Setter Property="IsEnabled" Value="False" />
+                        <Setter Property="Foreground" Value="LightGray" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="3">
+                                <Setter Property="IsEnabled" Value="True" />
+                                <Setter Property="Foreground" Value="Black" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+            </ComboBox>
             <Button Name="btnLearn" Width="200" Margin="0,5" Click="btnLearn_Click" Height="30">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}">
