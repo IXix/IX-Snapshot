@@ -3,6 +3,7 @@
 	Added option "Confirm on clear/purge"
 	Prevent saving states for deleted machines
 	Mapping dialog controls enable/disabled according to selected value in message type combo.
+	Possible fix for wde crash report
 
 2021.09.18
 	Support for delete/undelete of machines

@@ -159,7 +159,18 @@ namespace Snapshot
 
         public override int? Track => null;
 
-        public override int Size => Machine.Data.Length;
+        public override int Size
+        {
+            get
+            {
+                int size = 0;
+                Application.Current.Dispatcher.Invoke((Action)(() =>
+                {
+                    size = Machine.Data.Length;
+                }), DispatcherPriority.Send);
+                return size;
+            }
+        }
     }
 
     public class CPropertyStateGroup : CPropertyBase, IGroup<IPropertyState>
