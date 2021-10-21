@@ -26,6 +26,16 @@ namespace Snapshot
         public GUI()
         {
             InitializeComponent();
+            
+            // Cheap and nasty way to keep the machine data info up to date.
+            // Might have to come up with something better at some point.
+            IsKeyboardFocusWithinChanged += (sender, e) =>
+            {
+                if (Owner != null)
+                {
+                    Owner.UpdateSizeInfo();
+                }
+            };
         }
 
         public CMachine Owner { get; set; }

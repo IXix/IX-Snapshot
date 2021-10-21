@@ -506,9 +506,14 @@ namespace Snapshot
             _property = property;
             IsChecked = _property.Selected;
             _property.SelChanged += OnSelChanged;
+            _property.SizeChanged += OnSizeChanged;
+
         }
 
-        virtual public string Size => (_property.GetType().ToString() == "Snapshot.DataState" && _property.Size > 0) ? string.Format(" - {0}", Misc.ToSize(_property.Size)) : "";
+        private void OnSizeChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged("DisplayName");
+        }
 
         public override bool GotValue => _property.GotValue;            
 

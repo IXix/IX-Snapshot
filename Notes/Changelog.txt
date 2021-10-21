@@ -1,3 +1,11 @@
+2021.09.21
+	Update machine size info when GUI becomes active
+	Display both stored and current data size for data states
+	Removed redundant property Size from CPropertyStateVM
+
+2021.09.20
+	Prevent confirm on clear prompt during capture
+
 2021.09.19
 	Tooltips for most UI buttons
 	Added option "Confirm on clear/purge"

@@ -38,6 +38,9 @@ namespace Snapshot
         bool Active { get; set; }
         CMachine Owner { get; }
         CMachineState Parent { get; }
+
+        event EventHandler SizeChanged;
+        void OnSizeChanged();
     }
 
     public interface IGroup<T> : INamed
@@ -97,6 +100,7 @@ namespace Snapshot
         virtual public string DisplayName => throw new NotImplementedException();
 
         public event EventHandler<StateChangedEventArgs> SelChanged;
+        public event EventHandler SizeChanged;
 
         public void OnSelChanged(StateChangedEventArgs e)
         {
@@ -104,6 +108,15 @@ namespace Snapshot
             if (handler != null)
             {
                 handler(this, e);
+            }
+        }
+
+        public void OnSizeChanged()
+        {
+            EventHandler handler = SizeChanged;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
             }
         }
     }
@@ -149,27 +162,42 @@ namespace Snapshot
             : base(owner, parent)
         {
             Machine = machine;
+            _size = 0;
+            UpdateSize();
         }
 
         public IMachine Machine { get; private set; }
 
         public override string Name => "Data";
 
-        public override string DisplayName => string.Format("Data - {0}", Misc.ToSize(Size));
-
-        public override int? Track => null;
-
-        public override int Size
+        public override string DisplayName
         {
             get
             {
-                int size = 0;
-                Application.Current.Dispatcher.Invoke((Action)(() =>
+                if(GotValue)
                 {
-                    size = Machine.Data.Length;
-                }), DispatcherPriority.Send);
-                return size;
+                    var stored = Owner.CurrentSlot.GetPropertySize(this);
+                    return string.Format("Data - {0} ({1})", Misc.ToSize(stored), Misc.ToSize(Size));
+                }
+                else
+                {
+                    return string.Format("Data - ({0})", Misc.ToSize(Size));
+                }
             }
+        }
+
+        public override int? Track => null;
+
+        private int _size;
+        public override int Size => _size;
+
+        internal void UpdateSize()
+        {
+            Application.Current.Dispatcher.BeginInvoke((Action)(() =>
+            {
+                _size = Machine.Data.Length;
+                OnSizeChanged();
+            }));
         }
     }
 

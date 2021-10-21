@@ -191,6 +191,14 @@ namespace Snapshot
             }
         }
 
+        internal void UpdateSizeInfo()
+        {
+            foreach(CMachineState s in States.Where(x => x.DataState != null))
+            {
+                s.DataState.UpdateSize();
+            }
+        }
+
         public bool SlotHasData(int index) => CurrentSlot.StoredCount > 0;
 
         // This is the mapping of UI actions to MIDI events
@@ -775,7 +783,7 @@ namespace Snapshot
 
         internal void Clear()
         {
-            CurrentSlot.Clear();
+            CurrentSlot.Clear(ConfirmClear);
             OnPropertyChanged("State");
         }
 

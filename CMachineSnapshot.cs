@@ -63,6 +63,20 @@ namespace Snapshot
             return StoredProperties.Exists(x => x.Parent == s);
         }
 
+        public int GetPropertySize(CPropertyBase p)
+        {
+            if (!ContainsProperty(p)) return 0;
+            
+            switch(p.GetType().Name)
+            {
+                case "CDataState":
+                    return DataValues[(p as CDataState)].Length;
+
+                default:
+                    return sizeof(int);
+            }
+        }
+
         public int Size
         {
             get
@@ -89,7 +103,7 @@ namespace Snapshot
 
         public void Capture()
         {
-            Clear();
+            Clear(false);
 
             foreach (CMachineState state in m_owner.States)
             {
@@ -250,10 +264,10 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Clear()
+        public void Clear(bool confirm)
         {
             // Confirm if necessary
-            if (m_owner.ConfirmClear)
+            if (confirm)
             {
                 MessageBoxResult result = MessageBox.Show("Discard all stored properties", "Confirm clear", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
