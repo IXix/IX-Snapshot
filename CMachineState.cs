@@ -464,8 +464,9 @@ namespace Snapshot
                 }
             }
 
-            // Update treeview
+            // Update treeview and info
             VM.OnTrackCountChanged(newCount, _trackCount);
+            _owner.OnPropertyChanged("SelectionInfo");
 
             // Update tracking
             _trackCount = Machine.TrackCount;

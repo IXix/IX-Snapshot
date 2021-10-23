@@ -48,12 +48,11 @@ namespace Snapshot
                 {
                     CurrentSlot.Name = value;
                     OnPropertyChanged("SlotName");
-                    OnPropertyChanged("SlotDetails");
                 }
             }
         }
 
-        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} selected but not stored\n{4} stored but not selected\n{5} stored for missing machines\nSlot size: {6}\nTotal Size: {7}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, DeletedCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
+        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} selected but not stored\n{4} stored but not selected\n{5} stored for missing properties\nSlot size: {6}\nTotal Size: {7}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, DeletedCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
 
         private bool _confirmClear;
         public bool ConfirmClear

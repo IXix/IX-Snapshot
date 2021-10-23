@@ -232,7 +232,7 @@ namespace Snapshot
             if (m_owner.ConfirmClear)
             {
                 string msg = string.Format("Discard {0} stored properties?", StoredProperties.Count(x => x.Selected == false || x.Active == false));
-                MessageBoxResult result = MessageBox.Show("Discard stored", "Confirm purge", MessageBoxButton.YesNo);
+                MessageBoxResult result = MessageBox.Show(msg, "Confirm purge", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
                 {
                     return;
