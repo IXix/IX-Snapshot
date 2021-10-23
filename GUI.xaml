@@ -41,7 +41,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <TreeView x:Name="MachineList" Grid.Row="0" ItemsSource="{Binding States}">
+                <TreeView x:Name="MachineList" Grid.Row="0" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.ItemContainerStyle>
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
@@ -61,7 +61,7 @@
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                             <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding MachineName}" />
+                                    <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
                             </CheckBox>
                         </HierarchicalDataTemplate>

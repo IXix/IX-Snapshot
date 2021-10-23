@@ -152,7 +152,7 @@ namespace Snapshot
             get => false;
         }
 
-        void UpdateTreeCheck()
+        internal void UpdateTreeCheck()
         {
             var c = Children.Count(x => x.IsChecked == true);
             var i = Children.Count(x => x.IsChecked == null);
@@ -160,16 +160,15 @@ namespace Snapshot
             if(c == 0 && i == 0)
             {
                 IsChecked = false;
-                return;
             }
-
-            if (c == Children.Count)
+            else if (c == Children.Count)
             {
                 IsChecked = true;
-                return;
             }
-
-            IsChecked = null;
+            else
+            {
+                IsChecked = null;
+            }
         }
 
         protected void OnSelChanged(object sender, StateChangedEventArgs e)
@@ -210,6 +209,28 @@ namespace Snapshot
                 {
                     c.OnPropertyChanged(propertyName);
                 }
+            }
+        }
+
+        internal bool RemoveChild(CTreeViewItemVM VM)
+        {
+            if(Children.Remove(VM))
+                return true;
+
+            foreach(var c in Children)
+            {
+                if (c.RemoveChild(VM))
+                    return true;
+            }
+
+            return false;
+        }
+
+        internal void AddChild(CTreeViewItemVM VM)
+        {
+            if(!Children.Contains(VM))
+            {
+                Children.Add(VM);
             }
         }
 
@@ -291,6 +312,13 @@ namespace Snapshot
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("GotValue");
+                    }
+                    break;
+
+                case "Names":
+                    foreach (CMachineStateVM s in States)
+                    {
+                        s.OnPropertyChanged("Name");
                     }
                     break;
 
@@ -406,11 +434,12 @@ namespace Snapshot
             : base(null, true)
         {
             _state = state;
+            state.VM = this;
             IsChecked = false;
             LoadChildren();
         }
 
-        public string MachineName => _state.Machine.Name;
+        public string Name => _state.Machine.Name;
 
         public override bool GotValue => _state.GotValue;
 
@@ -440,6 +469,38 @@ namespace Snapshot
                 Children.Add(s);
             }
         }
+
+        internal void OnTrackCountChanged(int newCount, int oldCount)
+        {
+            int delta = newCount - oldCount;
+            if(delta < 0) // track(s?) removed
+            {
+                // Remove any inactive items from the tree
+                foreach(var param in _state.TrackStates.Children)
+                {
+                    foreach(var track in param.Children.Where(x => x.Active == false))
+                    {
+                        param.VM.RemoveChild(track.VM);
+                        track.VM = null;
+                        track.Selected = false;
+                    }
+                    param.VM.UpdateTreeCheck();
+                }
+            }
+            else if(delta > 0) // track(s?) added
+            {
+                // Add any properties whose VM is null to the tree
+                foreach(var param in _state.TrackStates.Children)
+                {
+                    foreach (IPropertyState track in param.Children.Where(x => x.Active && x.VM == null))
+                    {
+                        track.VM = new CPropertyStateVM(track, param.VM);
+                        param.VM.AddChild(track.VM);
+                    }
+                    param.VM.UpdateTreeCheck();
+                }
+            }
+        }
     }
 
     // Groups
@@ -451,6 +512,7 @@ namespace Snapshot
             : base(parentMachine, true)
         {
             _group = group;
+            group.VM = this;
             IsChecked = false;
             LoadChildren();
         }
@@ -465,7 +527,9 @@ namespace Snapshot
         protected override void LoadChildren()
         {
             foreach (var p in _group.Children)
+            {
                 Children.Add(new CPropertyStateVM(p, this));
+            }
         }
     }
 
@@ -478,6 +542,7 @@ namespace Snapshot
             : base(parent, true)
         {
             _group = group;
+            group.VM = this;
             IsChecked = false;
             LoadChildren();
         }
@@ -492,7 +557,9 @@ namespace Snapshot
         protected override void LoadChildren()
         {
             foreach (var pg in _group.Children)
+            {
                 Children.Add(new CPropertyStateGroupVM(pg, this));
+            }
         }
     }
 
@@ -504,10 +571,10 @@ namespace Snapshot
             : base(parent, false)
         {
             _property = property;
+            property.VM = this;
             IsChecked = _property.Selected;
             _property.SelChanged += OnSelChanged;
             _property.SizeChanged += OnSizeChanged;
-
         }
 
         private void OnSizeChanged(object sender, EventArgs e)

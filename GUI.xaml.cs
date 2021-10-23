@@ -63,62 +63,6 @@ namespace Snapshot
             
         }
 
-        private void OnMachinePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            var m = sender as IMachine;
-
-            if (m == machine) // this machine
-            {
-                switch (e.PropertyName)
-                {
-                    default:
-                        // "Attributes":
-                        // "IsActive":
-                        // "IsBypassed":
-                        // "IsMuted":
-                        // "IsSoloed":
-                        // "IsWireless":
-                        // "LastEngineThread" :
-                        // "MIDIInputChannel":
-                        // "Name":
-                        // "OversampleFactor":
-                        // "OverrideLatency":
-                        // "Patterns":
-                        // "PatternEditorDLL":
-                        // "Position":
-                        // "TrackCount":
-                        break;
-                }
-            }
-            else
-            {
-
-                switch (e.PropertyName)
-                {
-                    case "Name":
-                        //UpdateMachineLabels(m);
-                        break;
-
-                    default:
-                        // "Attributes":
-                        // "IsBypassed":
-                        // "IsMuted":
-                        // "IsSoloed":
-                        // "IsActive":
-                        // "IsWireless":
-                        // "LastEngineThread" :
-                        // "MIDIInputChannel":
-                        // "OversampleFactor":
-                        // "OverrideLatency":
-                        // "Patterns":
-                        // "PatternEditorDLL":
-                        // "Position":
-                        // "TrackCount":
-                        break;
-                }
-            }
-        }
-
         private void OnThreeStateClick(object sender, RoutedEventArgs e)
         {
             var chk = sender as CheckBox;

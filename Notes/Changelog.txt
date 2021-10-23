@@ -1,3 +1,6 @@
+2021.09.23
+	Handle machine name/track changes
+
 2021.09.21
 	Update machine size info when GUI becomes active
 	Display both stored and current data size for data states

@@ -8,6 +8,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace Snapshot
 {
@@ -39,6 +40,8 @@ namespace Snapshot
         CMachine Owner { get; }
         CMachineState Parent { get; }
 
+        CTreeViewItemVM VM { get; set; }
+
         event EventHandler SizeChanged;
         void OnSizeChanged();
     }
@@ -58,6 +61,8 @@ namespace Snapshot
             m_selected = false;
             Track = null;
         }
+
+        public CTreeViewItemVM VM { get; set; }
 
         private readonly CMachine _owner;
         public CMachine Owner => _owner;
@@ -292,6 +297,7 @@ namespace Snapshot
         public CMachineState(CMachine owner, IMachine m)
         {
             Machine = m;
+            _trackCount = m.TrackCount;
             _owner = owner;
             _active = true;
 
@@ -338,10 +344,51 @@ namespace Snapshot
                 AttributeStates.Children.Add(ats);
                 _allProperties.Add(ats);
             }
+
+            m.PropertyChanged += OnMachinePropertyChanged;
         }
+
+        private void OnMachinePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var m = sender as IMachine;
+
+            if (m != Machine) return;
+
+            switch (e.PropertyName)
+            {
+                case "Name":
+                    VM.OnPropertyChanged("Name");
+                    break;
+
+                case "TrackCount":
+                    UpdateTracks();
+                    break;
+
+                default:
+                    // "Attributes":
+                    // "IsBypassed":
+                    // "IsMuted":
+                    // "IsSoloed":
+                    // "IsActive":
+                    // "IsWireless":
+                    // "LastEngineThread" :
+                    // "MIDIInputChannel":
+                    // "OversampleFactor":
+                    // "OverrideLatency":
+                    // "Patterns":
+                    // "PatternEditorDLL":
+                    // "Position":
+                    break;
+            }
+        }
+
+        public CMachineStateVM VM { get; internal set; }
 
         public IMachine Machine { get; internal set; }
         readonly CMachine _owner;
+
+        private int _trackCount;
+        private int _highestTrackCount;
 
         public bool GotValue
         {
@@ -370,6 +417,61 @@ namespace Snapshot
                 {
                     p.Active = value;
                 }
+            }
+        }
+
+        private void UpdateTracks()
+        {
+            int newCount = Machine.TrackCount;
+            int delta = Machine.TrackCount - _trackCount;
+            if (delta < 0) // Track removed
+            {
+                foreach(var g in TrackStates.Children) // for each track param
+                {
+                    foreach(var p in g.Children.Where(x => x.Track > newCount - 1))
+                    {
+                        p.Active = false;
+                    }
+                }
+            }
+            else if(delta > 0) // Track added
+            {
+                if(newCount <= _highestTrackCount) // Previously added track restored
+                {
+                    
+                    foreach (var g in TrackStates.Children) // for each track param9
+                    {
+                        foreach (var p in g.Children.Where(x => x.Track > _trackCount - 1 && x.Track < newCount))
+                        {
+                            p.Active = true;
+                        }
+                    }
+                }
+                else // New track
+                {
+                    while(delta > 0) // Not sure if this is necessary. Can multiple tracks be added at once?
+                    {
+                        foreach (var g in TrackStates.Children) // for each track param
+                        {
+                            IParameter p = (g.Children.First() as CParameterState).Parameter;
+
+                            CParameterState ps = new CParameterState(_owner, this, p, newCount - delta);
+                            g.Children.Add(ps);
+                            _allProperties.Add(ps);
+                        }
+                        delta--;
+                    }
+                }
+            }
+
+            // Update treeview
+            VM.OnTrackCountChanged(newCount, _trackCount);
+
+            // Update tracking
+            _trackCount = Machine.TrackCount;
+            if(_trackCount > _highestTrackCount)
+            {
+                _highestTrackCount = _trackCount;
             }
         }
 
