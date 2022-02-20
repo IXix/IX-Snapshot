@@ -38,8 +38,6 @@ namespace Snapshot
         public List<CMachineSnapshot> Slots => _slots;
 
         public CMachineSnapshot CurrentSlot => _slots[_slot];
-        public CMachineSnapshot ManagerSlotA => _slots[ManagerSelA];
-        public CMachineSnapshot ManagerSlotB => _slots[ManagerSelB];
 
         public string SlotName
         {
@@ -191,9 +189,6 @@ namespace Snapshot
                 return size;
             }
         }
-
-        public int ManagerSelA { get; set; }
-        public int ManagerSelB { get; set; }
 
         internal void UpdateSizeInfo()
         {

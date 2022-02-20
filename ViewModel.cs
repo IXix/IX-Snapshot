@@ -243,9 +243,22 @@ namespace Snapshot
         public CSnapshotMachineVM(CMachine owner)
         {
             Owner = owner;
+            SelA = 0;
+            SelB = 0;
+
             States = new ObservableCollection<CMachineStateVM>(
                 (from state in Owner.States
-                 select new CMachineStateVM(state))
+                 select new CMachineStateVM(state, CurrentSlot))
+                .ToList());
+
+            StatesA = new ObservableCollection<CMachineStateVM>(
+                (from state in Owner.States
+                 select new CMachineStateVM(state, SlotA))
+                .ToList());
+
+            StatesB = new ObservableCollection<CMachineStateVM>(
+                (from state in Owner.States
+                 select new CMachineStateVM(state, SlotB))
                 .ToList());
 
             Owner.PropertyChanged += OwnerPropertyChanged;
@@ -346,15 +359,21 @@ namespace Snapshot
 
         public void AddState(CMachineState state)
         {
-            States.Add(new CMachineStateVM(state));
+            States.Add(new CMachineStateVM(state, CurrentSlot));
+            StatesA.Add(new CMachineStateVM(state, SlotA));
+            StatesB.Add(new CMachineStateVM(state, SlotB));
         }
 
         public void RemoveState(CMachineState state)
         {
             States.RemoveAt(States.FindIndex(x => x._state == state));
+            StatesA.RemoveAt(StatesA.FindIndex(x => x._state == state));
+            StatesB.RemoveAt(StatesB.FindIndex(x => x._state == state));
         }
 
         public ObservableCollection<CMachineStateVM> States { get; }
+        public ObservableCollection<CMachineStateVM> StatesA { get; }
+        public ObservableCollection<CMachineStateVM> StatesB { get; }
 
         #region Commands
         public SimpleCommand cmdCapture { get; private set; }
@@ -371,10 +390,30 @@ namespace Snapshot
         #endregion Commands
 
         #region Properties
-        public CMachineSnapshot ManagerSlotA => Owner.ManagerSlotA;
-        public CMachineSnapshot ManagerSlotB => Owner.ManagerSlotB;
-        public int ManagerSelA => Owner.ManagerSelA;
-        public int ManagerSelB => Owner.ManagerSelB;
+        public CMachineSnapshot SlotA { get; private set; }
+        public CMachineSnapshot SlotB { get; private set; }
+
+        private int _selA;
+        public int SelA
+        {
+            get { return _selA; }
+            set
+            {
+                _selA = value;
+                SlotA = Owner.Slots[_selA];
+            }
+        }
+
+        private int _selB;
+        public int SelB
+        {
+            get { return _selB; }
+            set
+            {
+                _selB = value;
+                SlotB = Owner.Slots[_selB];
+            }
+        }
 
         public CMachineSnapshot CurrentSlot => Owner.CurrentSlot;
         public int Slot
@@ -435,18 +474,34 @@ namespace Snapshot
     {
         public readonly CMachineState _state;
 
-        public CMachineStateVM(CMachineState state)
+        public CMachineStateVM(CMachineState state, CMachineSnapshot reference)
             : base(null, true)
         {
             _state = state;
-            state.VM = this;
+            Reference = reference;
             IsChecked = false;
             LoadChildren();
         }
 
         public string Name => _state.Machine.Name;
 
-        public override bool GotValue => _state.GotValue;
+        public CMachineSnapshot Reference { get; internal set; }
+
+        public override bool GotValue
+        {
+            get
+            {
+                try
+                {
+                    IPropertyState v = _state.AllProperties.First(x => Reference.ContainsProperty(x));
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
         protected override void LoadChildren()
         {

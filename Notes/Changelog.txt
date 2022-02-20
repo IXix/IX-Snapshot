@@ -1,5 +1,9 @@
 2022.02.20
 	Preliminary work on snapshot manager. Branched off due to extreme dodginess.
+	Removed CMachineState.VM
+		Multiple views are now tied to the same state so this reference to a single VM is no longer useful
+	Added members to CSnapshotMachineVM to display list of machines in the two panels of the manager
+
 
 2022.02.03
 	Fixed error due to mismatch between snapshot clear and delegate.

@@ -202,16 +202,15 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding ManagerSelA}" IsEditable="True" ToolTip="Select slot A." >
+                <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=OneWay}" ToolTip="Select slot A." >
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ManagerSlotA.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <DataTrigger Binding="{Binding SlotA.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="FontWeight" Value="Bold"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -235,12 +234,12 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding ManagerSelB}" IsEditable="True" ToolTip="Select slot B." >
+                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=OneWay}" ToolTip="Select slot B." >
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ManagerSlotB.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <DataTrigger Binding="{Binding SlotB.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                     <Setter Property="FontWeight" Value="Bold"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -264,7 +263,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
+                <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding StatesA, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.ItemContainerStyle>
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
@@ -314,7 +313,7 @@
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-                <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
+                <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding StatesB, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.ItemContainerStyle>
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
