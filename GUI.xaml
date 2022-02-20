@@ -205,7 +205,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=OneWay}" ToolTip="Select slot A." >
+                <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" ToolTip="Select slot A." >
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />
@@ -234,7 +234,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=OneWay}" ToolTip="Select slot B." >
+                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" ToolTip="Select slot B." >
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />
