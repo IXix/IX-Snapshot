@@ -782,7 +782,7 @@ namespace Snapshot
 
         internal void Clear()
         {
-            CurrentSlot.Clear(ConfirmClear);
+            CurrentSlot.Clear();
             OnPropertyChanged("State");
         }
 

@@ -7,6 +7,12 @@ Some kind of slot manager
 		Maybe even edit values?
 	Set current slot
 	Copy/paste/duplicate/clear slots
+	Morphing?
+
+Inertia for parameter changes
+	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.
+	There's no Tick() so can't interpolate every tick
+	Could we use a timer or a worker thread?
 
 Filter visibility of properties in the treeview somehow.
 

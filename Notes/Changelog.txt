@@ -1,3 +1,6 @@
+2022.02.03
+	Fixed error due to mismatch between snapshot clear and delegate.
+
 2021.09.23
 	Handle machine name/track changes
 

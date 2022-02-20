@@ -103,7 +103,7 @@ namespace Snapshot
 
         public void Capture()
         {
-            Clear(false);
+            DoClear();
 
             foreach (CMachineState state in m_owner.States)
             {
@@ -264,10 +264,19 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Clear(bool confirm)
+        private void DoClear()
+        {
+            AttributeValues.Clear();
+            ParameterValues.Clear();
+            DataValues.Clear();
+            StoredProperties.Clear();
+            OnPropertyChanged("HasData");
+        }
+
+        public void Clear()
         {
             // Confirm if necessary
-            if (confirm)
+            if (m_owner.ConfirmClear)
             {
                 MessageBoxResult result = MessageBox.Show("Discard all stored properties", "Confirm clear", MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
@@ -276,11 +285,7 @@ namespace Snapshot
                 }
             }
 
-            AttributeValues.Clear();
-            ParameterValues.Clear();
-            DataValues.Clear();
-            StoredProperties.Clear();
-            OnPropertyChanged("HasData");
+            DoClear();
         }
 
         public void ReadProperty(IPropertyState p, BinaryReader r)
