@@ -1,3 +1,6 @@
+2022.02.20
+	Preliminary work on snapshot manager. Branched off due to extreme dodginess.
+
 2022.02.03
 	Fixed error due to mismatch between snapshot clear and delegate.
 

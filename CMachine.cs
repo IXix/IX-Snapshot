@@ -30,7 +30,7 @@ namespace Snapshot
 
         public ObservableCollection<CMachineState> States { get; private set; }
 
-        public CSnapshotVM VM { get; }
+        public CSnapshotMachineVM VM { get; }
 
         public List<IPropertyState> AllProperties { get; private set; }
 
@@ -38,6 +38,8 @@ namespace Snapshot
         public List<CMachineSnapshot> Slots => _slots;
 
         public CMachineSnapshot CurrentSlot => _slots[_slot];
+        public CMachineSnapshot ManagerSlotA => _slots[ManagerSelA];
+        public CMachineSnapshot ManagerSlotB => _slots[ManagerSelB];
 
         public string SlotName
         {
@@ -190,6 +192,9 @@ namespace Snapshot
             }
         }
 
+        public int ManagerSelA { get; set; }
+        public int ManagerSelB { get; set; }
+
         internal void UpdateSizeInfo()
         {
             foreach(CMachineState s in States.Where(x => x.DataState != null))
@@ -223,7 +228,7 @@ namespace Snapshot
 
             States = new ObservableCollection<CMachineState>();
             AllProperties = new List<IPropertyState>();
-            VM = new CSnapshotVM(this);
+            VM = new CSnapshotMachineVM(this);
 
             ReadOnlyCollection<IMachine> machines = Global.Buzz.Song.Machines;
             foreach (IMachine m in machines)

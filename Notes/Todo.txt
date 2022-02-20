@@ -1,11 +1,15 @@
+Slot combo is being odd. Selecting a slot from the combo seems to be renaming the current slot.
+
 RestoreOnSlotChange works but can it be optimised?
 
 Some kind of slot manager
-	Tab or separate window? Probably tab.
-	Display slot names and sizes.
+	Commander style two pane interface
+	Each pane is like the machines pane in the main interface but needs to adjust item properties based on the selected slot for the pane.
+		Main interface is hard code to use the current slot
+		Need to change things so that we can specify which slot to pull the state info from
 	Maybe display stored values?
 		Maybe even edit values?
-	Set current slot
+	Set current slot (maybe an "Activate" button for each pane)
 	Copy/paste/duplicate/clear slots
 	Morphing?
 

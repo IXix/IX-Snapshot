@@ -238,9 +238,9 @@ namespace Snapshot
     }
 
     // Main interaction for GUI
-    public class CSnapshotVM : INotifyPropertyChanged
+    public class CSnapshotMachineVM : INotifyPropertyChanged
     {
-        public CSnapshotVM(CMachine owner)
+        public CSnapshotMachineVM(CMachine owner)
         {
             Owner = owner;
             States = new ObservableCollection<CMachineStateVM>(
@@ -371,6 +371,11 @@ namespace Snapshot
         #endregion Commands
 
         #region Properties
+        public CMachineSnapshot ManagerSlotA => Owner.ManagerSlotA;
+        public CMachineSnapshot ManagerSlotB => Owner.ManagerSlotB;
+        public int ManagerSelA => Owner.ManagerSelA;
+        public int ManagerSelB => Owner.ManagerSelB;
+
         public CMachineSnapshot CurrentSlot => Owner.CurrentSlot;
         public int Slot
         {
