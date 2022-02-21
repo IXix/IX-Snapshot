@@ -4,8 +4,6 @@ Some kind of slot manager
 	Commander style two pane interface
 	Each pane is like the machines pane in the main interface but needs to adjust item properties based on the selected slot for the pane.
 	Need to update the manager panels when SelA/SelB change
-		Not as simple as imagined. Every property has an associated VM.
-		Need to restructure things significantly.
 
 	Maybe display stored values?
 		Maybe even edit values?

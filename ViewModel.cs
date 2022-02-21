@@ -473,14 +473,51 @@ namespace Snapshot
     public class CMachineStateVM : CTreeViewItemVM
     {
         public readonly CMachineState _state;
+        public readonly int _trackCount;
 
         public CMachineStateVM(CMachineState state, CMachineSnapshot reference)
             : base(null, true)
         {
             _state = state;
+            _trackCount = _state.Machine.TrackCount;
+            state.Machine.PropertyChanged += OnMachinePropertyChanged;
             Reference = reference;
             IsChecked = false;
             LoadChildren();
+        }
+
+        private void OnMachinePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var m = sender as IMachine;
+
+            if (m != _state.Machine) return;
+
+            switch (e.PropertyName)
+            {
+                case "Name":
+                    //FIXME
+                    break;
+
+                case "TrackCount":
+                    OnTrackCountChanged();
+                    break;
+
+                default:
+                    // "Attributes":
+                    // "IsBypassed":
+                    // "IsMuted":
+                    // "IsSoloed":
+                    // "IsActive":
+                    // "IsWireless":
+                    // "LastEngineThread" :
+                    // "MIDIInputChannel":
+                    // "OversampleFactor":
+                    // "OverrideLatency":
+                    // "Patterns":
+                    // "PatternEditorDLL":
+                    // "Position":
+                    break;
+            }
         }
 
         public string Name => _state.Machine.Name;
@@ -530,35 +567,38 @@ namespace Snapshot
             }
         }
 
-        internal void OnTrackCountChanged(int newCount, int oldCount)
+        internal void OnTrackCountChanged()
         {
-            int delta = newCount - oldCount;
-            if(delta < 0) // track(s?) removed
+            try
             {
-                // Remove any inactive items from the tree
-                foreach(var param in _state.TrackStates.Children)
+                var trackParams = Children.First(x => x.GetType().Name == "CTrackPropertyStateGroupVM");
+
+                int newCount = _state.Machine.TrackCount;
+                int count = trackParams.Children[0].Children.Count;
+                int delta = newCount - count;
+
+                if (delta < 0) // track(s?) removed
                 {
-                    foreach(var track in param.Children.Where(x => x.Active == false))
+                    foreach (var param in trackParams.Children)
                     {
-                        param.VM.RemoveChild(track.VM);
-                        track.VM = null;
-                        track.Selected = false;
+                        var vm = param.Children[newCount]; // newCount should be index of track to remove
+                        param.RemoveChild(vm);
+                        param.UpdateTreeCheck();
                     }
-                    param.VM.UpdateTreeCheck();
+                }
+                else if (delta > 0) // track(s?) added
+                {
+                    var track = _state.TrackStates.Children[0].Children.First(x => x.Track == count); // Count should be index of new track
+                    foreach (var param in trackParams.Children)
+                    {
+                        param.AddChild(new CPropertyStateVM(track, param));
+                        param.UpdateTreeCheck();
+                    }
                 }
             }
-            else if(delta > 0) // track(s?) added
+            catch
             {
-                // Add any properties whose VM is null to the tree
-                foreach(var param in _state.TrackStates.Children)
-                {
-                    foreach (IPropertyState track in param.Children.Where(x => x.Active && x.VM == null))
-                    {
-                        track.VM = new CPropertyStateVM(track, param.VM);
-                        param.VM.AddChild(track.VM);
-                    }
-                    param.VM.UpdateTreeCheck();
-                }
+
             }
         }
     }
@@ -572,7 +612,6 @@ namespace Snapshot
             : base(parentMachine, true)
         {
             _group = group;
-            group.VM = this;
             IsChecked = false;
             LoadChildren();
         }
@@ -602,7 +641,6 @@ namespace Snapshot
             : base(parent, true)
         {
             _group = group;
-            group.VM = this;
             IsChecked = false;
             LoadChildren();
         }
@@ -631,7 +669,6 @@ namespace Snapshot
             : base(parent, false)
         {
             _property = property;
-            property.VM = this;
             IsChecked = _property.Selected;
             _property.SelChanged += OnSelChanged;
             _property.SizeChanged += OnSizeChanged;

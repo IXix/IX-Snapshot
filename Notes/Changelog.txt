@@ -1,3 +1,6 @@
+2022.02.21
+	Reorganised stuff so things are no longer tied to a specific VM
+
 2022.02.20
 	Preliminary work on snapshot manager. Branched off due to extreme dodginess.
 	Removed CMachineState.VM

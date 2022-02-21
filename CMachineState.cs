@@ -40,8 +40,6 @@ namespace Snapshot
         CMachine Owner { get; }
         CMachineState Parent { get; }
 
-        CTreeViewItemVM VM { get; set; }
-
         event EventHandler SizeChanged;
         void OnSizeChanged();
     }
@@ -61,8 +59,6 @@ namespace Snapshot
             m_selected = false;
             Track = null;
         }
-
-        public CTreeViewItemVM VM { get; set; }
 
         private readonly CMachine _owner;
         public CMachine Owner => _owner;
