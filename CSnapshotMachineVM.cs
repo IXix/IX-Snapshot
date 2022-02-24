@@ -12,8 +12,9 @@ namespace Snapshot
         public CSnapshotMachineVM(CMachine owner)
         {
             Owner = owner;
-            SelA = 0;
-            SelB = 0;
+
+            SlotA = Slots[0];
+            SlotB = Slots[0];
 
             States = new ObservableCollection<CMachineStateVM>(
                 (from state in Owner.States
@@ -31,6 +32,9 @@ namespace Snapshot
                 .ToList());
 
             Owner.PropertyChanged += OwnerPropertyChanged;
+
+            SelA = 0;
+            SelB = 0;
 
             cmdCapture = new SimpleCommand
             {
@@ -95,12 +99,40 @@ namespace Snapshot
                     {
                         s.OnPropertyChanged("GotValue");
                     }
+                    if(Slot != SelA)
+                    {
+                        foreach (CMachineStateVM s in StatesA)
+                        {
+                            s.OnPropertyChanged("GotValue");
+                        }
+                    }
+                    if (Slot != SelB)
+                    {
+                        foreach (CMachineStateVM s in StatesB)
+                        {
+                            s.OnPropertyChanged("GotValue");
+                        }
+                    }
                     break;
 
                 case "Names":
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("Name");
+                    }
+                    if (Slot != SelA)
+                    {
+                        foreach (CMachineStateVM s in StatesA)
+                        {
+                            s.OnPropertyChanged("Name");
+                        }
+                    }
+                    if (Slot != SelB)
+                    {
+                        foreach (CMachineStateVM s in StatesB)
+                        {
+                            s.OnPropertyChanged("Name");
+                        }
                     }
                     break;
 
@@ -170,6 +202,12 @@ namespace Snapshot
             {
                 _selA = value;
                 SlotA = Owner.Slots[_selA];
+                foreach(var s in StatesA)
+                {
+                    s.Reference = SlotA;
+                    s.OnPropertyChanged("GotValue");
+                }
+                NotifyPropertyChanged("StatesA");
             }
         }
 
@@ -181,6 +219,12 @@ namespace Snapshot
             {
                 _selB = value;
                 SlotB = Owner.Slots[_selB];
+                foreach (var s in StatesB)
+                {
+                    s.Reference = SlotB;
+                    s.OnPropertyChanged("GotValue");
+                }
+                NotifyPropertyChanged("StatesB");
             }
         }
 
