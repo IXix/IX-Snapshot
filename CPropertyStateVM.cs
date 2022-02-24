@@ -17,8 +17,8 @@ namespace Snapshot
     {
         readonly IPropertyState _property;
 
-        public CPropertyStateVM(IPropertyState property, CTreeViewItemVM parent)
-            : base(parent, false)
+        public CPropertyStateVM(IPropertyState property, CTreeViewItemVM parent, CMachineStateVM stateVM)
+            : base(parent, false, stateVM)
         {
             _property = property;
             IsChecked = _property.Selected;
@@ -31,7 +31,10 @@ namespace Snapshot
             OnPropertyChanged("DisplayName");
         }
 
-        public override bool GotValue => _property.GotValue;            
+        public override bool GotValue
+        {
+            get { return _stateVM.Reference.ContainsProperty(_property); }
+        }
 
         protected override void OnCheckChanged()
         {

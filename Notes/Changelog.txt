@@ -1,3 +1,8 @@
+2022.02.24
+	Split ViewModel.cs into separate files. Got tired of scrolling.
+	Added CTreeViewVM._stateVM
+		Bit ugly but couldn't find a better way to allow tree items to query the reference for GotValue.
+
 2022.02.21
 	Reorganised stuff so things are no longer tied to a specific VM
 

@@ -21,14 +21,16 @@ namespace Snapshot
         bool _isSelected;
         bool? _isChecked;
         bool _preventManualIndeterminate;
+        protected readonly CMachineStateVM _stateVM;
 
         #endregion // Data
 
         #region Constructors
 
-        protected CTreeViewItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate)
+        protected CTreeViewItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate, CMachineStateVM stateVM)
         {
             _parent = parent;
+            _stateVM = stateVM;
             _preventManualIndeterminate = preventManualIndeterminate;
             _children = new ObservableCollection<CTreeViewItemVM>();
         }

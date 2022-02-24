@@ -18,8 +18,8 @@ namespace Snapshot
     {
         readonly CTrackPropertyStateGroup _group;
 
-        public CTrackPropertyStateGroupVM(CTrackPropertyStateGroup group, CTreeViewItemVM parent)
-            : base(parent, true)
+        public CTrackPropertyStateGroupVM(CTrackPropertyStateGroup group, CTreeViewItemVM parent, CMachineStateVM stateVM)
+            : base(parent, true, stateVM)
         {
             _group = group;
             IsChecked = false;
@@ -31,13 +31,27 @@ namespace Snapshot
             get { return _group.Name; }
         }
 
-        public override bool GotValue => _group.GotValue;
+        public override bool GotValue
+        {
+            get
+            {
+                try
+                {
+                    var c = Children.First(x => x.GotValue == true);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
 
         protected override void LoadChildren()
         {
             foreach (var pg in _group.Children)
             {
-                Children.Add(new CPropertyStateGroupVM(pg, this));
+                Children.Add(new CPropertyStateGroupVM(pg, this, _stateVM));
             }
         }
     }

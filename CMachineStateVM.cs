@@ -12,7 +12,7 @@ namespace Snapshot
         public readonly int _trackCount;
 
         public CMachineStateVM(CMachineState state, CMachineSnapshot reference)
-            : base(null, true)
+            : base(null, true, null)
         {
             _state = state;
             _trackCount = _state.Machine.TrackCount;
@@ -80,25 +80,25 @@ namespace Snapshot
         {
             if (_state.DataState != null)
             {
-                var s = new CPropertyStateVM(_state.DataState, this);
+                var s = new CPropertyStateVM(_state.DataState, this, this);
                 Children.Add(s);
             }
 
             if (_state.AttributeStates.Children.Count > 0)
             {
-                var s = new CPropertyStateGroupVM(_state.AttributeStates, this);
+                var s = new CPropertyStateGroupVM(_state.AttributeStates, this, this);
                 Children.Add(s);
             }
 
             if (_state.GlobalStates.Children.Count > 0)
             {
-                var s = new CPropertyStateGroupVM(_state.GlobalStates, this);
+                var s = new CPropertyStateGroupVM(_state.GlobalStates, this, this);
                 Children.Add(s);
             }
 
             if (_state.TrackStates.Children.Count > 0)
             {
-                var s = new CTrackPropertyStateGroupVM(_state.TrackStates, this);
+                var s = new CTrackPropertyStateGroupVM(_state.TrackStates, this, this);
                 Children.Add(s);
             }
         }
@@ -127,7 +127,7 @@ namespace Snapshot
                     var track = _state.TrackStates.Children[0].Children.First(x => x.Track == count); // Count should be index of new track
                     foreach (var param in trackParams.Children)
                     {
-                        param.AddChild(new CPropertyStateVM(track, param));
+                        param.AddChild(new CPropertyStateVM(track, param, this));
                         param.UpdateTreeCheck();
                     }
                 }
