@@ -57,13 +57,18 @@
     <Compile Include="CMachineSnapshot.cs" />
     <Compile Include="CMachineState.cs" />
     <Compile Include="CMachine.cs" />
+    <Compile Include="CMachineStateVM.cs" />
+    <Compile Include="CPropertyStateGroupVM.cs" />
+    <Compile Include="CSnapshotMachineVM.cs" />
+    <Compile Include="CTrackPropertyStateGroupVM.cs" />
+    <Compile Include="CTreeViewItem.cs" />
     <Compile Include="GUI.xaml.cs">
       <DependentUpon>GUI.xaml</DependentUpon>
     </Compile>
     <Compile Include="CMappingDialog.xaml.cs">
       <DependentUpon>CMappingDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModel.cs" />
+    <Compile Include="CPropertyStateVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
