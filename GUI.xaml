@@ -203,6 +203,7 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="40" />
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" ToolTip="Select slot A." >
@@ -234,7 +235,15 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" ToolTip="Select slot B." >
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
+                    <Button x:Name="CopyBtoA">
+                        <TextBlock Text="&lt;" />
+                    </Button>
+                    <Button x:Name="CopyAtoB">
+                        <TextBlock Text="&gt;" />
+                    </Button>
+                </StackPanel>
+                <ComboBox Grid.Row="0" Grid.Column="2" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" ToolTip="Select slot B." >
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />
@@ -313,7 +322,7 @@
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-                <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="1" ItemsSource="{Binding StatesB, UpdateSourceTrigger=PropertyChanged}">
+                <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding StatesB, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.ItemContainerStyle>
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
