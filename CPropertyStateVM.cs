@@ -33,7 +33,7 @@ namespace Snapshot
 
         public override bool GotValue
         {
-            get { return _stateVM.Reference.ContainsProperty(_property); }
+            get { return _stateVM.Source.ContainsProperty(_property); }
         }
 
         protected override void OnCheckChanged()

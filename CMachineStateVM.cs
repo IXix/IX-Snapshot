@@ -17,7 +17,7 @@ namespace Snapshot
             _state = state;
             _trackCount = _state.Machine.TrackCount;
             state.Machine.PropertyChanged += OnMachinePropertyChanged;
-            Reference = reference;
+            Source = reference;
             IsChecked = false;
             LoadChildren();
         }
@@ -58,7 +58,7 @@ namespace Snapshot
 
         public string Name => _state.Machine.Name;
 
-        public CMachineSnapshot Reference { get; internal set; }
+        public CMachineSnapshot Source { get; internal set; }
 
         public override bool GotValue
         {
@@ -66,7 +66,7 @@ namespace Snapshot
             {
                 try
                 {
-                    IPropertyState v = _state.AllProperties.First(x => Reference.ContainsProperty(x));
+                    IPropertyState v = _state.AllProperties.First(x => Source.ContainsProperty(x));
                     return true;
                 }
                 catch

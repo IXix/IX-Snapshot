@@ -6,6 +6,9 @@ Some kind of slot manager
 	Need to update the manager panels when SelA/SelB change
 	Need to sync the expanded property across the two panes
 		CTreeViewItem.IsExpanded needs to link to some property of the CMachineStateVM (probably)
+		Need to add an Expanded property somewhere.
+			Sensible place would be in groups as single properties can't be expanded.
+				Put the event handler stuff in a group base class
 	Selection in manager needs to be separate from selection in main view
 		Currently IsChecked is linked to CPropertyBase.Selected
 		Need to either store it in CMachneStateVM or add A/B selectedness to CPropertyBase

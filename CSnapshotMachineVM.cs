@@ -204,7 +204,7 @@ namespace Snapshot
                 SlotA = Owner.Slots[_selA];
                 foreach(var s in StatesA)
                 {
-                    s.Reference = SlotA;
+                    s.Source = SlotA;
                     s.OnPropertyChanged("GotValue");
                 }
                 NotifyPropertyChanged("StatesA");
@@ -221,7 +221,7 @@ namespace Snapshot
                 SlotB = Owner.Slots[_selB];
                 foreach (var s in StatesB)
                 {
-                    s.Reference = SlotB;
+                    s.Source = SlotB;
                     s.OnPropertyChanged("GotValue");
                 }
                 NotifyPropertyChanged("StatesB");
