@@ -39,7 +39,7 @@ namespace Snapshot
         protected override void OnCheckChanged()
         {
             _property.Selected = (bool)IsChecked;
-            _property.OnSelChanged(new StateChangedEventArgs() { Property = _property, Selected = _property.Selected });
+            _property.OnSelChanged(new StateChangedEventArgs() { Property = _property, Checked = _property.Selected });
         }
 
         public string Name => _property.Name;

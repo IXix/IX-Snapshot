@@ -15,6 +15,7 @@ namespace Snapshot
     public class StateChangedEventArgs : EventArgs
     {
         public IPropertyState Property { get; set; }
+        public bool? Checked { get; set; }
         public bool Selected { get; set; }
     }
 
@@ -91,7 +92,7 @@ namespace Snapshot
                 if(m_selected != value)
                 {
                     m_selected = value;
-                    OnSelChanged(new StateChangedEventArgs() { Property = this, Selected = Selected });
+                    OnSelChanged(new StateChangedEventArgs() { Property = this, Checked = Selected });
                 }
             }
         }

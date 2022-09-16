@@ -16,13 +16,19 @@ namespace Snapshot
 
         readonly ObservableCollection<CTreeViewItemVM> _children;
         readonly CTreeViewItemVM _parent;
-
-        bool _isExpanded;
-        bool _isSelected;
-        bool? _isChecked;
-        bool _preventManualIndeterminate;
         protected readonly CMachineStateVM _stateVM;
 
+        bool _isExpanded;
+        bool _isExpandedM;
+        
+        bool _isSelected;
+
+        bool? _isChecked;
+        bool? _isCheckedA;
+        bool? _isCheckedB;
+        
+        bool _preventManualIndeterminate;
+        
         #endregion // Data
 
         #region Constructors
@@ -32,6 +38,9 @@ namespace Snapshot
             _parent = parent;
             _stateVM = stateVM;
             _preventManualIndeterminate = preventManualIndeterminate;
+            _isChecked = false;
+            _isCheckedA = false;
+            _isCheckedB = false;
             _children = new ObservableCollection<CTreeViewItemVM>();
         }
 
@@ -51,7 +60,7 @@ namespace Snapshot
         /// Gets/sets whether the TreeViewItem 
         /// associated with this object is expanded.
         /// </summary>
-        public bool IsExpanded
+        public bool IsExpanded // For main UI
         {
             get { return _isExpanded; }
             set
@@ -65,6 +74,23 @@ namespace Snapshot
                 // Expand all the way up to the root.
                 if (_isExpanded && _parent != null)
                     _parent.IsExpanded = true;
+            }
+        }
+
+        public bool IsExpandedM // For both manager panes
+        {
+            get { return _isExpandedM; }
+            set
+            {
+                if (value != _isExpandedM)
+                {
+                    _isExpandedM = value;
+                    OnPropertyChanged("IsExpandedM");
+                }
+
+                // Expand all the way up to the root.
+                if (_isExpandedM && _parent != null)
+                    _parent.IsExpandedM = true;
             }
         }
 
@@ -90,9 +116,16 @@ namespace Snapshot
         /// </summary>
         internal void OnClick()
         {
-            if (_preventManualIndeterminate && _isChecked == null)
+            if (_preventManualIndeterminate)
             {
-                IsChecked = false; // force this and any children to be unchecked.
+                if(_isChecked == null)
+                    IsChecked = false; // force this and any children to be unchecked.
+
+                if (_isCheckedA == null)
+                    IsCheckedA = false; // force this and any children to be unchecked.
+
+                if (_isCheckedB == null)
+                    IsCheckedB = false; // force this and any children to be unchecked.
             }
         }
 
@@ -140,33 +173,163 @@ namespace Snapshot
             }
         }
 
+        private bool reentrancyCheckA = false;
+        public bool? IsCheckedA
+        {
+            get { return _isCheckedA; }
+            set
+            {
+                if (value != _isCheckedA)
+                {
+                    if (reentrancyCheckA) return;
+
+                    reentrancyCheckA = true;
+
+                    _isCheckedA = value;
+
+                    if (value != null)
+                    {
+
+                        if (Children != null)
+                        {
+                            foreach (var child in Children)
+                            {
+                                child.IsCheckedA = _isCheckedA;
+                            }
+                        }
+                    }
+
+                    if (Parent != null)
+                    {
+                        Parent.UpdateTreeCheck("A");
+                    }
+
+                    OnPropertyChanged("IsCheckedA");
+
+                    OnCheckChanged();
+
+                    reentrancyCheckA = false;
+                }
+            }
+        }
+
+        private bool reentrancyCheckB = false;
+        public bool? IsCheckedB
+        {
+            get { return _isCheckedB; }
+            set
+            {
+                if (value != _isCheckedB)
+                {
+                    if (reentrancyCheckB) return;
+
+                    reentrancyCheckB = true;
+
+                    _isCheckedB = value;
+
+                    if (value != null)
+                    {
+
+                        if (Children != null)
+                        {
+                            foreach (var child in Children)
+                            {
+                                child.IsCheckedB = _isCheckedB;
+                            }
+                        }
+                    }
+
+                    if (Parent != null)
+                    {
+                        Parent.UpdateTreeCheck("B");
+                    }
+
+                    OnPropertyChanged("IsCheckedB");
+
+                    OnCheckChanged();
+
+                    reentrancyCheckB = false;
+                }
+            }
+        }
+
+
         public virtual bool GotValue
         {
             get => false;
         }
 
-        internal void UpdateTreeCheck()
+        internal void UpdateTreeCheck(string tree = "")
         {
-            var c = Children.Count(x => x.IsChecked == true);
-            var i = Children.Count(x => x.IsChecked == null);
+            switch(tree)
+            {
+                case "":
+                    {
+                        var c = Children.Count(x => x.IsChecked == true);
+                        var i = Children.Count(x => x.IsChecked == null);
 
-            if (c == 0 && i == 0)
-            {
-                IsChecked = false;
+                        if (c == 0 && i == 0)
+                        {
+                            IsChecked = false;
+                        }
+                        else if (c == Children.Count)
+                        {
+                            IsChecked = true;
+                        }
+                        else
+                        {
+                            IsChecked = null;
+                        }
+                    }
+                    break;
+
+                case "A":
+                    {
+                        var c = Children.Count(x => x.IsCheckedA == true);
+                        var i = Children.Count(x => x.IsCheckedA == null);
+
+                        if (c == 0 && i == 0)
+                        {
+                            IsCheckedA = false;
+                        }
+                        else if (c == Children.Count)
+                        {
+                            IsCheckedA = true;
+                        }
+                        else
+                        {
+                            IsCheckedA = null;
+                        }
+                    }
+                    break;
+
+                case "B":
+                    {
+                        var c = Children.Count(x => x.IsCheckedB == true);
+                        var i = Children.Count(x => x.IsCheckedB == null);
+
+                        if (c == 0 && i == 0)
+                        {
+                            IsCheckedB = false;
+                        }
+                        else if (c == Children.Count)
+                        {
+                            IsCheckedB = true;
+                        }
+                        else
+                        {
+                            IsCheckedB = null;
+                        }
+                    }
+                    break;
             }
-            else if (c == Children.Count)
-            {
-                IsChecked = true;
-            }
-            else
-            {
-                IsChecked = null;
-            }
+
+
         }
 
         protected void OnSelChanged(object sender, StateChangedEventArgs e)
         {
-            IsChecked = e.Selected;
+            IsChecked = e.Checked;
         }
 
         /// <summary>
@@ -179,7 +342,7 @@ namespace Snapshot
 
         protected virtual void OnCheckChanged()
         {
-
+            var dummy = 1;
         }
 
         public CTreeViewItemVM Parent

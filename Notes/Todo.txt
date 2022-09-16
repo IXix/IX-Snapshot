@@ -4,11 +4,10 @@ Some kind of slot manager
 	Commander style two pane interface
 	Each pane is like the machines pane in the main interface but needs to adjust item properties based on the selected slot for the pane.
 	Need to update the manager panels when SelA/SelB change
-	Need to sync the expanded property across the two panes
-		CTreeViewItem.IsExpanded needs to link to some property of the CMachineStateVM (probably)
-		Need to add an Expanded property somewhere.
-			Sensible place would be in groups as single properties can't be expanded.
-				Put the event handler stuff in a group base class
+	Need to work out how GotValue will work
+		How can we know which pane is asking and therefore which slot to use as the value source?
+					
+
 	Selection in manager needs to be separate from selection in main view
 		Currently IsChecked is linked to CPropertyBase.Selected
 		Need to either store it in CMachneStateVM or add A/B selectedness to CPropertyBase

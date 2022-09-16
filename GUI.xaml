@@ -272,11 +272,11 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding StatesA, UpdateSourceTrigger=PropertyChanged}">
+                <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.ItemContainerStyle>
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
                             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
@@ -290,7 +290,7 @@
 
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedA}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -298,7 +298,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedA}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -306,7 +306,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedA}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -314,7 +314,7 @@
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <CheckBox IsChecked="{Binding IsChecked}">
+                            <CheckBox IsChecked="{Binding IsCheckedA}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding DisplayName}" />
                                 </StackPanel>
@@ -322,11 +322,11 @@
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-                <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding StatesB, UpdateSourceTrigger=PropertyChanged}">
+                <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="2" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.ItemContainerStyle>
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
                             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
@@ -340,7 +340,7 @@
 
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedB}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -348,7 +348,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedB}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -356,7 +356,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedB}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -364,7 +364,7 @@
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <CheckBox IsChecked="{Binding IsChecked}">
+                            <CheckBox IsChecked="{Binding IsCheckedB}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding DisplayName}" />
                                 </StackPanel>
