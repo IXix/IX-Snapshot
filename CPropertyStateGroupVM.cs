@@ -7,8 +7,8 @@ namespace Snapshot
     {
         readonly CPropertyStateGroup _group;
 
-        public CPropertyStateGroupVM(CPropertyStateGroup group, CTreeViewItemVM parentMachine, CMachineStateVM stateVM)
-            : base(parentMachine, true, stateVM)
+        public CPropertyStateGroupVM(CPropertyStateGroup group, CTreeViewItemVM parentMachine, CSnapshotMachineVM ownerVM)
+            : base(parentMachine, true, ownerVM)
         {
             _group = group;
             IsChecked = false;
@@ -36,11 +36,43 @@ namespace Snapshot
             }
         }
 
+        public override bool GotValueA
+        {
+            get
+            {
+                try
+                {
+                    var c = Children.First(x => x.GotValueA == true);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public override bool GotValueB
+        {
+            get
+            {
+                try
+                {
+                    var c = Children.First(x => x.GotValueB == true);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         protected override void LoadChildren()
         {
             foreach (var p in _group.Children)
             {
-                Children.Add(new CPropertyStateVM(p, this, _stateVM));
+                Children.Add(new CPropertyStateVM(p, this, _ownerVM));
             }
         }
     }

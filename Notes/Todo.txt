@@ -1,19 +1,7 @@
 RestoreOnSlotChange works but can it be optimised?
 
-Some kind of slot manager
-	Commander style two pane interface
-	Each pane is like the machines pane in the main interface but needs to adjust item properties based on the selected slot for the pane.
-	Need to update the manager panels when SelA/SelB change
-	Need to work out how GotValue will work
-		How can we know which pane is asking and therefore which slot to use as the value source?
-					
-
-	Selection in manager needs to be separate from selection in main view
-		Currently IsChecked is linked to CPropertyBase.Selected
-		Need to either store it in CMachneStateVM or add A/B selectedness to CPropertyBase
-	Boldness of combo text for A/B slot select isn't working properly
-		Works to an extent but behaviour isn't right
-		Should be bold only when the relevant slot has data
+Manager interface
+	Need to update the A/B lists panels when SelA/SelB change
 
 	Maybe display stored values?
 		Maybe even edit values?

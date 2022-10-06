@@ -1,3 +1,7 @@
+2022.10.06
+	Changed constructor arguments for VM objects so everything has a reference to the main CSnapshotMachineVM
+	Implemented GotValueA/GotValueB
+
 2022.09.16
 	Rethinking how the manager treeviews will work.
 		We only have one collection of CMachineStateVM and all three treviews bind to that.

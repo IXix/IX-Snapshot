@@ -18,7 +18,7 @@ namespace Snapshot
 
             States = new ObservableCollection<CMachineStateVM>(
                 (from state in Owner.States
-                 select new CMachineStateVM(state, CurrentSlot))
+                 select new CMachineStateVM(state, this))
                 .ToList());
 
             Owner.PropertyChanged += OwnerPropertyChanged;
@@ -83,11 +83,15 @@ namespace Snapshot
             {
                 case "State":
                     NotifyPropertyChanged("CurrentSlot");
+                    NotifyPropertyChanged("SlotA");
+                    NotifyPropertyChanged("SlotB");
                     NotifyPropertyChanged("SlotName");
                     NotifyPropertyChanged("SelectionInfo");
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("GotValue");
+                        s.OnPropertyChanged("GotValueA");
+                        s.OnPropertyChanged("GotValueB");
                     }
                     break;
 
@@ -122,7 +126,7 @@ namespace Snapshot
 
         public void AddState(CMachineState state)
         {
-            States.Add(new CMachineStateVM(state, CurrentSlot));
+            States.Add(new CMachineStateVM(state, this));
         }
 
         public void RemoveState(CMachineState state)

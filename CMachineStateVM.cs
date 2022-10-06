@@ -11,13 +11,13 @@ namespace Snapshot
         public readonly CMachineState _state;
         public readonly int _trackCount;
 
-        public CMachineStateVM(CMachineState state, CMachineSnapshot reference)
-            : base(null, true, null)
+        public CMachineStateVM(CMachineState state, CSnapshotMachineVM ownerVM)
+            : base(null, true, ownerVM)
         {
             _state = state;
             _trackCount = _state.Machine.TrackCount;
             state.Machine.PropertyChanged += OnMachinePropertyChanged;
-            Source = reference;
+            OwnerVM = ownerVM;
             IsChecked = false;
             LoadChildren();
         }
@@ -58,7 +58,7 @@ namespace Snapshot
 
         public string Name => _state.Machine.Name;
 
-        public CMachineSnapshot Source { get; internal set; }
+        internal CSnapshotMachineVM OwnerVM { get; set; }
 
         public override bool GotValue
         {
@@ -66,7 +66,39 @@ namespace Snapshot
             {
                 try
                 {
-                    IPropertyState v = _state.AllProperties.First(x => Source.ContainsProperty(x));
+                    IPropertyState v = _state.AllProperties.First(x => OwnerVM.CurrentSlot.ContainsProperty(x));
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public override bool GotValueA
+        {
+            get
+            {
+                try
+                {
+                    IPropertyState v = _state.AllProperties.First(x => OwnerVM.SlotA.ContainsProperty(x));
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        public override bool GotValueB
+        {
+            get
+            {
+                try
+                {
+                    IPropertyState v = _state.AllProperties.First(x => OwnerVM.SlotB.ContainsProperty(x));
                     return true;
                 }
                 catch
@@ -80,25 +112,25 @@ namespace Snapshot
         {
             if (_state.DataState != null)
             {
-                var s = new CPropertyStateVM(_state.DataState, this, this);
+                var s = new CPropertyStateVM(_state.DataState, this, _ownerVM);
                 Children.Add(s);
             }
 
             if (_state.AttributeStates.Children.Count > 0)
             {
-                var s = new CPropertyStateGroupVM(_state.AttributeStates, this, this);
+                var s = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM);
                 Children.Add(s);
             }
 
             if (_state.GlobalStates.Children.Count > 0)
             {
-                var s = new CPropertyStateGroupVM(_state.GlobalStates, this, this);
+                var s = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM);
                 Children.Add(s);
             }
 
             if (_state.TrackStates.Children.Count > 0)
             {
-                var s = new CTrackPropertyStateGroupVM(_state.TrackStates, this, this);
+                var s = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM);
                 Children.Add(s);
             }
         }
@@ -127,7 +159,7 @@ namespace Snapshot
                     var track = _state.TrackStates.Children[0].Children.First(x => x.Track == count); // Count should be index of new track
                     foreach (var param in trackParams.Children)
                     {
-                        param.AddChild(new CPropertyStateVM(track, param, this));
+                        param.AddChild(new CPropertyStateVM(track, param, _ownerVM));
                         param.UpdateTreeCheck();
                     }
                 }
