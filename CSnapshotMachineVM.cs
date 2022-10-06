@@ -6,8 +6,8 @@ using System.Linq;
 
 namespace Snapshot
 {
-    // Main interaction for GUI
-    public class CSnapshotMachineVM : INotifyPropertyChanged
+        // Main interaction for GUI
+        public class CSnapshotMachineVM : INotifyPropertyChanged
     {
         public CSnapshotMachineVM(CMachine owner)
         {
@@ -19,16 +19,6 @@ namespace Snapshot
             States = new ObservableCollection<CMachineStateVM>(
                 (from state in Owner.States
                  select new CMachineStateVM(state, CurrentSlot))
-                .ToList());
-
-            StatesA = new ObservableCollection<CMachineStateVM>(
-                (from state in Owner.States
-                 select new CMachineStateVM(state, SlotA))
-                .ToList());
-
-            StatesB = new ObservableCollection<CMachineStateVM>(
-                (from state in Owner.States
-                 select new CMachineStateVM(state, SlotB))
                 .ToList());
 
             Owner.PropertyChanged += OwnerPropertyChanged;
@@ -99,40 +89,12 @@ namespace Snapshot
                     {
                         s.OnPropertyChanged("GotValue");
                     }
-                    if(Slot != SelA)
-                    {
-                        foreach (CMachineStateVM s in StatesA)
-                        {
-                            s.OnPropertyChanged("GotValue");
-                        }
-                    }
-                    if (Slot != SelB)
-                    {
-                        foreach (CMachineStateVM s in StatesB)
-                        {
-                            s.OnPropertyChanged("GotValue");
-                        }
-                    }
                     break;
 
                 case "Names":
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("Name");
-                    }
-                    if (Slot != SelA)
-                    {
-                        foreach (CMachineStateVM s in StatesA)
-                        {
-                            s.OnPropertyChanged("Name");
-                        }
-                    }
-                    if (Slot != SelB)
-                    {
-                        foreach (CMachineStateVM s in StatesB)
-                        {
-                            s.OnPropertyChanged("Name");
-                        }
                     }
                     break;
 
@@ -161,20 +123,14 @@ namespace Snapshot
         public void AddState(CMachineState state)
         {
             States.Add(new CMachineStateVM(state, CurrentSlot));
-            StatesA.Add(new CMachineStateVM(state, SlotA));
-            StatesB.Add(new CMachineStateVM(state, SlotB));
         }
 
         public void RemoveState(CMachineState state)
         {
             States.RemoveAt(States.FindIndex(x => x._state == state));
-            StatesA.RemoveAt(StatesA.FindIndex(x => x._state == state));
-            StatesB.RemoveAt(StatesB.FindIndex(x => x._state == state));
         }
 
         public ObservableCollection<CMachineStateVM> States { get; }
-        public ObservableCollection<CMachineStateVM> StatesA { get; }
-        public ObservableCollection<CMachineStateVM> StatesB { get; }
 
         #region Commands
         public SimpleCommand cmdCapture { get; private set; }
@@ -202,12 +158,7 @@ namespace Snapshot
             {
                 _selA = value;
                 SlotA = Owner.Slots[_selA];
-                foreach(var s in StatesA)
-                {
-                    s.Source = SlotA;
-                    s.OnPropertyChanged("GotValue");
-                }
-                NotifyPropertyChanged("StatesA");
+                NotifyPropertyChanged("States");
             }
         }
 
@@ -219,12 +170,7 @@ namespace Snapshot
             {
                 _selB = value;
                 SlotB = Owner.Slots[_selB];
-                foreach (var s in StatesB)
-                {
-                    s.Source = SlotB;
-                    s.OnPropertyChanged("GotValue");
-                }
-                NotifyPropertyChanged("StatesB");
+                NotifyPropertyChanged("States");
             }
         }
 

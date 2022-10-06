@@ -1,3 +1,9 @@
+2022.09.16
+	Rethinking how the manager treeviews will work.
+		We only have one collection of CMachineStateVM and all three treviews bind to that.
+		Still need to work out how to implement separate data sources for the GotValue property
+			Worst case we would have to add GotValueA and GotValueB but hopefully we can think of something more elegant.
+
 2022.02.24
 	Split ViewModel.cs into separate files. Got tired of scrolling.
 	Added CTreeViewVM._stateVM
