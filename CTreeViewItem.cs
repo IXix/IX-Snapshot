@@ -22,6 +22,7 @@ namespace Snapshot
         bool _isExpandedM;
         
         bool _isSelected;
+        bool _isSelectedM;
 
         bool? _isChecked;
         bool? _isCheckedA;
@@ -41,6 +42,8 @@ namespace Snapshot
             _isChecked = false;
             _isCheckedA = false;
             _isCheckedB = false;
+            _isSelected = false;
+            _isSelectedM = false;
             _children = new ObservableCollection<CTreeViewItemVM>();
         }
 
@@ -107,6 +110,19 @@ namespace Snapshot
                 {
                     _isSelected = value;
                     OnPropertyChanged("IsSelected");
+                }
+            }
+        }
+
+        public bool IsSelectedM
+        {
+            get { return _isSelectedM; }
+            set
+            {
+                if (value != _isSelectedM)
+                {
+                    _isSelectedM = value;
+                    OnPropertyChanged("IsSelectedM");
                 }
             }
         }

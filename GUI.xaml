@@ -277,7 +277,7 @@
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
                             <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
-                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelectedM, Mode=TwoWay}" />
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}"
@@ -327,7 +327,7 @@
                         <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
                         <Style TargetType="{x:Type TreeViewItem}">
                             <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
-                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelectedM, Mode=TwoWay}" />
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}"
