@@ -151,8 +151,40 @@ namespace Snapshot
         #endregion Commands
 
         #region Properties
-        public CMachineSnapshot SlotA { get; private set; }
-        public CMachineSnapshot SlotB { get; private set; }
+        private CMachineSnapshot _slotA;
+        public CMachineSnapshot SlotA
+        {
+            get { return _slotA; }
+            private set
+            {
+                _slotA = value;
+                NotifyPropertyChanged("SlotA");
+                if (States != null)
+                {
+                    foreach (CMachineStateVM s in States)
+                    {
+                        s.OnPropertyChanged("GotValueA");
+                    }
+                }
+            }
+        }
+        private CMachineSnapshot _slotB;
+        public CMachineSnapshot SlotB
+        {
+            get { return _slotB; }
+            private set
+            {
+                _slotB = value;
+                if (States != null)
+                {
+                    NotifyPropertyChanged("SlotB");
+                    foreach (CMachineStateVM s in States)
+                    {
+                        s.OnPropertyChanged("GotValueB");
+                    }
+                }
+            }
+        }
 
         private int _selA;
         public int SelA
@@ -162,7 +194,6 @@ namespace Snapshot
             {
                 _selA = value;
                 SlotA = Owner.Slots[_selA];
-                NotifyPropertyChanged("States");
             }
         }
 
@@ -174,7 +205,6 @@ namespace Snapshot
             {
                 _selB = value;
                 SlotB = Owner.Slots[_selB];
-                NotifyPropertyChanged("States");
             }
         }
 
