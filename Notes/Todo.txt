@@ -1,13 +1,21 @@
 RestoreOnSlotChange works but can it be optimised?
 
 Manager interface
-	Need to update the A/B lists panels when SelA/SelB change
+	A/B panes should individually be able to capture, clear, purge etc. same as the main interface
+	Manager requires a set of all/none/stored/invert buttons to manipulate property selection
+
+		Should we allow restore of A/B as well?
 
 	Maybe display stored values?
 		Maybe even edit values?
 	Set current slot (maybe an "Activate" button for each pane)
+		Setting A/B as the current slot would enable MIDI control
 	Copy/paste/duplicate/clear slots
 	Morphing?
+
+Need to enable renaming of slots
+	Doing so via the slot combo was glitchy before. It was ditched because we didn't want to spend ages fixing it.
+	Time to try again.
 
 Inertia for parameter changes
 	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.

@@ -1,3 +1,8 @@
+2022.10.10
+	Manager A/B panes now showing correct state
+	Synchronised IsChecked for A/B panes
+		Replaced IsCheckedA and IsCheckedB with IsCheckedM
+
 2022.10.06
 	Changed constructor arguments for VM objects so everything has a reference to the main CSnapshotMachineVM
 	Implemented GotValueA/GotValueB

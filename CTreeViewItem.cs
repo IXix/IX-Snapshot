@@ -25,7 +25,7 @@ namespace Snapshot
         bool _isSelectedM;
 
         bool? _isChecked;
-        bool? _isCheckedA;
+        bool? _isCheckedM;
         bool? _isCheckedB;
         
         bool _preventManualIndeterminate;
@@ -40,7 +40,7 @@ namespace Snapshot
             _ownerVM = ownerVM;
             _preventManualIndeterminate = preventManualIndeterminate;
             _isChecked = false;
-            _isCheckedA = false;
+            _isCheckedM = false;
             _isCheckedB = false;
             _isSelected = false;
             _isSelectedM = false;
@@ -137,11 +137,8 @@ namespace Snapshot
                 if(_isChecked == null)
                     IsChecked = false; // force this and any children to be unchecked.
 
-                if (_isCheckedA == null)
-                    IsCheckedA = false; // force this and any children to be unchecked.
-
-                if (_isCheckedB == null)
-                    IsCheckedB = false; // force this and any children to be unchecked.
+                if (_isCheckedM == null)
+                    IsCheckedM = false; // force this and any children to be unchecked.
             }
         }
 
@@ -189,19 +186,19 @@ namespace Snapshot
             }
         }
 
-        private bool reentrancyCheckA = false;
-        public bool? IsCheckedA
+        private bool reentrancyCheckM = false;
+        public bool? IsCheckedM
         {
-            get { return _isCheckedA; }
+            get { return _isCheckedM; }
             set
             {
-                if (value != _isCheckedA)
+                if (value != _isCheckedM)
                 {
-                    if (reentrancyCheckA) return;
+                    if (reentrancyCheckM) return;
 
-                    reentrancyCheckA = true;
+                    reentrancyCheckM = true;
 
-                    _isCheckedA = value;
+                    _isCheckedM = value;
 
                     if (value != null)
                     {
@@ -210,65 +207,24 @@ namespace Snapshot
                         {
                             foreach (var child in Children)
                             {
-                                child.IsCheckedA = _isCheckedA;
+                                child.IsCheckedM = _isCheckedM;
                             }
                         }
                     }
 
                     if (Parent != null)
                     {
-                        Parent.UpdateTreeCheck("A");
+                        Parent.UpdateTreeCheck("M");
                     }
 
-                    OnPropertyChanged("IsCheckedA");
+                    OnPropertyChanged("IsCheckedM");
 
                     OnCheckChanged();
 
-                    reentrancyCheckA = false;
+                    reentrancyCheckM = false;
                 }
             }
         }
-
-        private bool reentrancyCheckB = false;
-        public bool? IsCheckedB
-        {
-            get { return _isCheckedB; }
-            set
-            {
-                if (value != _isCheckedB)
-                {
-                    if (reentrancyCheckB) return;
-
-                    reentrancyCheckB = true;
-
-                    _isCheckedB = value;
-
-                    if (value != null)
-                    {
-
-                        if (Children != null)
-                        {
-                            foreach (var child in Children)
-                            {
-                                child.IsCheckedB = _isCheckedB;
-                            }
-                        }
-                    }
-
-                    if (Parent != null)
-                    {
-                        Parent.UpdateTreeCheck("B");
-                    }
-
-                    OnPropertyChanged("IsCheckedB");
-
-                    OnCheckChanged();
-
-                    reentrancyCheckB = false;
-                }
-            }
-        }
-
 
         public virtual bool GotValue
         {
@@ -309,42 +265,22 @@ namespace Snapshot
                     }
                     break;
 
-                case "A":
+                case "M":
                     {
-                        var c = Children.Count(x => x.IsCheckedA == true);
-                        var i = Children.Count(x => x.IsCheckedA == null);
+                        var c = Children.Count(x => x.IsCheckedM == true);
+                        var i = Children.Count(x => x.IsCheckedM == null);
 
                         if (c == 0 && i == 0)
                         {
-                            IsCheckedA = false;
+                            IsCheckedM = false;
                         }
                         else if (c == Children.Count)
                         {
-                            IsCheckedA = true;
+                            IsCheckedM = true;
                         }
                         else
                         {
-                            IsCheckedA = null;
-                        }
-                    }
-                    break;
-
-                case "B":
-                    {
-                        var c = Children.Count(x => x.IsCheckedB == true);
-                        var i = Children.Count(x => x.IsCheckedB == null);
-
-                        if (c == 0 && i == 0)
-                        {
-                            IsCheckedB = false;
-                        }
-                        else if (c == Children.Count)
-                        {
-                            IsCheckedB = true;
-                        }
-                        else
-                        {
-                            IsCheckedB = null;
+                            IsCheckedM = null;
                         }
                     }
                     break;

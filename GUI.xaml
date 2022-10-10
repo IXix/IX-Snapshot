@@ -288,7 +288,7 @@
 
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedA}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -296,7 +296,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedA}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -304,7 +304,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedA}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -312,7 +312,7 @@
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <CheckBox IsChecked="{Binding IsCheckedA}">
+                            <CheckBox IsChecked="{Binding IsCheckedM}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding DisplayName}" />
                                 </StackPanel>
@@ -337,7 +337,7 @@
 
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedB}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -345,7 +345,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedB}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -353,7 +353,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedB}" Click="OnThreeStateClick">
+                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding Name}" />
                                 </StackPanel>
@@ -361,7 +361,7 @@
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <CheckBox IsChecked="{Binding IsCheckedB}">
+                            <CheckBox IsChecked="{Binding IsCheckedM}">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding DisplayName}" />
                                 </StackPanel>
