@@ -2,9 +2,11 @@ RestoreOnSlotChange works but can it be optimised?
 
 Manager interface
 	A/B panes should individually be able to capture, clear, purge etc. same as the main interface
-	Manager requires a set of all/none/stored/invert buttons to manipulate property selection
+	How best to implement select all/none/invert for manager?
+		a. Alter current SimpleCommand system to take a command parameter
+		b. Implement separate commands for these things
 
-		Should we allow restore of A/B as well?
+	Should we allow restore of A/B as well?
 
 	Maybe display stored values?
 		Maybe even edit values?

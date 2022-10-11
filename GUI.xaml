@@ -43,6 +43,18 @@
                 <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </DataTemplate>
+        
+        <!-- Main TreeViewItems-->
+        <Style x:Key="tvi_main" TargetType="{x:Type TreeViewItem}">
+            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
 
         <!-- Manager TreeViewItems -->
         <Style x:Key="tvi_manager" TargetType="{x:Type TreeViewItem}">
@@ -64,11 +76,8 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-
-
-        
-        
     </UserControl.Resources>
+    
     <TabControl>
         <TabItem Header="Main">
             <Grid x:Name="MainGrid" MinHeight="200" Margin="0,0,0,8">
@@ -82,21 +91,7 @@
                             <RowDefinition/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TreeView x:Name="MachineList" Grid.Row="0" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
-                            <TreeView.ItemContainerStyle>
-                                <!-- This Style binds a TreeViewItem to a TreeViewItemViewModel. -->
-                                <Style TargetType="{x:Type TreeViewItem}">
-                                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                                    <Setter Property="FontWeight" Value="Normal" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="FontWeight" Value="Bold"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TreeView.ItemContainerStyle>
-
+                        <TreeView x:Name="MachineList" Grid.Row="0" ItemContainerStyle="{StaticResource tvi_main}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                                     <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
