@@ -1,15 +1,23 @@
 RestoreOnSlotChange works but can it be optimised?
 
 Manager interface
+	Implement display of captured values
+		This will make it easier to see whether copying A to B is working.
+
 	A/B panes should individually be able to capture, clear, purge etc. same as the main interface
+	
 
 	Should we allow restore of A/B as well?
 
-	Display stored values
-		Maybe even edit values?
+	Editing values would be nice.
+		Would have to make sure input was properly validated for the selected property
+		Machine data values would have to be non-editable
+
 	Set current slot (maybe an "Activate" button for each pane)
 		Setting A/B as the current slot would enable MIDI control
+
 	Copy/paste/duplicate/clear slots
+
 	Morphing?
 
 Need to enable renaming of slots

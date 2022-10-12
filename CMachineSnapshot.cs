@@ -63,6 +63,26 @@ namespace Snapshot
             return StoredProperties.Exists(x => x.Parent == s);
         }
 
+        public string GetPropertyValue(IPropertyState p)
+        {
+            if (!ContainsProperty(p)) return "";
+
+            switch (p.GetType().Name)
+            {
+                case "CParameterState":
+                    return "FIXME - Param";
+
+                case "CAttributeState":
+                        return "FIXME - Attr";
+
+                case "CDataState":
+                    return DataValues[(p as CDataState)].Length.ToString();
+
+                default:
+                    return "Wuh??";
+            }
+        }
+
         public int GetPropertySize(CPropertyBase p)
         {
             if (!ContainsProperty(p)) return 0;

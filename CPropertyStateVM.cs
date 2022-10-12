@@ -47,6 +47,21 @@ namespace Snapshot
             get { return _ownerVM.SlotB.ContainsProperty(_property); }
         }
 
+        public override string Value
+        {
+            get { return _ownerVM.CurrentSlot.GetPropertyValue(_property); }
+        }
+
+        public override string ValueA
+        {
+            get { return _ownerVM.SlotA.GetPropertyValue(_property); }
+        }
+
+        public override string ValueB
+        {
+            get { return _ownerVM.SlotB.GetPropertyValue(_property); }
+        }
+
         protected override void OnCheckChanged()
         {
             _property.Selected = (bool)IsChecked;

@@ -239,6 +239,21 @@ namespace Snapshot
             get => false;
         }
 
+        public virtual string Value
+        {
+            get => "";
+        }
+
+        public virtual string ValueA
+        {
+            get => "";
+        }
+
+        public virtual string ValueB
+        {
+            get => "";
+        }
+
         internal void UpdateTreeCheck(string tree = "")
         {
             switch(tree)
