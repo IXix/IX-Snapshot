@@ -26,7 +26,6 @@ namespace Snapshot
 
         bool? _isChecked;
         bool? _isCheckedM;
-        bool? _isCheckedB;
         
         bool _preventManualIndeterminate;
         
@@ -41,7 +40,6 @@ namespace Snapshot
             _preventManualIndeterminate = preventManualIndeterminate;
             _isChecked = false;
             _isCheckedM = false;
-            _isCheckedB = false;
             _isSelected = false;
             _isSelectedM = false;
             _children = new ObservableCollection<CTreeViewItemVM>();
@@ -292,6 +290,7 @@ namespace Snapshot
         protected void OnSelChanged(object sender, StateChangedEventArgs e)
         {
             IsChecked = e.Checked;
+            IsCheckedM = e.Checked_M;
         }
 
         /// <summary>

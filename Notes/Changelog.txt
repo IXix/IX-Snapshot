@@ -1,3 +1,6 @@
+2022.10.12
+	Buttons for manager selection operations
+
 2022.10.11
 	XAML improvements
 		Various treeview/combobox styles and data templates converted to usercontrol resources

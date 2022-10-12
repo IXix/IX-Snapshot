@@ -22,6 +22,7 @@ namespace Snapshot
         {
             _property = property;
             IsChecked = _property.Selected;
+            IsCheckedM = _property.Selected_M;
             _property.SelChanged += OnSelChanged;
             _property.SizeChanged += OnSizeChanged;
         }
@@ -49,7 +50,8 @@ namespace Snapshot
         protected override void OnCheckChanged()
         {
             _property.Selected = (bool)IsChecked;
-            _property.OnSelChanged(new StateChangedEventArgs() { Property = _property, Checked = _property.Selected });
+            _property.Selected_M = (bool)IsCheckedM;
+            _property.OnSelChanged(new StateChangedEventArgs() { Property = _property, Checked = _property.Selected, Checked_M = _property.Selected_M });
         }
 
         public string Name => _property.Name;

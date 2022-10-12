@@ -312,6 +312,30 @@ namespace Snapshot
             }
         }
 
+        public void SelectAll_M()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected_M = true;
+            }
+        }
+
+        public void SelectNone_M()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected_M = false;
+            }
+        }
+
+        public void SelectInvert_M()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected_M = !s.Selected_M;
+            }
+        }
+
         internal void MapCommand(string command, bool specific)
         {
             // Find the command

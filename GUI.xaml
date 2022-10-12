@@ -237,11 +237,15 @@
                 </ComboBox>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
                     <Button x:Name="CopyBtoA">
-                        <TextBlock Text="&lt;" />
+                        <TextBlock Text="&lt;&lt;" />
                     </Button>
                     <Button x:Name="CopyAtoB">
-                        <TextBlock Text="&gt;" />
+                        <TextBlock Text="&gt;&gt;" />
                     </Button>
+                    <Separator Height="9" />
+                    <Button x:Name="btnSelectAll_M" Command="{Binding cmdSelectAll_M}" MinWidth="30" Padding="3,1" ToolTip="Select all properties.">A</Button>
+                    <Button x:Name="btnSelectNone_M" Command="{Binding cmdSelectNone_M}" MinWidth="30" Padding="3,1" ToolTip="Deselect all properties.">N</Button>
+                    <Button x:Name="btnSelectInvert_M" Command="{Binding cmdSelectInvert_M}" MinWidth="30" Padding="3,1" ToolTip="Invert the selection.">I</Button>
                 </StackPanel>
                 <ComboBox Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" ToolTip="Select slot B." >
                     <ComboBox.Style>
@@ -325,6 +329,11 @@
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
+                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="0">
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+
+                    </StackPanel>
+                </StackPanel>
             </Grid>
         </TabItem>
     </TabControl>

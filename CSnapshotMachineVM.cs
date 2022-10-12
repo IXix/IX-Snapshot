@@ -75,6 +75,18 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.SelectInvert()
             };
+            cmdSelectAll_M = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectAll_M()
+            };
+            cmdSelectNone_M = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectNone_M()
+            };
+            cmdSelectInvert_M = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectInvert_M()
+            };
         }
 
         private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -148,6 +160,9 @@ namespace Snapshot
         public SimpleCommand cmdSelectNone { get; private set; }
         public SimpleCommand cmdSelectStored { get; private set; }
         public SimpleCommand cmdSelectInvert { get; private set; }
+        public SimpleCommand cmdSelectAll_M { get; private set; }
+        public SimpleCommand cmdSelectNone_M { get; private set; }
+        public SimpleCommand cmdSelectInvert_M { get; private set; }
         #endregion Commands
 
         #region Properties

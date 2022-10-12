@@ -16,6 +16,7 @@ namespace Snapshot
     {
         public IPropertyState Property { get; set; }
         public bool? Checked { get; set; }
+        public bool? Checked_M { get; set; }
         public bool Selected { get; set; }
     }
 
@@ -28,6 +29,7 @@ namespace Snapshot
     public interface ISelectable : INamed
     {
         bool Selected { get; set; }
+        bool Selected_M { get; set; }
         event EventHandler<StateChangedEventArgs> SelChanged;
         void OnSelChanged(StateChangedEventArgs e);
     }
@@ -92,7 +94,21 @@ namespace Snapshot
                 if(m_selected != value)
                 {
                     m_selected = value;
-                    OnSelChanged(new StateChangedEventArgs() { Property = this, Checked = Selected });
+                    OnSelChanged(new StateChangedEventArgs() { Property = this, Checked = Selected, Checked_M = Selected_M });
+                }
+            }
+        }
+
+        protected bool m_selected_M;
+        virtual public bool Selected_M
+        {
+            get => m_selected_M;
+            set
+            {
+                if (m_selected_M != value)
+                {
+                    m_selected_M = value;
+                    OnSelChanged(new StateChangedEventArgs() { Property = this, Checked = Selected, Checked_M = Selected_M });
                 }
             }
         }
