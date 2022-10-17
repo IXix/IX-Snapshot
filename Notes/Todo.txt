@@ -1,7 +1,5 @@
 RestoreOnSlotChange works but can it be optimised?
 
-Update TreeView item DisplayName on capture/clear
-
 Manager interface
 	Implement display of captured values
 		This will make it easier to see whether copying A to B is working.

@@ -65,7 +65,7 @@ namespace Snapshot
 
         public string GetPropertyDisplayValue(IPropertyState p)
         {
-            if (!ContainsProperty(p)) return p.Name + " #" + p.GetHashCode().ToString();
+            if (!ContainsProperty(p)) return "";
 
             switch (p.GetType().Name)
             {
@@ -73,7 +73,7 @@ namespace Snapshot
                     return " (" + ParameterValues.First(x => x.Key == p).Value.Item2.ToString() + ")";
 
                 case "CAttributeState":
-                        return "FIXME - Attr";
+                    return " (" + AttributeValues.First(x => x.Key == p).Value.ToString() + ")";
 
                 case "CDataState":
                     return " (" + DataValues[(p as CDataState)].Length.ToString() + ")";

@@ -104,6 +104,9 @@ namespace Snapshot
                         s.OnPropertyChanged("GotValue");
                         s.OnPropertyChanged("GotValueA");
                         s.OnPropertyChanged("GotValueB");
+                        s.OnPropertyChanged("DisplayValue");
+                        s.OnPropertyChanged("DisplayValueA");
+                        s.OnPropertyChanged("DisplayValueB");
                     }
                     break;
 
