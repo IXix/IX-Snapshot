@@ -39,6 +39,34 @@ namespace Snapshot
 
         public CMachineSnapshot CurrentSlot => _slots[_slot];
 
+        public CMachineSnapshot SlotA => _slots[_slotA];
+        public int SelA
+        {
+            get { return _slotA; }
+            set
+            {
+                if(_slotA != value)
+                {
+                    _slotA = value;
+                    OnPropertyChanged("SlotA");
+                }
+            }
+        }
+        
+        public CMachineSnapshot SlotB => _slots[_slotB];
+        public int SelB
+        {
+            get { return _slotB; }
+            set
+            {
+                if (_slotB != value)
+                {
+                    _slotB = value;
+                    OnPropertyChanged("SlotB");
+                }
+            }
+        }
+
         public string SlotName
         {
             get => CurrentSlot.Name;
@@ -216,6 +244,7 @@ namespace Snapshot
             _confirmClear = true;
 
             _slots = new List<CMachineSnapshot>();
+            _slot = _slotA = _slotB = 0;
             for (int i = 0; i < 128; i++)
             {
                 _slots.Add(new CMachineSnapshot(this, i));
@@ -334,6 +363,28 @@ namespace Snapshot
             {
                 s.Selected_M = !s.Selected_M;
             }
+        }
+
+        public void CopyAtoB()
+        {
+            var SlotTemp = new CMachineSnapshot(SlotA);
+            SlotTemp.AttributeValues.Remove(x => x.Selected_M == false);
+            SlotTemp.ParameterValues.Remove(x => x.Selected_M == false);
+            SlotTemp.DataValues.Remove(x => x.Selected_M == false);
+            SlotTemp.StoredProperties.RemoveAll(x => x.Selected_M == false);
+            SlotB.CopyFrom(SlotTemp);
+            OnPropertyChanged("SlotB");
+        }
+
+        public void CopyBtoA()
+        {
+            var SlotTemp = new CMachineSnapshot(SlotB);
+            SlotTemp.AttributeValues.Remove(x => x.Selected_M == false);
+            SlotTemp.ParameterValues.Remove(x => x.Selected_M == false);
+            SlotTemp.DataValues.Remove(x => x.Selected_M == false);
+            SlotTemp.StoredProperties.RemoveAll(x => x.Selected_M == false);
+            SlotA.CopyFrom(SlotTemp);
+            OnPropertyChanged("SlotA");
         }
 
         internal void MapCommand(string command, bool specific)
@@ -743,7 +794,9 @@ namespace Snapshot
 
         #region Global Parameters
         // Global params
-        int _slot;
+        internal int _slot;
+        internal int _slotA;
+        internal int _slotB;
         private CMappingDialog _mappingDialog;
 
         [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 0, Description = "Active slot", Name = "Slot")]

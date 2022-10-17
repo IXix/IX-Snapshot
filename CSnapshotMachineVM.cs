@@ -13,18 +13,12 @@ namespace Snapshot
         {
             Owner = owner;
 
-            SlotA = Slots[0];
-            SlotB = Slots[0];
-
             States = new ObservableCollection<CMachineStateVM>(
                 (from state in Owner.States
                  select new CMachineStateVM(state, this))
                 .ToList());
 
             Owner.PropertyChanged += OwnerPropertyChanged;
-
-            SelA = 0;
-            SelB = 0;
 
             cmdCapture = new SimpleCommand
             {
@@ -87,6 +81,14 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.SelectInvert_M()
             };
+            cmdAtoB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.CopyAtoB()
+            };
+            cmdBtoA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.CopyBtoA()
+            };
         }
 
         private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -114,6 +116,24 @@ namespace Snapshot
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("Name");
+                    }
+                    break;
+
+                case "SlotA":
+                    NotifyPropertyChanged("SlotA");
+                    foreach (CMachineStateVM s in States)
+                    {
+                        s.OnPropertyChanged("GotValueA");
+                        s.OnPropertyChanged("DisplayValueA");
+                    }
+                    break;
+
+                case "SlotB":
+                    NotifyPropertyChanged("SlotB");
+                    foreach (CMachineStateVM s in States)
+                    {
+                        s.OnPropertyChanged("GotValueB");
+                        s.OnPropertyChanged("DisplayValueB");
                     }
                     break;
 
@@ -166,67 +186,36 @@ namespace Snapshot
         public SimpleCommand cmdSelectAll_M { get; private set; }
         public SimpleCommand cmdSelectNone_M { get; private set; }
         public SimpleCommand cmdSelectInvert_M { get; private set; }
+        public SimpleCommand cmdAtoB { get; private set; }
+        public SimpleCommand cmdBtoA { get; private set; }
         #endregion Commands
 
         #region Properties
-        private CMachineSnapshot _slotA;
-        public CMachineSnapshot SlotA
-        {
-            get { return _slotA; }
-            private set
-            {
-                _slotA = value;
-                NotifyPropertyChanged("SlotA");
-                if (States != null)
-                {
-                    foreach (CMachineStateVM s in States)
-                    {
-                        s.OnPropertyChanged("GotValueA");
-                    }
-                }
-            }
-        }
-        private CMachineSnapshot _slotB;
-        public CMachineSnapshot SlotB
-        {
-            get { return _slotB; }
-            private set
-            {
-                _slotB = value;
-                if (States != null)
-                {
-                    NotifyPropertyChanged("SlotB");
-                    foreach (CMachineStateVM s in States)
-                    {
-                        s.OnPropertyChanged("GotValueB");
-                    }
-                }
-            }
-        }
 
-        private int _selA;
+        public CMachineSnapshot SlotA => Owner.SlotA;
+
+        public CMachineSnapshot SlotB => Owner.SlotB;
+
         public int SelA
         {
-            get { return _selA; }
+            get { return Owner.SelA; }
             set
             {
-                _selA = value;
-                SlotA = Owner.Slots[_selA];
+                Owner.SelA = value;
             }
         }
 
-        private int _selB;
         public int SelB
         {
-            get { return _selB; }
+            get { return Owner.SelB; }
             set
             {
-                _selB = value;
-                SlotB = Owner.Slots[_selB];
+                Owner.SelB = value;
             }
         }
 
         public CMachineSnapshot CurrentSlot => Owner.CurrentSlot;
+
         public int Slot
         {
             get => Owner.Slot;

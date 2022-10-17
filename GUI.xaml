@@ -28,7 +28,7 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Margin" Value="5,0" />
         </Style>
-        
+
         <!-- Slot ComboBox items-->
         <Style x:Key="cbi_slots" TargetType="ComboBoxItem">
             <Setter Property="FontWeight" Value="Normal" />
@@ -51,7 +51,7 @@
             <Setter Property="FontWeight" Value="Normal" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -237,10 +237,10 @@
                     </ComboBox.Style>
                 </ComboBox>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
-                    <Button x:Name="CopyBtoA">
+                    <Button x:Name="CopyBtoA" Command="{Binding cmdBtoA}">
                         <TextBlock Text="&lt;&lt;" />
                     </Button>
-                    <Button x:Name="CopyAtoB">
+                    <Button x:Name="CopyAtoB" Command="{Binding cmdAtoB}">
                         <TextBlock Text="&gt;&gt;" />
                     </Button>
                     <Separator Height="9" />

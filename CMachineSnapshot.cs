@@ -22,6 +22,17 @@ namespace Snapshot
             StoredProperties = new List<IPropertyState>();
         }
 
+        public CMachineSnapshot(CMachineSnapshot src)
+        {
+            m_owner = src.m_owner;
+            Name = src.Name + " copy";
+            Index = src.Index;
+            AttributeValues = new Dictionary<CAttributeState, int>(src.AttributeValues);
+            ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>(src.ParameterValues);
+            DataValues = new Dictionary<CDataState, byte[]>(src.DataValues);
+            StoredProperties = new List<IPropertyState>(src.StoredProperties);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public virtual void OnPropertyChanged(string propertyName)
         {
@@ -30,10 +41,10 @@ namespace Snapshot
         }
 
         private readonly CMachine m_owner;
-        readonly Dictionary<CAttributeState, int /*value*/> AttributeValues;
-        readonly Dictionary<CParameterState, Tuple<int /*track*/, int /*value*/>> ParameterValues;
-        readonly Dictionary<CDataState, byte[] /*value*/> DataValues;
-        public List<IPropertyState> StoredProperties { get; private set; }
+        internal Dictionary<CAttributeState, int /*value*/> AttributeValues;
+        internal Dictionary<CParameterState, Tuple<int /*track*/, int /*value*/>> ParameterValues;
+        internal Dictionary<CDataState, byte[] /*value*/> DataValues;
+        public List<IPropertyState> StoredProperties { get; internal set; }
 
         public int Index { get; private set; }
 
@@ -120,6 +131,27 @@ namespace Snapshot
 
         // How many properties are stored that are inactive (machine deleted)
         public int DeletedCount => StoredProperties.Count(x => x.Active == false);
+
+        public void CopyFrom(CMachineSnapshot src)
+        {
+            foreach(KeyValuePair<CAttributeState, int> p in src.AttributeValues)
+            {
+                AttributeValues.Add(p.Key, p.Value);
+                StoredProperties.Add(p.Key);
+            }
+
+            foreach (KeyValuePair<CParameterState, Tuple<int, int>> p in src.ParameterValues)
+            {
+                ParameterValues.Add(p.Key, p.Value);
+                StoredProperties.Add(p.Key);
+            }
+
+            foreach(var p in src.DataValues)
+            {
+                DataValues.Add(p.Key, p.Value);
+                StoredProperties.Add(p.Key);
+            }
+        }
 
         public void Capture()
         {
