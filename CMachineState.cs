@@ -462,11 +462,13 @@ namespace Snapshot
                 {
                     while(delta > 0) // Not sure if this is necessary. Can multiple tracks be added at once?
                     {
+                        int newIndex = newCount - delta;
                         foreach (var g in TrackStates.Children) // for each track param
                         {
-                            IParameter p = (g.Children.First() as CParameterState).Parameter;
+                            int gIndex = (g.Children.First() as CParameterState).Parameter.IndexInGroup;
+                            var tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
 
-                            CParameterState ps = new CParameterState(_owner, this, p, newCount - delta);
+                            CParameterState ps = new CParameterState(_owner, this, tracks.Parameters[gIndex], newIndex);
                             g.Children.Add(ps);
                             _allProperties.Add(ps);
                         }

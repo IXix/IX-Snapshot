@@ -239,17 +239,17 @@ namespace Snapshot
             get => false;
         }
 
-        public virtual string Value
+        public virtual string DisplayValue
         {
             get => "";
         }
 
-        public virtual string ValueA
+        public virtual string DisplayValueA
         {
             get => "";
         }
 
-        public virtual string ValueB
+        public virtual string DisplayValueB
         {
             get => "";
         }

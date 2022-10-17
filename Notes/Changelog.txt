@@ -1,3 +1,7 @@
+2022.10.17
+	Fixed incorrect tree structure for track params
+	More work on displaying property values
+
 2022.10.12
 	Buttons for manager selection operations
 	Started work on displaying property values

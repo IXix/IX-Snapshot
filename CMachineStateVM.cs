@@ -156,12 +156,26 @@ namespace Snapshot
                 }
                 else if (delta > 0) // track(s?) added
                 {
-                    var track = _state.TrackStates.Children[0].Children.First(x => x.Track == count); // Count should be index of new track
-                    foreach (var param in trackParams.Children)
+                    /*
+                     * This is wrong. Adding the same property 'track' to all the groups.
+                     * 'track' needs to iterate too
+                     */
+                    //var track = _state.TrackStates.Children[0].Children.First(x => x.Track == count); // Count should be index of new track
+                    //foreach (var param in trackParams.Children)
+                    //{
+                    //    param.AddChild(new CPropertyStateVM(track, param, _ownerVM));
+                    //    param.UpdateTreeCheck();
+                    //}
+
+                    int index = 0;
+                    foreach(var param in _state.TrackStates.Children)
                     {
-                        param.AddChild(new CPropertyStateVM(track, param, _ownerVM));
-                        param.UpdateTreeCheck();
+                        var property = param.Children.First(x => x.Track == count); // Count should be index of new track
+                        var paramVM = trackParams.Children[index];
+                        paramVM.AddChild(new CPropertyStateVM(property, paramVM, _ownerVM));
+                        index++;
                     }
+
                 }
             }
             catch

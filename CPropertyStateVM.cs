@@ -47,19 +47,19 @@ namespace Snapshot
             get { return _ownerVM.SlotB.ContainsProperty(_property); }
         }
 
-        public override string Value
+        public override string DisplayValue
         {
-            get { return _ownerVM.CurrentSlot.GetPropertyValue(_property); }
+            get { return _ownerVM.CurrentSlot.GetPropertyDisplayValue(_property); }
         }
 
-        public override string ValueA
+        public override string DisplayValueA
         {
-            get { return _ownerVM.SlotA.GetPropertyValue(_property); }
+            get { return _ownerVM.SlotA.GetPropertyDisplayValue(_property); }
         }
 
-        public override string ValueB
+        public override string DisplayValueB
         {
-            get { return _ownerVM.SlotB.GetPropertyValue(_property); }
+            get { return _ownerVM.SlotB.GetPropertyDisplayValue(_property); }
         }
 
         protected override void OnCheckChanged()
