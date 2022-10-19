@@ -74,6 +74,42 @@ namespace Snapshot
             return StoredProperties.Exists(x => x.Parent == s);
         }
 
+        public void SetPropertyValue(CPropertyBase p, int value)
+        {
+            switch (p.GetType().Name)
+            {
+                case "CParameterState":
+                    {
+                        var key = p as CParameterState;
+                        try
+                        {
+                            var track = ParameterValues[key].Item1;
+                            ParameterValues[key] = new Tuple<int, int>(track, value) ;
+                        }
+                        catch
+                        {
+                            var track = key.Track.HasValue ? p.Track.Value : -1;
+                            ParameterValues.Add(key, new Tuple<int, int>(track, value));
+                            StoredProperties.Add(p);
+                        }
+                    }
+                    break;
+
+                case "CAttributeState":
+                    {
+                        // FIXME
+                    }
+                    break;
+
+                case "CDataState":
+                    // FIXME: Careful. Null to signify empty. Anyhting else is dodgy.
+                    return;
+
+                default:
+                    break;
+            }
+        }
+
         public string GetPropertyDisplayValue(IPropertyState p)
         {
             if (!ContainsProperty(p)) return "";
@@ -136,20 +172,62 @@ namespace Snapshot
         {
             foreach(KeyValuePair<CAttributeState, int> p in src.AttributeValues)
             {
-                AttributeValues.Add(p.Key, p.Value);
-                StoredProperties.Add(p.Key);
+                if (p.Value == -1)
+                {
+                    AttributeValues.Remove(p.Key);
+                }
+                else
+                {
+                    try
+                    {
+                        AttributeValues.Add(p.Key, p.Value);
+                        StoredProperties.Add(p.Key);
+                    }
+                    catch
+                    {
+                        AttributeValues[p.Key] = p.Value;
+                    }
+                }
             }
 
             foreach (KeyValuePair<CParameterState, Tuple<int, int>> p in src.ParameterValues)
             {
-                ParameterValues.Add(p.Key, p.Value);
-                StoredProperties.Add(p.Key);
+                if (p.Value.Item2 == -1)
+                {
+                    ParameterValues.Remove(p.Key);
+                }
+                else
+                {
+                    try
+                    {
+                        ParameterValues.Add(p.Key, p.Value);
+                        StoredProperties.Add(p.Key);
+                    }
+                    catch
+                    {
+                        ParameterValues[p.Key] = p.Value;
+                    }
+                }
             }
 
             foreach(var p in src.DataValues)
             {
-                DataValues.Add(p.Key, p.Value);
-                StoredProperties.Add(p.Key);
+                if (p.Value == null)
+                {
+                    DataValues.Remove(p.Key);
+                }
+                else
+                {
+                    try
+                    {
+                        DataValues.Add(p.Key, p.Value);
+                        StoredProperties.Add(p.Key);
+                    }
+                    catch
+                    {
+                        DataValues[p.Key] = p.Value;
+                    }
+                }
             }
         }
 
@@ -198,7 +276,7 @@ namespace Snapshot
                 {
                     try
                     {
-                        int value = AttributeValues[s];
+                        int? value = AttributeValues[s];
                     }
                     catch
                     {
@@ -314,6 +392,39 @@ namespace Snapshot
             }
 
             OnPropertyChanged("HasData");
+        }
+
+        internal void RemoveProperty(IPropertyState p)
+        {
+            if (!ContainsProperty(p)) return;
+            
+            switch (p.GetType().Name)
+            {
+                case "CParameterState":
+                    {
+                        var key = p as CParameterState;
+                        ParameterValues.Remove(key);
+                    }
+                    break;
+
+                case "CAttributeState":
+                    {
+                        var key = p as CAttributeState;
+                        AttributeValues.Remove(key);
+                    }
+                    break;
+
+                case "CDataState":
+                    {
+                        var key = p as CDataState;
+                        DataValues.Remove(key);
+                    }
+                    break;
+
+                default:
+                    return;
+            }
+            StoredProperties.Remove(p);
         }
 
         private void DoClear()

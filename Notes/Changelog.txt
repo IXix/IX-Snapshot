@@ -1,3 +1,6 @@
+2022.10.19
+	Implemented copy of empty properties (clear in dest)
+
 2022.10.17
 	Fixed incorrect tree structure for track params
 	More work on displaying property values

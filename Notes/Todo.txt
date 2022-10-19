@@ -1,11 +1,9 @@
 RestoreOnSlotChange works but can it be optimised?
 
 Manager interface
+	Need to sync the scroll position in A/B panes
+
 	A/B panes should individually be able to capture, clear, purge etc. same as the main interface
-	
-	Copying values
-		Copying an empty source property should clear the value from the destination property.
-			Currently nothing happens.
 
 	Should we allow restore of A/B as well?
 

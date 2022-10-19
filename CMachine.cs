@@ -365,25 +365,37 @@ namespace Snapshot
             }
         }
 
+        private void CopySelectedProperties(CMachineSnapshot src, CMachineSnapshot dest)
+        {
+            var tmp = new CMachineSnapshot(src);
+
+            // Remove properties that aren't selected from the copy
+            tmp.AttributeValues.Remove(x => x.Selected_M == false);
+            tmp.ParameterValues.Remove(x => x.Selected_M == false);
+            tmp.DataValues.Remove(x => x.Selected_M == false);
+            tmp.StoredProperties.RemoveAll(x => x.Selected_M == false);
+
+            // Remove selected empty properties from destination slot
+            foreach (CMachineState state in States)
+            {
+                foreach (IPropertyState p in state.AllProperties.Where(x => x.Selected_M && tmp.ContainsProperty(x) == false))
+                {
+                    dest.RemoveProperty(p);
+                }
+            }
+
+            dest.CopyFrom(tmp);
+        }
+
         public void CopyAtoB()
         {
-            var SlotTemp = new CMachineSnapshot(SlotA);
-            SlotTemp.AttributeValues.Remove(x => x.Selected_M == false);
-            SlotTemp.ParameterValues.Remove(x => x.Selected_M == false);
-            SlotTemp.DataValues.Remove(x => x.Selected_M == false);
-            SlotTemp.StoredProperties.RemoveAll(x => x.Selected_M == false);
-            SlotB.CopyFrom(SlotTemp);
+            CopySelectedProperties(SlotA, SlotB);
             OnPropertyChanged("SlotB");
         }
 
         public void CopyBtoA()
         {
-            var SlotTemp = new CMachineSnapshot(SlotB);
-            SlotTemp.AttributeValues.Remove(x => x.Selected_M == false);
-            SlotTemp.ParameterValues.Remove(x => x.Selected_M == false);
-            SlotTemp.DataValues.Remove(x => x.Selected_M == false);
-            SlotTemp.StoredProperties.RemoveAll(x => x.Selected_M == false);
-            SlotA.CopyFrom(SlotTemp);
+            CopySelectedProperties(SlotB, SlotA);
             OnPropertyChanged("SlotA");
         }
 
