@@ -399,6 +399,68 @@ namespace Snapshot
             OnPropertyChanged("SlotA");
         }
 
+        public void CaptureA()
+        {
+            SlotA.Capture();
+            OnPropertyChanged("SlotA");
+        }
+        public void CaptureMissingA()
+        {
+            SlotA.CaptureMissing();
+            OnPropertyChanged("SlotA");
+        }
+        public void PurgeA()
+        {
+            SlotA.Purge();
+            OnPropertyChanged("SlotA");
+        }
+        public void ClearSelectedA()
+        {
+            SlotA.ClearSelected();
+            OnPropertyChanged("SlotA");
+        }
+        public void ClearA()
+        {
+            SlotA.Clear();
+            OnPropertyChanged("SlotA");
+        }
+        public void RestoreA()
+        {
+            SlotA.Restore();
+        }
+
+        public void CaptureB()
+        {
+            SlotA.Capture();
+            OnPropertyChanged("SlotB");
+        }
+        public void CaptureMissingB()
+        {
+            SlotA.CaptureMissing();
+            OnPropertyChanged("SlotB");
+        }
+        public void PurgeB()
+        {
+            SlotA.Purge();
+            OnPropertyChanged("SlotB");
+        }
+        public void ClearSelectedB()
+        {
+            SlotA.ClearSelected();
+            OnPropertyChanged("SlotB");
+        }
+        public void ClearB()
+        {
+            SlotA.Clear();
+            OnPropertyChanged("SlotB");
+        }
+        public void RestoreB()
+        {
+            SlotA.Restore();
+        }
+
+
+
         internal void MapCommand(string command, bool specific)
         {
             // Find the command

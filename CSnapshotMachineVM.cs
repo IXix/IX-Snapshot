@@ -69,6 +69,7 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.SelectInvert()
             };
+
             cmdSelectAll_M = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectAll_M()
@@ -88,6 +89,56 @@ namespace Snapshot
             cmdBtoA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CopyBtoA()
+            };
+
+            cmdCaptureA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.CaptureA()
+            };
+            cmdCaptureMissingA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.CaptureMissingA()
+            };
+            cmdPurgeA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.PurgeA()
+            };
+            cmdClearSelectedA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.ClearSelectedA()
+            };
+            cmdClearA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.ClearA()
+            };
+            cmdRestoreA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.RestoreA()
+            };
+
+            cmdCaptureB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.CaptureB()
+            };
+            cmdCaptureMissingB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.CaptureMissingB()
+            };
+            cmdPurgeB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.PurgeB()
+            };
+            cmdClearSelectedB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.ClearSelectedB()
+            };
+            cmdClearB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.ClearB()
+            };
+            cmdRestoreB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.RestoreB()
             };
         }
 
@@ -183,11 +234,26 @@ namespace Snapshot
         public SimpleCommand cmdSelectNone { get; private set; }
         public SimpleCommand cmdSelectStored { get; private set; }
         public SimpleCommand cmdSelectInvert { get; private set; }
+
         public SimpleCommand cmdSelectAll_M { get; private set; }
         public SimpleCommand cmdSelectNone_M { get; private set; }
         public SimpleCommand cmdSelectInvert_M { get; private set; }
         public SimpleCommand cmdAtoB { get; private set; }
         public SimpleCommand cmdBtoA { get; private set; }
+
+        public SimpleCommand cmdCaptureA { get; private set; }
+        public SimpleCommand cmdCaptureMissingA { get; private set; }
+        public SimpleCommand cmdPurgeA { get; private set; }
+        public SimpleCommand cmdClearSelectedA { get; private set; }
+        public SimpleCommand cmdClearA { get; private set; }
+        public SimpleCommand cmdRestoreA { get; private set; }
+
+        public SimpleCommand cmdCaptureB { get; private set; }
+        public SimpleCommand cmdCaptureMissingB { get; private set; }
+        public SimpleCommand cmdPurgeB { get; private set; }
+        public SimpleCommand cmdClearSelectedB { get; private set; }
+        public SimpleCommand cmdClearB { get; private set; }
+        public SimpleCommand cmdRestoreB { get; private set; }
         #endregion Commands
 
         #region Properties

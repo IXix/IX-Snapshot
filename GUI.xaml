@@ -237,10 +237,10 @@
                     </ComboBox.Style>
                 </ComboBox>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
-                    <Button x:Name="CopyBtoA" Command="{Binding cmdBtoA}">
+                    <Button x:Name="CopyBtoA" Command="{Binding cmdBtoA}" ToolTip="Copy selected propertied to left.">
                         <TextBlock Text="&lt;&lt;" />
                     </Button>
-                    <Button x:Name="CopyAtoB" Command="{Binding cmdAtoB}">
+                    <Button x:Name="CopyAtoB" Command="{Binding cmdAtoB}" ToolTip="Copy selected propertied to right.">
                         <TextBlock Text="&gt;&gt;" />
                     </Button>
                     <Separator Height="9" />
@@ -332,11 +332,89 @@
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="0">
-                    <StackPanel Grid.Row="1" Orientation="Horizontal">
 
-                    </StackPanel>
+                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="0">
+                    <Button x:Name="btnCaptureA" ToolTip="Capture selected properties.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdCaptureA}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Capture
+                    </Button>
+                    <Button x:Name="btnCaptureMissingA" ToolTip="Capture selected properties that don't have values.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdCaptureMissingA}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Capture Missing
+                    </Button>
+                    <Separator Height="5" />
+                    <Button x:Name="btnPurgeA" ToolTip="Clear properties that are not selected.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdPurgeA}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Purge
+                    </Button>
+                    <Button x:Name="btnClearSelectedA" ToolTip="Clear selected properties.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdClearSelectedA}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Clear Selected
+                    </Button>
+                    <Button x:Name="btnClearA" ToolTip="Clear all properties.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdClearA}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Clear All
+                    </Button>
+                    <Separator Height="5" />
+                    <Button x:Name="btnRestoreA" ToolTip="Apply stored values.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdRestoreA}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Restore
+                    </Button>
                 </StackPanel>
+
+                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="2">
+                    <Button x:Name="btnCaptureB" ToolTip="Capture selected properties.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdCaptureB}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Capture
+                    </Button>
+                    <Button x:Name="btnCaptureMissingB" ToolTip="Capture selected properties that don't have values.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdCaptureMissingB}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Capture Missing
+                    </Button>
+                    <Separator Height="5" />
+                    <Button x:Name="btnPurgeB" ToolTip="Clear properties that are not selected.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdPurgeB}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Purge
+                    </Button>
+                    <Button x:Name="btnClearSelectedB" ToolTip="Clear selected properties.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdClearSelectedB}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Clear Selected
+                    </Button>
+                    <Button x:Name="btnClearB" ToolTip="Clear all properties.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdClearB}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Clear All
+                    </Button>
+                    <Separator Height="5" />
+                    <Button x:Name="btnRestoreB" ToolTip="Apply stored values.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding cmdRestoreB}" MouseAction="LeftClick" />
+                        </Button.InputBindings>
+                        Restore
+                    </Button>
+                </StackPanel>
+
             </Grid>
         </TabItem>
     </TabControl>
