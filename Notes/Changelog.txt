@@ -1,6 +1,8 @@
 2022.10.20
 	Added CMachineSnapshot.ClearSelected()
 	Added manager buttons and matching commands for A/B operations
+	Overhaul of various systems to facilitate operations on different slots
+	Completed implementation of manager buttons
 
 2022.10.19
 	Implemented copy of empty properties (clear in dest)

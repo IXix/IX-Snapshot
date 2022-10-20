@@ -226,7 +226,7 @@ namespace Snapshot
             }
         }
 
-        public bool SlotHasData(int index) => CurrentSlot.StoredCount > 0;
+        public bool SlotHasData => CurrentSlot.StoredCount > 0;
 
         // This is the mapping of UI actions to MIDI events
         public Dictionary<Action, CMidiEvent> MidiMap { get; private set; }
@@ -365,6 +365,19 @@ namespace Snapshot
             }
         }
 
+        bool Confirm(string title, string msg)
+        {
+            if (ConfirmClear)
+            {
+                MessageBoxResult result = MessageBox.Show(msg, title, MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private void CopySelectedProperties(CMachineSnapshot src, CMachineSnapshot dest)
         {
             var tmp = new CMachineSnapshot(src);
@@ -376,54 +389,97 @@ namespace Snapshot
             tmp.StoredProperties.RemoveAll(x => x.Selected_M == false);
 
             // Remove selected empty properties from destination slot
-            foreach (CMachineState state in States)
-            {
-                foreach (IPropertyState p in state.AllProperties.Where(x => x.Selected_M && tmp.ContainsProperty(x) == false))
-                {
-                    dest.RemoveProperty(p);
-                }
-            }
+            List<IPropertyState> lp = GetSelectedProperties(false);
+            lp.RemoveAll(x => tmp.ContainsProperty(x) == false);
+            dest.Remove(lp);
 
             dest.CopyFrom(tmp);
         }
 
         public void CopyAtoB()
         {
-            CopySelectedProperties(SlotA, SlotB);
-            OnPropertyChanged("SlotB");
+            string msg = string.Format("Copy selection from {0} to {1}?", SlotA.Name, SlotB.Name);
+            if (Confirm("Confirm", msg))
+            {
+                CopySelectedProperties(SlotA, SlotB);
+                OnPropertyChanged("State");
+            }
         }
 
         public void CopyBtoA()
         {
-            CopySelectedProperties(SlotB, SlotA);
-            OnPropertyChanged("SlotA");
+            string msg = string.Format("Copy selection from {0} to {1}?", SlotB.Name, SlotA.Name);
+            if (Confirm("Confirm", msg))
+            {
+                CopySelectedProperties(SlotB, SlotA);
+                OnPropertyChanged("State");
+            }
+        }
+
+        internal List<IPropertyState> GetSelectedProperties(bool main)
+        {
+            List<IPropertyState> lp = new List<IPropertyState>();
+            if (main)
+            {
+                foreach (var state in States)
+                {
+                    lp.AddRange(state.AllProperties.Where(x => x.Selected));
+                }
+            }
+            else
+            {
+                foreach (var state in States)
+                {
+                    lp.AddRange(state.AllProperties.Where(x => x.Selected_M));
+                }
+            }
+            return lp;
         }
 
         public void CaptureA()
         {
-            SlotA.Capture();
-            OnPropertyChanged("SlotA");
+            SlotA.Capture(GetSelectedProperties(false), false);
+            OnPropertyChanged("State");
         }
+
         public void CaptureMissingA()
         {
-            SlotA.CaptureMissing();
-            OnPropertyChanged("SlotA");
+            List<IPropertyState> targets = GetSelectedProperties(false);
+            targets.RemoveAll(x => SlotA.ContainsProperty(x) == true);
+            SlotA.Capture(targets, false);
+            OnPropertyChanged("State");
         }
+
         public void PurgeA()
         {
-            SlotA.Purge();
-            OnPropertyChanged("SlotA");
+            string msg = string.Format("Discard {0} stored properties from {1}?", SlotA.RedundantCount_M, SlotA.Name);
+            if (Confirm("Confirm purge", msg))
+            {
+                SlotA.Purge(false);
+                OnPropertyChanged("State");
+            }
         }
+
         public void ClearSelectedA()
         {
-            SlotA.ClearSelected();
-            OnPropertyChanged("SlotA");
+            string msg = string.Format("Discard {0} stored properties from {1}?", SlotA.SelectedCount_M, SlotA.Name);
+            if (Confirm("Confirm clear", msg))
+            {
+                SlotA.Remove(GetSelectedProperties(false));
+                OnPropertyChanged("State");
+            }
         }
+
         public void ClearA()
         {
-            SlotA.Clear();
-            OnPropertyChanged("SlotA");
+            string msg = string.Format("Discard all stored properties from {0}?", SlotA.Name);
+            if (Confirm("Confirm clear", msg))
+            {
+                SlotA.Clear();
+                OnPropertyChanged("State");
+            }
         }
+
         public void RestoreA()
         {
             SlotA.Restore();
@@ -431,35 +487,51 @@ namespace Snapshot
 
         public void CaptureB()
         {
-            SlotA.Capture();
-            OnPropertyChanged("SlotB");
+            SlotB.Capture(GetSelectedProperties(false), false);
+            OnPropertyChanged("State");
         }
+
         public void CaptureMissingB()
         {
-            SlotA.CaptureMissing();
-            OnPropertyChanged("SlotB");
+            List<IPropertyState> targets = GetSelectedProperties(false);
+            targets.RemoveAll(x => SlotA.ContainsProperty(x) == true);
+            SlotB.Capture(targets, false);
+            OnPropertyChanged("State");
         }
+
         public void PurgeB()
         {
-            SlotA.Purge();
-            OnPropertyChanged("SlotB");
+            string msg = string.Format("Discard {0} stored properties from {1}?", SlotB.RedundantCount_M, SlotB.Name);
+            if (Confirm("Confirm purge", msg))
+            {
+                SlotB.Purge(false);
+                OnPropertyChanged("State");
+            }
         }
+
         public void ClearSelectedB()
         {
-            SlotA.ClearSelected();
-            OnPropertyChanged("SlotB");
+            string msg = string.Format("Discard {0} stored properties from {1}?", SlotB.SelectedCount_M, SlotB.Name);
+            if (Confirm("Confirm clear", msg))
+            {
+                SlotB.Remove(GetSelectedProperties(false));
+                OnPropertyChanged("State");
+            }
         }
+
         public void ClearB()
         {
-            SlotA.Clear();
-            OnPropertyChanged("SlotB");
+            if (Confirm("Confirm clear", "Discard all stored properties from right?"))
+            {
+                SlotB.Clear();
+                OnPropertyChanged("State");
+            }
         }
+
         public void RestoreB()
         {
             SlotA.Restore();
         }
-
-
 
         internal void MapCommand(string command, bool specific)
         {
@@ -906,13 +978,15 @@ namespace Snapshot
 
         internal void Capture()
         {
-            CurrentSlot.Capture();
+            CurrentSlot.Capture(GetSelectedProperties(true), true);
             OnPropertyChanged("State");
         }
 
         internal void CaptureMissing()
         {
-            CurrentSlot.CaptureMissing();
+            List<IPropertyState> targets = GetSelectedProperties(true);
+            targets.RemoveAll(x => CurrentSlot.ContainsProperty(x) == true);
+            CurrentSlot.Capture(targets, false);
             OnPropertyChanged("State");
         }
 
@@ -927,14 +1001,21 @@ namespace Snapshot
 
         internal void Purge()
         {
-            CurrentSlot.Purge();
-            OnPropertyChanged("State");
+            string msg = string.Format("Discard {0} stored properties?", CurrentSlot.RedundantCount);
+            if (Confirm("Confirm purge", msg))
+            {
+                CurrentSlot.Purge(true);
+                OnPropertyChanged("State");
+            }
         }
 
         internal void Clear()
         {
-            CurrentSlot.Clear();
-            OnPropertyChanged("State");
+            if (Confirm("Confirm clear", "Discard all stored properties?"))
+            {
+                CurrentSlot.Clear();
+                OnPropertyChanged("State");
+            }
         }
 
         // Called before the slot is changed

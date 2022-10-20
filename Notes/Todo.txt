@@ -1,11 +1,11 @@
+Need thorough testing outside of debug to avoid persistant random crashes.
+
 RestoreOnSlotChange works but can it be optimised?
 
+
+
 Manager interface
-	Need to sync the scroll position in A/B panes
-
-	A/B panes should individually be able to capture, clear, purge etc. same as the main interface
-
-	Should we allow restore of A/B as well?
+	Need to sync the scroll position in A/B panes	
 
 	Editing values would be nice.
 		Would have to make sure input was properly validated for the selected property

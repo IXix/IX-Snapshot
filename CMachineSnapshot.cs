@@ -78,35 +78,32 @@ namespace Snapshot
         {
             switch (p.GetType().Name)
             {
+                case "CAttributeState":
+                    {
+                        var key = p as CAttributeState;
+                        AttributeValues[key] = value;
+                    }
+                    break;
+
                 case "CParameterState":
                     {
                         var key = p as CParameterState;
-                        try
-                        {
-                            var track = ParameterValues[key].Item1;
-                            ParameterValues[key] = new Tuple<int, int>(track, value) ;
-                        }
-                        catch
-                        {
-                            var track = key.Track.HasValue ? p.Track.Value : -1;
-                            ParameterValues.Add(key, new Tuple<int, int>(track, value));
-                            StoredProperties.Add(p);
-                        }
+                        int track = p.Track ?? -1;
+                        ParameterValues[key] = new Tuple<int, int>(track, value) ;
                     }
                     break;
 
-                case "CAttributeState":
-                    {
-                        // FIXME
-                    }
-                    break;
 
                 case "CDataState":
-                    // FIXME: Careful. Null to signify empty. Anyhting else is dodgy.
-                    return;
+                    return; // Bad idea to set machine data manually
 
                 default:
-                    break;
+                    throw new Exception("Unknown property type.");
+            }
+
+            if(!StoredProperties.Contains(p))
+            {
+                StoredProperties.Add(p);
             }
         }
 
@@ -126,7 +123,7 @@ namespace Snapshot
                     return " (" + DataValues[(p as CDataState)].Length.ToString() + ")";
 
                 default:
-                    return "Wuh??";
+                    throw new Exception("Unknown property type.");
             }
         }
 
@@ -162,171 +159,93 @@ namespace Snapshot
         // How many properties have been captured
         public int StoredCount => StoredProperties.Count;
 
+        // How many stored properties are selected
+        public int SelectedCount => StoredProperties.Count(x => x.Selected);
+        public int SelectedCount_M => StoredProperties.Count(x => x.Selected_M);
+
         // How many properties are stored that aren't selected
         public int RedundantCount => StoredProperties.Count(x => x.Active && x.Selected == false);
+
+        public int RedundantCount_M => StoredProperties.Count(x => x.Active && x.Selected_M == false);
 
         // How many properties are stored that are inactive (machine deleted)
         public int DeletedCount => StoredProperties.Count(x => x.Active == false);
 
         public void CopyFrom(CMachineSnapshot src)
         {
-            foreach(KeyValuePair<CAttributeState, int> p in src.AttributeValues)
+            foreach(IPropertyState p in src.StoredProperties)
             {
-                if (p.Value == -1)
+                switch (p.GetType().Name)
                 {
-                    AttributeValues.Remove(p.Key);
-                }
-                else
-                {
-                    try
-                    {
-                        AttributeValues.Add(p.Key, p.Value);
-                        StoredProperties.Add(p.Key);
-                    }
-                    catch
-                    {
-                        AttributeValues[p.Key] = p.Value;
-                    }
+                    case "CAttributeState":
+                        {
+                            var key = p as CAttributeState;
+                            AttributeValues[key] = src.AttributeValues[key];
+                        }
+                        break;
+
+                    case "CParameterState":
+                        {
+                            var key = p as CParameterState;
+                            ParameterValues[key] = src.ParameterValues[key];
+                        }
+                        break;
+
+                    case "CDataState":
+                        {
+                            var key = p as CDataState;
+                            DataValues[key] = src.DataValues[key];
+                        }
+                        break;
+
+                    default:
+                        throw new Exception("Unknown property type.");
                 }
             }
 
-            foreach (KeyValuePair<CParameterState, Tuple<int, int>> p in src.ParameterValues)
-            {
-                if (p.Value.Item2 == -1)
-                {
-                    ParameterValues.Remove(p.Key);
-                }
-                else
-                {
-                    try
-                    {
-                        ParameterValues.Add(p.Key, p.Value);
-                        StoredProperties.Add(p.Key);
-                    }
-                    catch
-                    {
-                        ParameterValues[p.Key] = p.Value;
-                    }
-                }
-            }
-
-            foreach(var p in src.DataValues)
-            {
-                if (p.Value == null)
-                {
-                    DataValues.Remove(p.Key);
-                }
-                else
-                {
-                    try
-                    {
-                        DataValues.Add(p.Key, p.Value);
-                        StoredProperties.Add(p.Key);
-                    }
-                    catch
-                    {
-                        DataValues[p.Key] = p.Value;
-                    }
-                }
-            }
+            StoredProperties = StoredProperties.Union(src.StoredProperties).ToList();
         }
 
-        public void Capture()
+        public void Capture(List<IPropertyState> targets, bool clearExisting)
         {
-            DoClear();
-
-            foreach (CMachineState state in m_owner.States)
+            if(clearExisting)
             {
-                foreach (CAttributeState s in state.AttributeStates.Children.Where(x => x.Selected))
-                {
-                    AttributeValues.Add(s, s.Attribute.Value);
-                    StoredProperties.Add(s);
-                }
+                Clear();
+            }
 
-                foreach (CParameterState s in state.GlobalStates.Children.Where(x => x.Selected))
+            foreach (IPropertyState p in targets)
+            {
+                switch (p.GetType().Name)
                 {
-                    ParameterValues.Add(s, new Tuple<int, int>(-1, s.Parameter.GetValue(-1)));
-                    StoredProperties.Add(s);
-                }
+                    case "CAttributeState":
+                        {
+                            var key = p as CAttributeState;
+                            AttributeValues[key] = key.Attribute.Value;
+                        }
+                        break;
 
-                foreach (CPropertyStateGroup pg in state.TrackStates.Children)
-                {
-                    foreach (CParameterState s in pg.Children.Where(x => x.Selected))
-                    {
-                        ParameterValues.Add(s, new Tuple<int, int>(s.Track.Value, s.Parameter.GetValue(s.Track.Value)));
-                        StoredProperties.Add(s);
-                    }
-                }
+                    case "CParameterState":
+                        {
+                            var key = p as CParameterState;
+                            int track = key.Track ?? -1;
+                            ParameterValues[key] = new Tuple<int, int>(track, key.Parameter.GetValue(track));
+                        }
+                        break;
 
-                if (state.DataState != null && state.DataState.Selected)
-                {
-                    DataValues.Add(state.DataState, state.DataState.Machine.Data);
-                    StoredProperties.Add(state.DataState);
+                    case "CDataState":
+                        {
+                            var key = p as CDataState;
+                            DataValues[key] = key.Machine.Data;
+                        }
+                        break;
+
+                    default:
+                        throw new Exception("Unknown property type.");
                 }
             }
 
-            OnPropertyChanged("HasData");
-        }
+            StoredProperties = StoredProperties.Union(targets).ToList();
 
-        public void CaptureMissing()
-        {
-            foreach (CMachineState state in m_owner.States)
-            {
-                foreach (CAttributeState s in state.AttributeStates.Children.Where(x => x.Selected))
-                {
-                    try
-                    {
-                        int? value = AttributeValues[s];
-                    }
-                    catch
-                    {
-                        AttributeValues.Add(s, s.Attribute.Value);
-                        StoredProperties.Add(s);
-                    }
-                }
-
-                foreach (CParameterState s in state.GlobalStates.Children.Where(x => x.Selected))
-                {
-                    try
-                    {
-                        Tuple<int, int> value = ParameterValues[s];
-                    }
-                    catch
-                    {
-                        ParameterValues.Add(s, new Tuple<int, int>(-1, s.Parameter.GetValue(-1)));
-                        StoredProperties.Add(s);
-                    }
-                }
-
-                foreach (CPropertyStateGroup pg in state.TrackStates.Children)
-                {
-                    foreach (CParameterState s in pg.Children.Where(x => x.Selected))
-                    {
-                        try
-                        {
-                            Tuple<int, int> value = ParameterValues[s];
-                        }
-                        catch
-                        {
-                            ParameterValues.Add(s, new Tuple<int, int>(s.Track.Value, s.Parameter.GetValue(s.Track.Value)));
-                            StoredProperties.Add(s);
-                        }
-                    }
-                }
-
-                if (state.DataState != null && state.DataState.Selected)
-                {
-                    try
-                    {
-                        var value = DataValues[state.DataState];
-                    }
-                    catch
-                    {
-                        DataValues.Add(state.DataState, state.DataState.Machine.Data);
-                        StoredProperties.Add(state.DataState);
-                    }
-                }
-            }
             OnPropertyChanged("HasData");
         }
 
@@ -352,139 +271,63 @@ namespace Snapshot
                 );
         }
 
-        public void Purge()
+        public void Purge(bool main)
         {
-            // Could use List.Except() but these lists are readonly and not sure if bindings etc. would be preserved
-            // Need testing at some point
-            // list = list.Except(list.Where(x => x.Key.Selected == false));
-
-            // Confirm if necessary
-            if (m_owner.ConfirmClear)
+            if (main)
             {
-                string msg = string.Format("Discard {0} stored properties?", StoredProperties.Count(x => x.Selected == false || x.Active == false));
-                MessageBoxResult result = MessageBox.Show(msg, "Confirm purge", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No)
+                Remove(StoredProperties.Where(x => x.Active == false || x.Selected == false).ToList());
+            }
+            else
+            {
+                Remove(StoredProperties.Where(x => x.Active == false || x.Selected_M == false).ToList());
+            }
+            OnPropertyChanged("HasData");
+        }
+
+        public void Remove(List<IPropertyState> targets)
+        {
+            foreach (IPropertyState p in targets)
+            {
+                switch (p.GetType().Name)
                 {
-                    return;
+                    case "CAttributeState":
+                        {
+                            var key = p as CAttributeState;
+                            AttributeValues.Remove(key);
+                        }
+                        break;
+
+                    case "CParameterState":
+                        {
+                            var key = p as CParameterState;
+                            ParameterValues.Remove(key);
+                        }
+                        break;
+
+                    case "CDataState":
+                        {
+                            var key = p as CDataState;
+                            DataValues.Remove(key);
+                        }
+                        break;
+
+                    default:
+                        throw new Exception("Unknown property type.");
                 }
             }
 
-            var attrList = AttributeValues.Where(x => x.Key.Active == false || x.Key.Selected == false).ToList();
-            foreach (KeyValuePair<CAttributeState, int> item in attrList)
-            {
-                CAttributeState p = item.Key;
-                AttributeValues.Remove(p);
-                StoredProperties.Remove(p);
-            }
-            var paraList = ParameterValues.Where(x => x.Key.Active == false || x.Key.Selected == false).ToList();
-            foreach (KeyValuePair<CParameterState, Tuple<int, int>> item in paraList)
-            {
-                CParameterState p = item.Key;
-                ParameterValues.Remove(p);
-                StoredProperties.Remove(p);
-            }
-            var dataList = DataValues.Where(x => x.Key.Active == false || x.Key.Selected == false).ToList();
-            foreach (KeyValuePair<CDataState, byte[]> item in dataList)
-            {
-                CDataState p = item.Key;
-                DataValues.Remove(p);
-                StoredProperties.Remove(p);
-            }
+            StoredProperties = StoredProperties.Except(targets).ToList();
 
             OnPropertyChanged("HasData");
         }
 
-        internal void RemoveProperty(IPropertyState p)
-        {
-            if (!ContainsProperty(p)) return;
-            
-            switch (p.GetType().Name)
-            {
-                case "CParameterState":
-                    {
-                        var key = p as CParameterState;
-                        ParameterValues.Remove(key);
-                    }
-                    break;
-
-                case "CAttributeState":
-                    {
-                        var key = p as CAttributeState;
-                        AttributeValues.Remove(key);
-                    }
-                    break;
-
-                case "CDataState":
-                    {
-                        var key = p as CDataState;
-                        DataValues.Remove(key);
-                    }
-                    break;
-
-                default:
-                    return;
-            }
-            StoredProperties.Remove(p);
-        }
-
-        private void DoClear()
+        internal void Clear()
         {
             AttributeValues.Clear();
             ParameterValues.Clear();
             DataValues.Clear();
             StoredProperties.Clear();
             OnPropertyChanged("HasData");
-        }
-
-        public void Clear()
-        {
-            // Confirm if necessary
-            if (m_owner.ConfirmClear)
-            {
-                MessageBoxResult result = MessageBox.Show("Discard all stored properties", "Confirm clear", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
-
-            DoClear();
-        }
-
-        private void DoClearSelected()
-        {
-            foreach(var p in AttributeValues.Keys.Where(x => x.Selected))
-            {
-                AttributeValues.Remove(p);
-            }
-
-            foreach (var p in ParameterValues.Keys.Where(x => x.Selected))
-            {
-                ParameterValues.Remove(p);
-            }
-
-            foreach (var p in DataValues.Keys.Where(x => x.Selected))
-            {
-                DataValues.Remove(p);
-            }
-
-            StoredProperties.RemoveAll(x => x.Selected);
-            OnPropertyChanged("HasData");
-        }
-
-        public void ClearSelected()
-        {
-            // Confirm if necessary
-            if (m_owner.ConfirmClear)
-            {
-                MessageBoxResult result = MessageBox.Show("Discard all stored properties", "Confirm clear", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
-
-            DoClearSelected();
         }
 
         public void ReadProperty(IPropertyState p, BinaryReader r)
