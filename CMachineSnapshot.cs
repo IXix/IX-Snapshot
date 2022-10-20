@@ -451,6 +451,42 @@ namespace Snapshot
             DoClear();
         }
 
+        private void DoClearSelected()
+        {
+            foreach(var p in AttributeValues.Keys.Where(x => x.Selected))
+            {
+                AttributeValues.Remove(p);
+            }
+
+            foreach (var p in ParameterValues.Keys.Where(x => x.Selected))
+            {
+                ParameterValues.Remove(p);
+            }
+
+            foreach (var p in DataValues.Keys.Where(x => x.Selected))
+            {
+                DataValues.Remove(p);
+            }
+
+            StoredProperties.RemoveAll(x => x.Selected);
+            OnPropertyChanged("HasData");
+        }
+
+        public void ClearSelected()
+        {
+            // Confirm if necessary
+            if (m_owner.ConfirmClear)
+            {
+                MessageBoxResult result = MessageBox.Show("Discard all stored properties", "Confirm clear", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
+            DoClearSelected();
+        }
+
         public void ReadProperty(IPropertyState p, BinaryReader r)
         {
             Type t = p.GetType();

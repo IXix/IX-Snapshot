@@ -1,3 +1,6 @@
+2022.10.20
+	Added CMachineSnapshot.ClearSelected()
+
 2022.10.19
 	Implemented copy of empty properties (clear in dest)
 
