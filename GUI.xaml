@@ -317,7 +317,7 @@
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
-                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                        <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding Name}" />
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
                             </StackPanel>
@@ -328,7 +328,7 @@
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
-                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                        <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding Name}" />
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
                             </StackPanel>
@@ -339,7 +339,7 @@
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
-                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                        <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding Name}" />
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
                             </StackPanel>
@@ -351,7 +351,7 @@
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
+                                            <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding DisplayName}" />
                                             <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValueA}" />
                                         </StackPanel>
                                     </ContentPresenter.Content>
@@ -367,7 +367,7 @@
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
-                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                        <TextBlock Style="{StaticResource tvi_textb}" Text="{Binding Name}" />
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
                             </StackPanel>
@@ -378,7 +378,7 @@
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
-                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                        <TextBlock Style="{StaticResource tvi_textb}" Text="{Binding Name}" />
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
                             </StackPanel>
@@ -389,7 +389,7 @@
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
-                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                        <TextBlock Style="{StaticResource tvi_textb}" Text="{Binding Name}" />
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
                             </StackPanel>
@@ -401,7 +401,7 @@
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
+                                            <TextBlock Style="{StaticResource tvi_textb}" Text="{Binding DisplayName}" />
                                             <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValueB}" />
                                         </StackPanel>
                                     </ContentPresenter.Content>
