@@ -111,20 +111,33 @@ namespace Snapshot
         {
             if (!ContainsProperty(p)) return "";
 
+            string value;
+
             switch (p.GetType().Name)
             {
                 case "CParameterState":
-                    return " (" + ParameterValues.First(x => x.Key == p).Value.Item2.ToString() + ")";
+                    {
+                        var key = p as CParameterState;
+                        var v = ParameterValues[key].Item2;
+                        value = key.Parameter.DescribeValue(v);
+                    }
+                    break;
 
                 case "CAttributeState":
-                    return " (" + AttributeValues.First(x => x.Key == p).Value.ToString() + ")";
+                    {
+                        value = AttributeValues[p as CAttributeState].ToString();
+                    }
+                    break;
 
                 case "CDataState":
-                    return " (" + DataValues[(p as CDataState)].Length.ToString() + ")";
+                    value = DataValues[p as CDataState].Length.ToString();
+                    break;
 
                 default:
                     throw new Exception("Unknown property type.");
             }
+
+            return " (" + value + ")";
         }
 
         public int GetPropertySize(CPropertyBase p)

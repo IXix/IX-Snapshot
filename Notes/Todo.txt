@@ -1,5 +1,3 @@
-Need thorough testing outside of debug to avoid persistant random crashes.
-
 RestoreOnSlotChange works but can it be optimised?
 
 Manager interface
@@ -17,10 +15,9 @@ Context menu for treeview items? (for groups apply the action to all children)
 	Copy from left/right
 	Remove from all snapshot slots
 	
-
 Need to enable renaming of slots
-	Doing so via the slot combo was glitchy before. It was ditched because we didn't want to spend ages fixing it.
-	Time to try again.
+	The problem is that when you start typing, the combo jumps to the first item whose name starts with what you type.
+	If we can disable that behaviour, renaming should work fine.
 
 Inertia for parameter changes
 	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.

@@ -187,7 +187,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <TextBlock>Slot Name</TextBlock>
-                        <ComboBox ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select/rename current slot.">
+                        <ComboBox ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="False" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select current slot.">
                             <ComboBox.Style>
                                 <Style TargetType="{x:Type ComboBox}">
                                     <Setter Property="FontWeight" Value="Normal" />

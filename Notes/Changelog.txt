@@ -9,6 +9,10 @@
 	Fixed incorrect text styles used for manager treeview items
 	Added manager buttons to select stored properties
 	Improved selection info
+	Disabled text input for slot name combo
+		The "jump to letter" behaviour changes the active slot as you're typing.
+		Need to find a way to disable it.
+	Implemented display of parameter value descriptions
 
 2022.10.20
 	Added CMachineSnapshot.ClearSelected()
