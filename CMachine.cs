@@ -80,7 +80,22 @@ namespace Snapshot
             }
         }
 
-        public string SelectionInfo => string.Format("{0} of {1} properties selected\n{2} stored\n{3} selected but not stored\n{4} stored but not selected\n{5} stored for missing properties\nSlot size: {6}\nTotal Size: {7}", SelCount, AllProperties.Count, StoredCount, MissingCount, RedundantCount, DeletedCount, Misc.ToSize(Size), Misc.ToSize(TotalSize));
+        public string SelectionInfo => string.Format(
+            "{0} of {1} properties selected\n" +
+            "{2} stored\n" +
+            "{3} selected but not stored\n" +
+            "{4} stored but not selected\n" +
+            "{5} stored for missing properties\n" +
+            "Slot size: {6}\n" +
+            "Total Size: {7}",
+            SelCount,
+            AllProperties.Count,
+            StoredCount,
+            MissingCount,
+            RedundantCount,
+            DeletedCount,
+            Misc.ToSize(Size),
+            Misc.ToSize(TotalSize));
 
         private bool _confirmClear;
         public bool ConfirmClear
@@ -181,7 +196,7 @@ namespace Snapshot
         }
 
         // How many properties are selected
-        public int SelCount => AllProperties.Count(x => x.Selected);
+        public int SelCount => AllProperties.Count(x => x.Selected && x.Active);
 
         // How many properties have been captured
         public int StoredCount => CurrentSlot.StoredCount;
@@ -193,7 +208,7 @@ namespace Snapshot
         public int DeletedCount => CurrentSlot.DeletedCount;
 
         // How many selected properties have not been captured
-        public int MissingCount => AllProperties.Where(x => x.Selected).Except(CurrentSlot.StoredProperties).Count();
+        public int MissingCount => AllProperties.Where(x => x.Selected && x.Active).Except(CurrentSlot.StoredProperties).Count();
 
         public string Name
         {
@@ -244,7 +259,8 @@ namespace Snapshot
             _confirmClear = true;
 
             _slots = new List<CMachineSnapshot>();
-            _slot = _slotA = _slotB = 0;
+            _slot = _slotA = 0;
+            _slotB = 1;
             for (int i = 0; i < 128; i++)
             {
                 _slots.Add(new CMachineSnapshot(this, i));
@@ -365,6 +381,22 @@ namespace Snapshot
             }
         }
 
+        public void SelectStoredA()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected_M = SlotA.ContainsProperty(s);
+            }
+        }
+
+        public void SelectStoredB()
+        {
+            foreach (IPropertyState s in AllProperties)
+            {
+                s.Selected_M = SlotB.ContainsProperty(s);
+            }
+        }
+
         bool Confirm(string title, string msg)
         {
             if (ConfirmClear)
@@ -398,7 +430,7 @@ namespace Snapshot
 
         public void CopyAtoB()
         {
-            string msg = string.Format("Copy selection from {0} to {1}?", SlotA.Name, SlotB.Name);
+            string msg = string.Format("Copy {0} properties from {1} to {2}?", GetSelectedProperties(false).Count, SlotA.Name, SlotB.Name);
             if (Confirm("Confirm", msg))
             {
                 CopySelectedProperties(SlotA, SlotB);
@@ -408,7 +440,7 @@ namespace Snapshot
 
         public void CopyBtoA()
         {
-            string msg = string.Format("Copy selection from {0} to {1}?", SlotB.Name, SlotA.Name);
+            string msg = string.Format("Copy {0} properties from {1} to {2}?", GetSelectedProperties(false).Count, SlotB.Name, SlotA.Name);
             if (Confirm("Confirm", msg))
             {
                 CopySelectedProperties(SlotB, SlotA);

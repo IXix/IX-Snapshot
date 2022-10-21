@@ -12,6 +12,12 @@ Manager interface
 
 	Morphing?
 
+Context menu for treeview items? (for groups apply the action to all children)
+	Capture/Clear/Restore
+	Copy from left/right
+	Remove from all snapshot slots
+	
+
 Need to enable renaming of slots
 	Doing so via the slot combo was glitchy before. It was ditched because we didn't want to spend ages fixing it.
 	Time to try again.

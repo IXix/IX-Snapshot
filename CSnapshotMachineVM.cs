@@ -82,6 +82,14 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.SelectInvert_M()
             };
+            cmdSelectStoredA = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectStoredA()
+            };
+            cmdSelectStoredB = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.SelectStoredB()
+            };
             cmdAtoB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CopyAtoB()
@@ -277,6 +285,8 @@ namespace Snapshot
         public SimpleCommand cmdSelectAll_M { get; private set; }
         public SimpleCommand cmdSelectNone_M { get; private set; }
         public SimpleCommand cmdSelectInvert_M { get; private set; }
+        public SimpleCommand cmdSelectStoredA { get; private set; }
+        public SimpleCommand cmdSelectStoredB { get; private set; }
         public SimpleCommand cmdAtoB { get; private set; }
         public SimpleCommand cmdBtoA { get; private set; }
 

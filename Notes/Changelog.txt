@@ -7,6 +7,8 @@
 	Fixed "Selection follows slot" broken in last commit
 	Fixed manager selection buttons, also broken in last commit
 	Fixed incorrect text styles used for manager treeview items
+	Added manager buttons to select stored properties
+	Improved selection info
 
 2022.10.20
 	Added CMachineSnapshot.ClearSelected()
