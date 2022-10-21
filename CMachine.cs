@@ -390,7 +390,7 @@ namespace Snapshot
 
             // Remove selected empty properties from destination slot
             List<IPropertyState> lp = GetSelectedProperties(false);
-            lp.RemoveAll(x => tmp.ContainsProperty(x) == false);
+            lp.RemoveAll(x => tmp.ContainsProperty(x));
             dest.Remove(lp);
 
             dest.CopyFrom(tmp);
