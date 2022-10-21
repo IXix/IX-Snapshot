@@ -302,6 +302,8 @@ namespace Snapshot
 
         protected void OnSelChanged(object sender, StateChangedEventArgs e)
         {
+            IsChecked = e.Checked;
+            //IsCheckedM = e.Checked_M;
         }
 
         /// <summary>
