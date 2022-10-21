@@ -298,14 +298,10 @@ namespace Snapshot
                     }
                     break;
             }
-
-
         }
 
         protected void OnSelChanged(object sender, StateChangedEventArgs e)
         {
-            IsChecked = e.Checked;
-            IsCheckedM = e.Checked_M;
         }
 
         /// <summary>
@@ -318,7 +314,6 @@ namespace Snapshot
 
         protected virtual void OnCheckChanged()
         {
-            var dummy = 1;
         }
 
         public CTreeViewItemVM Parent

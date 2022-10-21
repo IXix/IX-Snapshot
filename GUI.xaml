@@ -1,4 +1,4 @@
-﻿<UserControl x:Name="Main"  x:Class="Snapshot.GUI"
+﻿<UserControl x:Name="Main" x:Class="Snapshot.GUI"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -29,12 +29,18 @@
             <Setter Property="Margin" Value="5,0" />
         </Style>
 
+        <Style x:Key="tvi_text_base" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
         <!-- Slot ComboBox items-->
         <Style x:Key="cbi_slots" TargetType="ComboBoxItem">
             <Setter Property="FontWeight" Value="Normal" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding HasData}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontWeight" Value="Bold" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -48,12 +54,14 @@
         <Style x:Key="tvi_main" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+            <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
+            <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
+            <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" />
         </Style>
-        <Style x:Key="tvi_text" TargetType="TextBlock">
-            <Setter Property="FontWeight" Value="Normal" />
+        <Style x:Key="tvi_text" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="FontWeight" Value="Bold" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -62,19 +70,37 @@
         <Style x:Key="tvi_manager" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelectedM, Mode=TwoWay}" />
-            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
+            <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
+            <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsCheckedM, UpdateSourceTrigger=PropertyChanged}" />
         </Style>
+        
         <Style x:Key="tvi_manager_a" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ResourceKey=tvi_manager}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding GotValueA, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontWeight" Value="Bold" />
                 </DataTrigger>
             </Style.Triggers>            
         </Style>
+        <Style x:Key="tvi_texta" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding GotValueA, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
         <Style x:Key="tvi_manager_b" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ResourceKey=tvi_manager}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding GotValueB, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontWeight" Value="Bold" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="tvi_textb" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding GotValueB, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                    <Setter Property="FontWeight" Value="Bold" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -84,20 +110,20 @@
         <TabItem Header="Main">
             <Grid x:Name="MainGrid" MinHeight="200" Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TreeView x:Name="MachineList" Grid.Row="0" ItemContainerStyle="{StaticResource tvi_main}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick"/>
+                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
                                                 <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -108,7 +134,7 @@
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick"/>
+                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
                                                 <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -119,7 +145,7 @@
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick"/>
+                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
                                                 <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -130,7 +156,7 @@
 
                                 <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                                     <StackPanel Orientation="Horizontal">
-                                        <CheckBox Focusable="False" IsChecked="{Binding IsChecked}"/>
+                                        <CheckBox Focusable="False" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
                                                 <StackPanel Orientation="Horizontal">
@@ -154,7 +180,7 @@
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <TextBlock>Slot Name</TextBlock>
@@ -164,36 +190,36 @@
                                     <Setter Property="FontWeight" Value="Normal" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontWeight" Value="Bold" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </ComboBox.Style>
                         </ComboBox>
-                        <TextBlock x:Name="txtInfoDisplay" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock x:Name="txtInfoDisplay" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                     <StackPanel Grid.Row="1">
-                        <CheckBox x:Name="chkConfirmClear" Content="Confirm on clear/purge" IsChecked="{Binding ConfirmClear}" ToolTip="Ask for confirmation when discarding stored properties."/>
-                        <CheckBox x:Name="chkSelFollowsSlot" Content="Selection follows slot" IsChecked="{Binding SelectionFollowsSlot}" ToolTip="When changing slot, only stored properties will be selected."/>
-                        <CheckBox x:Name="chkSelNew" Content="Select new machines" IsChecked="{Binding SelectNewMachines}" ToolTip="Automatically select newly created machines."/>
-                        <CheckBox x:Name="chkCaptureOnSlot" Content="Capture on slot change" IsChecked="{Binding CaptureOnSlotChange}" ToolTip="Before changing to a new slot, capture selected properties into current slot."/>
-                        <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" IsChecked="{Binding RestoreOnSlotChange}" ToolTip="Automatically restore slot contents after changing to a new slot."/>
-                        <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}" ToolTip="Automatically restore current slot content when song is loaded."/>
-                        <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}" ToolTip="Automatically restore current slot content when playback stops."/>
+                        <CheckBox x:Name="chkConfirmClear" Content="Confirm on clear/purge" IsChecked="{Binding ConfirmClear}" ToolTip="Ask for confirmation when discarding stored properties." />
+                        <CheckBox x:Name="chkSelFollowsSlot" Content="Selection follows slot" IsChecked="{Binding SelectionFollowsSlot}" ToolTip="When changing slot, only stored properties will be selected." />
+                        <CheckBox x:Name="chkSelNew" Content="Select new machines" IsChecked="{Binding SelectNewMachines}" ToolTip="Automatically select newly created machines." />
+                        <CheckBox x:Name="chkCaptureOnSlot" Content="Capture on slot change" IsChecked="{Binding CaptureOnSlotChange}" ToolTip="Before changing to a new slot, capture selected properties into current slot." />
+                        <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" IsChecked="{Binding RestoreOnSlotChange}" ToolTip="Automatically restore slot contents after changing to a new slot." />
+                        <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}" ToolTip="Automatically restore current slot content when song is loaded." />
+                        <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}" ToolTip="Automatically restore current slot content when playback stops." />
                         <Separator Height="9" />
                         <Button x:Name="btnCapture" ToolTip="Capture selected properties.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding cmdCapture}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Capture" Gesture="RightClick"/>
-                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Capture" Gesture="Ctrl+RightClick"/>
+                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Capture" Gesture="RightClick" />
+                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Capture" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             Capture
                         </Button>
                         <Button x:Name="btnCaptureMissing" ToolTip="Capture selected properties that are not already stored.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding cmdCaptureMissing}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick"/>
-                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="CaptureMissing" Gesture="Ctrl+RightClick"/>
+                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick" />
+                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="CaptureMissing" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             Capture Missing
                         </Button>
@@ -201,8 +227,8 @@
                         <Button x:Name="btnRestore" ToolTip="Restore all stored properties.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding cmdRestore}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Restore" Gesture="RightClick"/>
-                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Restore" Gesture="Ctrl+RightClick"/>
+                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Restore" Gesture="RightClick" />
+                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Restore" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             Restore
                         </Button>
@@ -210,16 +236,16 @@
                         <Button x:Name="btnClear" ToolTip="Discard all stored properties.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding cmdClear}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Clear" Gesture="RightClick"/>
-                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick"/>
+                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Clear" Gesture="RightClick" />
+                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             Clear
                         </Button>
                         <Button x:Name="btnPurge" ToolTip="Discard stored properties that are not selected or belong to missing machines.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding cmdPurge}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Purge" Gesture="RightClick"/>
-                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Purge" Gesture="Ctrl+RightClick"/>
+                                <MouseBinding Command="{Binding cmdMap}" CommandParameter="Purge" Gesture="RightClick" />
+                                <MouseBinding Command="{Binding cmdMapSpecific}" CommandParameter="Purge" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             Purge
                         </Button>
@@ -236,14 +262,14 @@
                     </Style>
                 </Grid.Resources>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="40" />
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <ComboBox Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" ToolTip="Select slot A." >
                     <ComboBox.Style>
@@ -251,7 +277,7 @@
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding SlotA.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontWeight" Value="Bold" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -275,7 +301,7 @@
                             <Setter Property="FontWeight" Value="Normal" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding SlotB.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontWeight" Value="Bold" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -285,7 +311,7 @@
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -296,7 +322,7 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -307,7 +333,7 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -318,7 +344,7 @@
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Focusable="False" IsChecked="{Binding IsChecked}"/>
+                                <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <StackPanel Orientation="Horizontal">
@@ -335,7 +361,7 @@
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -346,7 +372,7 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -357,7 +383,7 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
@@ -368,7 +394,7 @@
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox Focusable="False" IsChecked="{Binding IsChecked}"/>
+                                <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <StackPanel Orientation="Horizontal">

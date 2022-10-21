@@ -73,6 +73,7 @@
     </Compile>
     <Compile Include="CPropertyStateVM.cs" />
     <Compile Include="ScrollSynchronizer.cs" />
+    <Compile Include="VirtualToggleButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

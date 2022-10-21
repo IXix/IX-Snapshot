@@ -1,13 +1,8 @@
-Fix treeview item checkbox response to key presses
-	When main treeview is working properly, copy the solution to manager
-
 Need thorough testing outside of debug to avoid persistant random crashes.
 
 RestoreOnSlotChange works but can it be optimised?
 
 Manager interface
-	Fix keyboard navigation of treeviews (see above)
-
 	Editing values would be nice.
 		Would have to make sure input was properly validated for the selected property
 		Machine data values would have to be non-editable
