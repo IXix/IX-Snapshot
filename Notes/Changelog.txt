@@ -2,6 +2,9 @@
 	Fixed copying empty properties (erase in dest)
 	Auto expand property groups with values on slot change
 	Disable manager copy buttons when both panes show the same slot
+	Improved treeview navigation
+		Select with spacebar doesn't work but navigating with arrow keys functions as expected
+		So make checkbox respond to spacebar we nned to adapt https://www.codeproject.com/articles/28306/working-with-checkboxes-in-the-wpf-treeview
 
 2022.10.20
 	Added CMachineSnapshot.ClearSelected()

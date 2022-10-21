@@ -1,11 +1,12 @@
+Fix treeview item checkbox response to key presses
+	When main treeview is working properly, copy the solution to manager
+
 Need thorough testing outside of debug to avoid persistant random crashes.
 
 RestoreOnSlotChange works but can it be optimised?
 
-
-
 Manager interface
-	Need to sync the scroll position in A/B panes	
+	Fix keyboard navigation of treeviews (see above)
 
 	Editing values would be nice.
 		Would have to make sure input was properly validated for the selected property
@@ -20,8 +21,6 @@ Need to enable renaming of slots
 	Doing so via the slot combo was glitchy before. It was ditched because we didn't want to spend ages fixing it.
 	Time to try again.
 
-Would like properties with values to be expanded when the slot becomes active in one of the treeviews.
-
 Inertia for parameter changes
 	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.
 	There's no Tick() so can't interpolate every tick
@@ -34,7 +33,4 @@ Some way of setting default property selection for individual machines would be 
 Select new machines option could be broken into separate options for attributes, globals. track and data.
 
 Styling of list items based on whether a value is stored/not stored/missing
-	Currently properties that have stored values are bold. Might be nice to have some sort if indicator graphic instead.
-
-Selecting (not checking) items in the treeview is very sluggish and doesn't work for mouse-clicks
-	Probably fires loads of unused events or something.
+	Currently properties that have stored values are bold. Might be nice to have some sort of indicator graphic instead.

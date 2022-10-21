@@ -48,6 +48,8 @@
         <Style x:Key="tvi_main" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+        </Style>
+        <Style x:Key="tvi_text" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="Normal" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
@@ -94,36 +96,50 @@
                         <TreeView x:Name="MachineList" Grid.Row="0" ItemContainerStyle="{StaticResource tvi_main}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                                    <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Name}" />
-                                        </StackPanel>
-                                    </CheckBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick"/>
+                                        <ContentPresenter>
+                                            <ContentPresenter.Content>
+                                                <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                            </ContentPresenter.Content>
+                                        </ContentPresenter>
+                                    </StackPanel>
                                 </HierarchicalDataTemplate>
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                                    <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Name}" />
-                                        </StackPanel>
-                                    </CheckBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick"/>
+                                        <ContentPresenter>
+                                            <ContentPresenter.Content>
+                                                <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                            </ContentPresenter.Content>
+                                        </ContentPresenter>
+                                    </StackPanel>
                                 </HierarchicalDataTemplate>
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                                    <CheckBox IsThreeState="True" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Name}" />
-                                        </StackPanel>
-                                    </CheckBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick"/>
+                                        <ContentPresenter>
+                                            <ContentPresenter.Content>
+                                                <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                            </ContentPresenter.Content>
+                                        </ContentPresenter>
+                                    </StackPanel>
                                 </HierarchicalDataTemplate>
 
                                 <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                                    <CheckBox IsChecked="{Binding IsChecked}">
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding DisplayName}" Margin="0,0,5,0" />
-                                            <TextBlock Text="{Binding DisplayValue, UpdateSourceTrigger=PropertyChanged}" />
-                                        </StackPanel>
-                                    </CheckBox>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox Focusable="False" IsChecked="{Binding IsChecked}"/>
+                                        <ContentPresenter>
+                                            <ContentPresenter.Content>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
+                                                    <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayValue}" />
+                                                </StackPanel>
+                                            </ContentPresenter.Content>
+                                        </ContentPresenter>
+                                    </StackPanel>
                                 </DataTemplate>
                             </TreeView.Resources>
                         </TreeView>
@@ -268,72 +284,100 @@
                 <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemContainerStyle="{StaticResource tvi_manager_a}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <CheckBox IsChecked="{Binding IsCheckedM}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding DisplayName}" Margin="0,0,5,0" />
-                                    <TextBlock Text="{Binding DisplayValueA, UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Focusable="False" IsChecked="{Binding IsChecked}"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
+                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayValueA}" />
+                                        </StackPanel>
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
                 <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="2" ItemContainerStyle="{StaticResource tvi_manager_b}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <CheckBox IsThreeState="True" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <CheckBox IsChecked="{Binding IsCheckedM}">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding DisplayName}" Margin="0,0,5,0" />
-                                    <TextBlock Text="{Binding DisplayValueB, UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
-                            </CheckBox>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Focusable="False" IsChecked="{Binding IsChecked}"/>
+                                <ContentPresenter>
+                                    <ContentPresenter.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
+                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayValueB}" />
+                                        </StackPanel>
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </StackPanel>
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
