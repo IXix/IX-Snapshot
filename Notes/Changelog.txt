@@ -1,3 +1,8 @@
+2022.10.21
+	Fixed copying empty properties (erase in dest)
+	Auto expand property groups with values on slot change
+	Disable manager copy buttons when both panes show the same slot
+
 2022.10.20
 	Added CMachineSnapshot.ClearSelected()
 	Added manager buttons and matching commands for A/B operations

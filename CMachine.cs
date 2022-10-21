@@ -1044,6 +1044,7 @@ namespace Snapshot
             }
 
             OnPropertyChanged("State");
+            OnPropertyChanged("CurrentSlot");
         }
 
         #endregion Commands

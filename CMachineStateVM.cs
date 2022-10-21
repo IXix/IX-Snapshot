@@ -19,6 +19,9 @@ namespace Snapshot
             state.Machine.PropertyChanged += OnMachinePropertyChanged;
             OwnerVM = ownerVM;
             IsChecked = false;
+            IsCheckedM = false;
+            IsExpanded = true;
+            IsExpandedM = true;
             LoadChildren();
         }
 

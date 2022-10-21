@@ -237,10 +237,10 @@
                     </ComboBox.Style>
                 </ComboBox>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
-                    <Button x:Name="CopyBtoA" Command="{Binding cmdBtoA}" ToolTip="Copy selected propertied to left.">
+                    <Button x:Name="CopyBtoA" Command="{Binding cmdBtoA}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to left.">
                         <TextBlock Text="&lt;&lt;" />
                     </Button>
-                    <Button x:Name="CopyAtoB" Command="{Binding cmdAtoB}" ToolTip="Copy selected propertied to right.">
+                    <Button x:Name="CopyAtoB" Command="{Binding cmdAtoB}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to right.">
                         <TextBlock Text="&gt;&gt;" />
                     </Button>
                     <Separator Height="9" />
@@ -347,7 +347,7 @@
                         Capture Missing
                     </Button>
                     <Separator Height="5" />
-                    <Button x:Name="btnPurgeA" ToolTip="Clear properties that are not selected.">
+                    <Button x:Name="btnPurgeA" ToolTip="Discard properties that are not selected or belong to missing machines.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding cmdPurgeA}" MouseAction="LeftClick" />
                         </Button.InputBindings>
@@ -388,7 +388,7 @@
                         Capture Missing
                     </Button>
                     <Separator Height="5" />
-                    <Button x:Name="btnPurgeB" ToolTip="Clear properties that are not selected.">
+                    <Button x:Name="btnPurgeB" ToolTip="Discard properties that are not selected or belong to missing machines.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding cmdPurgeB}" MouseAction="LeftClick" />
                         </Button.InputBindings>

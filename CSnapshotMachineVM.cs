@@ -170,21 +170,60 @@ namespace Snapshot
                     }
                     break;
 
+                case "CurrentSlot":
+                    {
+                        foreach (CMachineStateVM s in States)
+                        {
+                            s.OnPropertyChanged("GotValueA");
+                            s.OnPropertyChanged("DisplayValueA");
+
+                            // Auto expand if a value is present
+                            foreach (var c in s.Children)
+                            {
+                                foreach (var cc in c.Children)
+                                {
+                                    cc.IsExpanded = cc.GotValue;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
                 case "SlotA":
                     NotifyPropertyChanged("SlotA");
+                    NotifyPropertyChanged("CanCopy");
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("GotValueA");
                         s.OnPropertyChanged("DisplayValueA");
+                        
+                        // Auto expand if a value is present in SlotA or SlotB
+                        foreach (var c in s.Children)
+                        {
+                            foreach(var cc in c.Children)
+                            {
+                                cc.IsExpandedM = cc.GotValueA || cc.GotValueB;
+                            }
+                        }
                     }
                     break;
 
                 case "SlotB":
                     NotifyPropertyChanged("SlotB");
+                    NotifyPropertyChanged("CanCopy");
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("GotValueB");
                         s.OnPropertyChanged("DisplayValueB");
+
+                        // Auto expand if a value is present in SlotA or SlotB
+                        foreach (var c in s.Children)
+                        {
+                            foreach (var cc in c.Children)
+                            {
+                                cc.IsExpandedM = cc.GotValueA || cc.GotValueB;
+                            }
+                        }
                     }
                     break;
 
@@ -261,6 +300,8 @@ namespace Snapshot
         public CMachineSnapshot SlotA => Owner.SlotA;
 
         public CMachineSnapshot SlotB => Owner.SlotB;
+
+        public bool CanCopy => SlotA != SlotB;
 
         public int SelA
         {
