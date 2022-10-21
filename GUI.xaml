@@ -65,6 +65,9 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <Style x:Key="tvi_value" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
+            <Setter Property="FontWeight" Value="Normal" />
+        </Style>
 
         <!-- Manager TreeViewItems -->
         <Style x:Key="tvi_manager" TargetType="{x:Type TreeViewItem}">
@@ -161,7 +164,7 @@
                                             <ContentPresenter.Content>
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
-                                                    <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayValue}" />
+                                                    <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValue}" />
                                                 </StackPanel>
                                             </ContentPresenter.Content>
                                         </ContentPresenter>
@@ -349,7 +352,7 @@
                                     <ContentPresenter.Content>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
-                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayValueA}" />
+                                            <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValueA}" />
                                         </StackPanel>
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
@@ -399,7 +402,7 @@
                                     <ContentPresenter.Content>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
-                                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayValueB}" />
+                                            <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValueB}" />
                                         </StackPanel>
                                     </ContentPresenter.Content>
                                 </ContentPresenter>
