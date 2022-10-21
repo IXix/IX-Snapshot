@@ -214,6 +214,11 @@
 
         <TabItem Header="Manage">
             <Grid>
+                <Grid.Resources>
+                    <Style TargetType="ScrollViewer">
+                        <Setter Property="local:ScrollSynchronizer.ScrollGroup" Value="Group1" />
+                    </Style>
+                </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>

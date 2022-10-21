@@ -72,6 +72,7 @@
       <DependentUpon>CMappingDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="CPropertyStateVM.cs" />
+    <Compile Include="ScrollSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
