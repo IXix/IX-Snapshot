@@ -5,6 +5,7 @@
 	Improved treeview navigation
 	Implemented keyboard control of treeview checkboxes
 	Fixed "Selection follows slot" broken in last commit
+	Fixed manager selection buttons, also broken in last commit
 
 2022.10.20
 	Added CMachineSnapshot.ClearSelected()
