@@ -14,10 +14,6 @@ Context menu for treeview items? (for groups apply the action to all children)
 	Capture/Clear/Restore
 	Copy from left/right
 	Remove from all snapshot slots
-	
-Need to enable renaming of slots
-	The problem is that when you start typing, the combo jumps to the first item whose name starts with what you type.
-	If we can disable that behaviour, renaming should work fine.
 
 Inertia for parameter changes
 	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.
@@ -32,3 +28,6 @@ Select new machines option could be broken into separate options for attributes,
 
 Styling of list items based on whether a value is stored/not stored/missing
 	Currently properties that have stored values are bold. Might be nice to have some sort of indicator graphic instead.
+
+Multiple selection in treeview
+	Possibly by adapting https://chrigas.blogspot.com/2014/08/wpf-treeview-with-multiple-selection.html

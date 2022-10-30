@@ -343,6 +343,16 @@ namespace Snapshot
             get => Owner.SlotName;
             set => Owner.SlotName = value;
         }
+        public string SlotNameA
+        {
+            get => Owner.SlotNameA;
+            set => Owner.SlotNameA = value;
+        }
+        public string SlotNameB
+        {
+            get => Owner.SlotNameB;
+            set => Owner.SlotNameB = value;
+        }
         public List<CMachineSnapshot> Slots
         {
             get => Owner.Slots;

@@ -187,7 +187,7 @@
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <TextBlock>Slot Name</TextBlock>
-                        <ComboBox ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="False" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select current slot.">
+                        <ComboBox ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select current slot." IsTextSearchEnabled="False">
                             <ComboBox.Style>
                                 <Style TargetType="{x:Type ComboBox}">
                                     <Setter Property="FontWeight" Value="Normal" />
@@ -274,7 +274,7 @@
                     <ColumnDefinition Width="40" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <ComboBox Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" ToolTip="Select slot A." >
+                <ComboBox Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot A." IsTextSearchEnabled="False" >
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />
@@ -301,7 +301,7 @@
                     <Button x:Name="btnSelectStored_A" Command="{Binding cmdSelectStoredA}" MinWidth="30" Padding="3,1" ToolTip="Select only properties with left values.">L</Button>
                     <Button x:Name="btnSelectStored_B" Command="{Binding cmdSelectStoredB}" MinWidth="30" Padding="3,1" ToolTip="Select only properties with right values.">R</Button>
                 </StackPanel>
-                <ComboBox Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" ToolTip="Select slot B." >
+                <ComboBox Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
                     <ComboBox.Style>
                         <Style TargetType="{x:Type ComboBox}">
                             <Setter Property="FontWeight" Value="Normal" />

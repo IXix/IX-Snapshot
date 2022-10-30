@@ -1,3 +1,10 @@
+2022.10.30
+	Implemented renaming slots via slot combos
+		Just needed to set "IsTextSearchEnabled" to false to prevent ketpresses from changing the selected item.
+
+2022.10.22
+	Version 1.1
+
 2022.10.21
 	Fixed copying empty properties (erase in dest)
 	Auto expand property groups with values on slot change

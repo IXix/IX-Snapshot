@@ -20,7 +20,7 @@ namespace Snapshot
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
-    [MachineDecl(Name = "IX Snapshot", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
+    [MachineDecl(Name = "IX Snapshot 1.1", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         IBuzzMachineHost host;
@@ -76,6 +76,44 @@ namespace Snapshot
                 {
                     CurrentSlot.Name = value;
                     OnPropertyChanged("SlotName");
+                    if (CurrentSlot == SlotA)
+                        OnPropertyChanged("SlotNameA");
+                    if (CurrentSlot == SlotB)
+                        OnPropertyChanged("SlotNameB");
+                }
+            }
+        }
+
+        public string SlotNameA
+        {
+            get => SlotA.Name;
+            set
+            {
+                if (value != null && value != SlotA.Name)
+                {
+                    SlotA.Name = value;
+                    OnPropertyChanged("SlotNameA");
+                    if (SlotA == CurrentSlot)
+                        OnPropertyChanged("SlotName");
+                    if (SlotA == SlotB)
+                        OnPropertyChanged("SlotNameB");
+                }
+            }
+        }
+
+        public string SlotNameB
+        {
+            get => SlotB.Name;
+            set
+            {
+                if (value != null && value != SlotB.Name)
+                {
+                    SlotB.Name = value;
+                    OnPropertyChanged("SlotNameB");
+                    if (SlotB == CurrentSlot)
+                        OnPropertyChanged("SlotName");
+                    if (SlotB == SlotA)
+                        OnPropertyChanged("SlotNameA");
                 }
             }
         }
