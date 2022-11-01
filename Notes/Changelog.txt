@@ -1,3 +1,8 @@
+2022.11.01
+	Added Show combo to main an manager
+		Show stored/empty/all properties in the treeviews
+		Added various related properties
+
 2022.10.30
 	Implemented renaming slots via slot combos
 		Just needed to set "IsTextSearchEnabled" to false to prevent ketpresses from changing the selected item.

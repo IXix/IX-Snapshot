@@ -21,6 +21,7 @@ Inertia for parameter changes
 	Could we use a timer or a worker thread?
 
 Filter visibility of properties in the treeview somehow.
+	Hook a textbox up to the existing visibility/expandedness systems
 
 Some way of setting default property selection for individual machines would be nice
 

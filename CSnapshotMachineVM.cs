@@ -150,6 +150,58 @@ namespace Snapshot
             };
         }
 
+        private void UpdateVisibility()
+        {
+            // Set visibility and expandedness for main treeview
+            foreach (CMachineStateVM s in States)
+            {
+                s.IsVisible = GetVisibility(s);
+                s.IsExpanded = GetExpanded(s);
+
+                foreach (var c in s.Children)
+                {
+                    c.IsVisible = GetVisibility(c);
+                    c.IsExpanded = GetExpanded(c);
+                    foreach (var cc in c.Children)
+                    {
+                        cc.IsExpanded = GetExpanded(cc);
+                        cc.IsVisible = GetVisibility(cc);
+                        foreach (var ccc in cc.Children)
+                        {
+                            GetExpanded(ccc);
+                            ccc.IsVisible = GetVisibility(ccc);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UpdateVisibilityM()
+        {
+            // Set visibility and expandedness for manager treeviews
+            foreach (CMachineStateVM s in States)
+            {
+                s.IsVisibleM = GetVisibilityM(s);
+                s.IsExpandedM = GetExpandedM(s);
+
+                foreach (var c in s.Children)
+                {
+                    c.IsVisibleM = GetVisibility(c);
+                    c.IsExpandedM = GetExpanded(c);
+                    foreach (var cc in c.Children)
+                    {
+                        cc.IsExpandedM = GetExpanded(cc);
+                        cc.IsVisibleM = GetVisibility(cc);
+                        foreach (var ccc in cc.Children)
+                        {
+                            GetExpanded(ccc);
+                            ccc.IsVisibleM = GetVisibility(ccc);
+                        }
+                    }
+                }
+            }
+        }
+
         private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
@@ -178,21 +230,20 @@ namespace Snapshot
                     }
                     break;
 
+                case "Filter":
+                    UpdateVisibility();
+                    break;
+
+                case "FilterM":
+                    UpdateVisibilityM();
+                    break;
+
                 case "CurrentSlot":
                     {
                         foreach (CMachineStateVM s in States)
                         {
                             s.OnPropertyChanged("GotValueA");
                             s.OnPropertyChanged("DisplayValueA");
-
-                            // Auto expand if a value is present
-                            foreach (var c in s.Children)
-                            {
-                                foreach (var cc in c.Children)
-                                {
-                                    cc.IsExpanded = cc.GotValue;
-                                }
-                            }
                         }
                     }
                     break;
@@ -204,15 +255,6 @@ namespace Snapshot
                     {
                         s.OnPropertyChanged("GotValueA");
                         s.OnPropertyChanged("DisplayValueA");
-                        
-                        // Auto expand if a value is present in SlotA or SlotB
-                        foreach (var c in s.Children)
-                        {
-                            foreach(var cc in c.Children)
-                            {
-                                cc.IsExpandedM = cc.GotValueA || cc.GotValueB;
-                            }
-                        }
                     }
                     break;
 
@@ -223,15 +265,6 @@ namespace Snapshot
                     {
                         s.OnPropertyChanged("GotValueB");
                         s.OnPropertyChanged("DisplayValueB");
-
-                        // Auto expand if a value is present in SlotA or SlotB
-                        foreach (var c in s.Children)
-                        {
-                            foreach (var cc in c.Children)
-                            {
-                                cc.IsExpandedM = cc.GotValueA || cc.GotValueB;
-                            }
-                        }
                     }
                     break;
 
@@ -256,6 +289,52 @@ namespace Snapshot
         private CMachine Owner { get; set; }
 
         public string SelectionInfo => Owner.SelectionInfo;
+
+        internal System.Windows.Visibility GetVisibility(CTreeViewItemVM tvi)
+        {
+            if (tvi.IsChecked != false)
+                return System.Windows.Visibility.Visible; // Don't hide selected items
+
+            switch(ShowMode)
+            {
+                case 0: // Empty
+                    return tvi.GotValue ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+
+                case 1: // Stored
+                    return tvi.GotValue ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+
+                default:
+                    return System.Windows.Visibility.Visible;
+            }
+        }
+
+        internal System.Windows.Visibility GetVisibilityM(CTreeViewItemVM tvi)
+        {
+            if (tvi.IsCheckedM != false)
+                return System.Windows.Visibility.Visible; // Don't hide selected items
+
+            switch (ShowModeM)
+            {
+                case 0: // Empty
+                    return tvi.GotValueM ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+
+                case 1: // Stored
+                    return tvi.GotValueM ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+
+                default:
+                    return System.Windows.Visibility.Visible;
+            }
+        }
+
+        internal bool GetExpanded(CTreeViewItemVM tvi)
+        {
+            return tvi.IsChecked != false || tvi.GotValue; // Auto-expand selected items, items with selected children and items with values
+        }
+
+        internal bool GetExpandedM(CTreeViewItemVM tvi)
+        {
+            return tvi.IsCheckedM != false || tvi.GotValueM; // Auto-expand selected items, items with selected children and items with values
+        }
 
         public void AddState(CMachineState state)
         {
@@ -329,6 +408,18 @@ namespace Snapshot
             {
                 Owner.SelB = value;
             }
+        }
+
+        public int ShowMode
+        {
+            get => Owner.ShowMode;
+            set => Owner.ShowMode = value;
+        }
+
+        public int ShowModeM
+        {
+            get => Owner.ShowModeM;
+            set => Owner.ShowModeM = value;
         }
 
         public CMachineSnapshot CurrentSlot => Owner.CurrentSlot;

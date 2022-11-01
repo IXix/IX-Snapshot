@@ -24,6 +24,9 @@ namespace Snapshot
         bool _isSelected;
         bool _isSelectedM;
 
+        System.Windows.Visibility _isVisible;
+        System.Windows.Visibility _isVisibleM;
+
         bool? _isChecked;
         bool? _isCheckedM;
         
@@ -42,6 +45,7 @@ namespace Snapshot
             _isCheckedM = false;
             _isSelected = false;
             _isSelectedM = false;
+            _isVisible = System.Windows.Visibility.Visible;
             _children = new ObservableCollection<CTreeViewItemVM>();
         }
 
@@ -121,6 +125,32 @@ namespace Snapshot
                 {
                     _isSelectedM = value;
                     OnPropertyChanged("IsSelectedM");
+                }
+            }
+        }
+
+        public System.Windows.Visibility IsVisible
+        {
+            get { return _isVisible; }
+            set
+            {
+                if (value != _isVisible)
+                {
+                    _isVisible = value;
+                    OnPropertyChanged("IsVisible");
+                }
+            }
+        }
+
+        public System.Windows.Visibility IsVisibleM
+        {
+            get { return _isVisibleM; }
+            set
+            {
+                if (value != _isVisibleM)
+                {
+                    _isVisibleM = value;
+                    OnPropertyChanged("IsVisibleM");
                 }
             }
         }
@@ -237,6 +267,11 @@ namespace Snapshot
         public virtual bool GotValueB
         {
             get => false;
+        }
+
+        public virtual bool GotValueM
+        {
+            get => GotValueA || GotValueB;
         }
 
         public virtual string DisplayValue

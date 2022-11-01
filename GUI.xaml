@@ -54,6 +54,7 @@
         <Style x:Key="tvi_main" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+            <Setter Property="Visibility" Value="{Binding IsVisible, Mode=OneWay}" />
             <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
             <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
             <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" />
@@ -73,6 +74,7 @@
         <Style x:Key="tvi_manager" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelectedM, Mode=TwoWay}" />
+            <Setter Property="Visibility" Value="{Binding IsVisibleM, Mode=OneWay}" />
             <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
             <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
             <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsCheckedM, UpdateSourceTrigger=PropertyChanged}" />
@@ -177,6 +179,12 @@
                             <Button x:Name="btnSelectNone" Command="{Binding cmdSelectNone}" MinWidth="30" Padding="3,1" ToolTip="Deselect all properties.">None</Button>
                             <Button x:Name="btnSelectStored" Command="{Binding cmdSelectStored}" MinWidth="30" Padding="3,1" ToolTip="Select only stored properties.">Stored</Button>
                             <Button x:Name="btnSelectInvert" Command="{Binding cmdSelectInvert}" MinWidth="30" Padding="3,1" ToolTip="Invert the selection.">Invert</Button>
+                            <TextBlock VerticalAlignment="Center" Margin="3,1">Show:</TextBlock>
+                            <ComboBox Name="cbxShow" SelectedIndex="{Binding ShowMode, Mode=OneWayToSource}" Padding="3,1" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
+                                <ComboBoxItem Tag="Empty" Content="Empty" />
+                                <ComboBoxItem Tag="Stored" Content="Stored" />
+                                <ComboBoxItem Tag="All" Content="All" IsSelected="True" />
+                            </ComboBox>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -300,6 +308,13 @@
                     <Separator Height="9" />
                     <Button x:Name="btnSelectStored_A" Command="{Binding cmdSelectStoredA}" MinWidth="30" Padding="3,1" ToolTip="Select only properties with left values.">L</Button>
                     <Button x:Name="btnSelectStored_B" Command="{Binding cmdSelectStoredB}" MinWidth="30" Padding="3,1" ToolTip="Select only properties with right values.">R</Button>
+                    <Separator Height="9" />
+                    <TextBlock>Show</TextBlock>
+                    <ComboBox Name="cbxShowM" SelectedIndex="{Binding ShowModeM, Mode=OneWayToSource}" Padding="3,1" ToolTip="Select which properties to show. Selected properties are always visible." HorizontalContentAlignment="Center" VerticalAlignment="Center">
+                        <ComboBoxItem Tag="Empty" Content="Empty" />
+                        <ComboBoxItem Tag="Stored" Content="Stored" />
+                        <ComboBoxItem Tag="All" Content="All" IsSelected="True" />
+                    </ComboBox>
                 </StackPanel>
                 <ComboBox Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
                     <ComboBox.Style>

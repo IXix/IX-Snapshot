@@ -37,6 +37,26 @@ namespace Snapshot
         private List<CMachineSnapshot> _slots;
         public List<CMachineSnapshot> Slots => _slots;
 
+        public int ShowMode
+        {
+            get { return _showMode; }
+            set
+            {
+                _showMode = value;
+                OnPropertyChanged("Filter");
+            }
+        }
+
+        public int ShowModeM
+        {
+            get { return _showModeM; }
+            set
+            {
+                _showModeM = value;
+                OnPropertyChanged("FilterM");
+            }
+        }
+
         public CMachineSnapshot CurrentSlot => _slots[_slot];
 
         public CMachineSnapshot SlotA => _slots[_slotA];
@@ -49,6 +69,7 @@ namespace Snapshot
                 {
                     _slotA = value;
                     OnPropertyChanged("SlotA");
+                    OnPropertyChanged("FilterM");
                 }
             }
         }
@@ -63,6 +84,7 @@ namespace Snapshot
                 {
                     _slotB = value;
                     OnPropertyChanged("SlotB");
+                    OnPropertyChanged("FilterM");
                 }
             }
         }
@@ -296,6 +318,7 @@ namespace Snapshot
             _midiMapping = new Dictionary<Action, UInt32>();
             _confirmClear = true;
 
+            _showMode = _showModeM = 2; // All
             _slots = new List<CMachineSnapshot>();
             _slot = _slotA = 0;
             _slotB = 1;
@@ -1010,6 +1033,8 @@ namespace Snapshot
 
         #region Global Parameters
         // Global params
+        internal int _showMode;
+        internal int _showModeM;
         internal int _slot;
         internal int _slotA;
         internal int _slotB;
@@ -1115,6 +1140,7 @@ namespace Snapshot
 
             OnPropertyChanged("State");
             OnPropertyChanged("CurrentSlot");
+            OnPropertyChanged("Filter");
         }
 
         #endregion Commands
