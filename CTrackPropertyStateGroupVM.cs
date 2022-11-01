@@ -37,7 +37,7 @@ namespace Snapshot
             {
                 try
                 {
-                    var c = Children.First(x => x.GotValue == true);
+                    CTreeViewItemVM c = Children.First(x => x.GotValue == true);
                     return true;
                 }
                 catch
@@ -53,7 +53,7 @@ namespace Snapshot
             {
                 try
                 {
-                    var c = Children.First(x => x.GotValueA == true);
+                    CTreeViewItemVM c = Children.First(x => x.GotValueA == true);
                     return true;
                 }
                 catch
@@ -69,7 +69,7 @@ namespace Snapshot
             {
                 try
                 {
-                    var c = Children.First(x => x.GotValueB == true);
+                    CTreeViewItemVM c = Children.First(x => x.GotValueB == true);
                     return true;
                 }
                 catch
@@ -81,7 +81,7 @@ namespace Snapshot
 
         protected override void LoadChildren()
         {
-            foreach (var pg in _group.Children)
+            foreach (CPropertyStateGroup pg in _group.Children)
             {
                 Children.Add(new CPropertyStateGroupVM(pg, this, _ownerVM));
             }

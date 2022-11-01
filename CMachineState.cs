@@ -194,7 +194,7 @@ namespace Snapshot
             {
                 if(GotValue)
                 {
-                    var stored = Owner.CurrentSlot.GetPropertySize(this);
+                    int stored = Owner.CurrentSlot.GetPropertySize(this);
                     return string.Format("Data - {0} ({1})", Misc.ToSize(stored), Misc.ToSize(Size));
                 }
                 else
@@ -252,7 +252,7 @@ namespace Snapshot
             set
             {
                 _active = value;
-               foreach(var c in Children)
+               foreach(IPropertyState c in Children)
                 {
                     c.Active = value;
                 }
@@ -295,7 +295,7 @@ namespace Snapshot
             set
             {
                 _active = value;
-                foreach (var c in Children)
+                foreach (CPropertyStateGroup c in Children)
                 {
                     c.Active = value;
                 }
@@ -323,27 +323,27 @@ namespace Snapshot
             }
 
             GlobalStates = new CPropertyStateGroup(owner, this, "Global");
-            foreach (var p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
+            foreach (IParameter p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
-                    var ps = new CParameterState(owner, this, p);
+                    CParameterState ps = new CParameterState(owner, this, p);
                     GlobalStates.Children.Add(ps);
                     _allProperties.Add(ps);
                 }
             }
 
             TrackStates = new CTrackPropertyStateGroup(owner, this, "Track");
-            var tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
-            foreach (var p in tracks.Parameters)
+            IParameterGroup tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
+            foreach (IParameter p in tracks.Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
-                    var pg = new CPropertyStateGroup(owner, this, p.Name);
+                    CPropertyStateGroup pg = new CPropertyStateGroup(owner, this, p.Name);
                     TrackStates.Children.Add(pg);
                     for(int i = 0; i < tracks.TrackCount; i++)
                     {
-                        var ps = new CParameterState(owner, this, p, i);
+                        CParameterState ps = new CParameterState(owner, this, p, i);
                         pg.Children.Add(ps);
                         _allProperties.Add(ps);
                     }
@@ -351,9 +351,9 @@ namespace Snapshot
             }
 
             AttributeStates = new CPropertyStateGroup(owner, this, "Attributes");
-            foreach (var a in Machine.Attributes)
+            foreach (IAttribute a in Machine.Attributes)
             {
-                var ats = new CAttributeState(owner, this, a);
+                CAttributeState ats = new CAttributeState(owner, this, a);
                 AttributeStates.Children.Add(ats);
                 _allProperties.Add(ats);
             }
@@ -363,7 +363,7 @@ namespace Snapshot
 
         private void OnMachinePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var m = sender as IMachine;
+            IMachine m = sender as IMachine;
 
             if (m != Machine) return;
 
@@ -437,9 +437,9 @@ namespace Snapshot
             int delta = Machine.TrackCount - _trackCount;
             if (delta < 0) // Track removed
             {
-                foreach(var g in TrackStates.Children) // for each track param
+                foreach(CPropertyStateGroup g in TrackStates.Children) // for each track param
                 {
-                    foreach(var p in g.Children.Where(x => x.Track > newCount - 1))
+                    foreach(IPropertyState p in g.Children.Where(x => x.Track > newCount - 1))
                     {
                         p.Active = false;
                     }
@@ -450,9 +450,9 @@ namespace Snapshot
                 if(newCount <= _highestTrackCount) // Previously added track restored
                 {
                     
-                    foreach (var g in TrackStates.Children) // for each track param9
+                    foreach (CPropertyStateGroup g in TrackStates.Children) // for each track param9
                     {
-                        foreach (var p in g.Children.Where(x => x.Track > _trackCount - 1 && x.Track < newCount))
+                        foreach (IPropertyState p in g.Children.Where(x => x.Track > _trackCount - 1 && x.Track < newCount))
                         {
                             p.Active = true;
                         }
@@ -463,10 +463,10 @@ namespace Snapshot
                     while(delta > 0) // Not sure if this is necessary. Can multiple tracks be added at once?
                     {
                         int newIndex = newCount - delta;
-                        foreach (var g in TrackStates.Children) // for each track param
+                        foreach (CPropertyStateGroup g in TrackStates.Children) // for each track param
                         {
                             int gIndex = (g.Children.First() as CParameterState).Parameter.IndexInGroup;
-                            var tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
+                            IParameterGroup tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
 
                             CParameterState ps = new CParameterState(_owner, this, tracks.Parameters[gIndex], newIndex);
                             g.Children.Add(ps);

@@ -473,7 +473,7 @@ namespace Snapshot
 
         private void CopySelectedProperties(CMachineSnapshot src, CMachineSnapshot dest)
         {
-            var tmp = new CMachineSnapshot(src);
+            CMachineSnapshot tmp = new CMachineSnapshot(src);
 
             // Remove properties that aren't selected from the copy
             tmp.AttributeValues.Remove(x => x.Selected_M == false);
@@ -514,14 +514,14 @@ namespace Snapshot
             List<IPropertyState> lp = new List<IPropertyState>();
             if (main)
             {
-                foreach (var state in States)
+                foreach (CMachineState state in States)
                 {
                     lp.AddRange(state.AllProperties.Where(x => x.Selected));
                 }
             }
             else
             {
-                foreach (var state in States)
+                foreach (CMachineState state in States)
                 {
                     lp.AddRange(state.AllProperties.Where(x => x.Selected_M));
                 }

@@ -158,15 +158,15 @@ namespace Snapshot
                 s.IsVisible = GetVisibility(s);
                 s.IsExpanded = GetExpanded(s);
 
-                foreach (var c in s.Children)
+                foreach (CTreeViewItemVM c in s.Children)
                 {
                     c.IsVisible = GetVisibility(c);
                     c.IsExpanded = GetExpanded(c);
-                    foreach (var cc in c.Children)
+                    foreach (CTreeViewItemVM cc in c.Children)
                     {
                         cc.IsExpanded = GetExpanded(cc);
                         cc.IsVisible = GetVisibility(cc);
-                        foreach (var ccc in cc.Children)
+                        foreach (CTreeViewItemVM ccc in cc.Children)
                         {
                             GetExpanded(ccc);
                             ccc.IsVisible = GetVisibility(ccc);
@@ -184,15 +184,15 @@ namespace Snapshot
                 s.IsVisibleM = GetVisibilityM(s);
                 s.IsExpandedM = GetExpandedM(s);
 
-                foreach (var c in s.Children)
+                foreach (CTreeViewItemVM c in s.Children)
                 {
                     c.IsVisibleM = GetVisibility(c);
                     c.IsExpandedM = GetExpanded(c);
-                    foreach (var cc in c.Children)
+                    foreach (CTreeViewItemVM cc in c.Children)
                     {
                         cc.IsExpandedM = GetExpanded(cc);
                         cc.IsVisibleM = GetVisibility(cc);
-                        foreach (var ccc in cc.Children)
+                        foreach (CTreeViewItemVM ccc in cc.Children)
                         {
                             GetExpanded(ccc);
                             ccc.IsVisibleM = GetVisibility(ccc);

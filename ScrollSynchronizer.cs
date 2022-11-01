@@ -56,7 +56,7 @@ namespace Snapshot
 		/// <param name="e">Event data that is issued by any event that tracks changes to the effective value of this property.</param>
 		private static void OnScrollGroupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			var scrollViewer = d as ScrollViewer;
+            ScrollViewer scrollViewer = d as ScrollViewer;
 			if (scrollViewer != null)
 			{
 				if (!string.IsNullOrEmpty((string)e.OldValue))
@@ -107,7 +107,7 @@ namespace Snapshot
 		{
 			if (e.VerticalChange != 0 || e.HorizontalChange != 0)
 			{
-				var changedScrollViewer = sender as ScrollViewer;
+                ScrollViewer changedScrollViewer = sender as ScrollViewer;
 				Scroll(changedScrollViewer);
 			}
 		}
@@ -119,11 +119,11 @@ namespace Snapshot
 		/// <param name="changedScrollViewer">Sroll viewer, that specifies the current position of the group.</param>
 		private static void Scroll(ScrollViewer changedScrollViewer)
 		{
-			var group = scrollViewers[changedScrollViewer];
+            string group = scrollViewers[changedScrollViewer];
 			verticalScrollOffsets[group] = changedScrollViewer.VerticalOffset;
 			horizontalScrollOffsets[group] = changedScrollViewer.HorizontalOffset;
 
-			foreach (var scrollViewer in scrollViewers.Where((s) => s.Value == group && s.Key != changedScrollViewer))
+			foreach (KeyValuePair<ScrollViewer, string> scrollViewer in scrollViewers.Where((s) => s.Value == group && s.Key != changedScrollViewer))
 			{
 				if (scrollViewer.Key.VerticalOffset != changedScrollViewer.VerticalOffset)
 				{

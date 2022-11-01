@@ -193,7 +193,7 @@ namespace Snapshot
 
                         if (Children != null)
                         {
-                            foreach (var child in Children)
+                            foreach (CTreeViewItemVM child in Children)
                             {
                                 child.IsChecked = _isChecked;
                             }
@@ -233,7 +233,7 @@ namespace Snapshot
 
                         if (Children != null)
                         {
-                            foreach (var child in Children)
+                            foreach (CTreeViewItemVM child in Children)
                             {
                                 child.IsCheckedM = _isCheckedM;
                             }
@@ -295,8 +295,8 @@ namespace Snapshot
             {
                 case "":
                     {
-                        var c = Children.Count(x => x.IsChecked == true);
-                        var i = Children.Count(x => x.IsChecked == null);
+                        int c = Children.Count(x => x.IsChecked == true);
+                        int i = Children.Count(x => x.IsChecked == null);
 
                         if (c == 0 && i == 0)
                         {
@@ -315,8 +315,8 @@ namespace Snapshot
 
                 case "M":
                     {
-                        var c = Children.Count(x => x.IsCheckedM == true);
-                        var i = Children.Count(x => x.IsCheckedM == null);
+                        int c = Children.Count(x => x.IsCheckedM == true);
+                        int i = Children.Count(x => x.IsCheckedM == null);
 
                         if (c == 0 && i == 0)
                         {
@@ -369,7 +369,7 @@ namespace Snapshot
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-                foreach (var c in Children)
+                foreach (CTreeViewItemVM c in Children)
                 {
                     c.OnPropertyChanged(propertyName);
                 }
@@ -381,7 +381,7 @@ namespace Snapshot
             if (Children.Remove(VM))
                 return true;
 
-            foreach (var c in Children)
+            foreach (CTreeViewItemVM c in Children)
             {
                 if (c.RemoveChild(VM))
                     return true;

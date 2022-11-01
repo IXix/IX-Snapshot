@@ -80,14 +80,14 @@ namespace Snapshot
             {
                 case "CAttributeState":
                     {
-                        var key = p as CAttributeState;
+                        CAttributeState key = p as CAttributeState;
                         AttributeValues[key] = value;
                     }
                     break;
 
                 case "CParameterState":
                     {
-                        var key = p as CParameterState;
+                        CParameterState key = p as CParameterState;
                         int track = p.Track ?? -1;
                         ParameterValues[key] = new Tuple<int, int>(track, value) ;
                     }
@@ -117,8 +117,8 @@ namespace Snapshot
             {
                 case "CParameterState":
                     {
-                        var key = p as CParameterState;
-                        var v = ParameterValues[key].Item2;
+                        CParameterState key = p as CParameterState;
+                        int v = ParameterValues[key].Item2;
                         value = key.Parameter.DescribeValue(v);
                     }
                     break;
@@ -192,21 +192,21 @@ namespace Snapshot
                 {
                     case "CAttributeState":
                         {
-                            var key = p as CAttributeState;
+                            CAttributeState key = p as CAttributeState;
                             AttributeValues[key] = src.AttributeValues[key];
                         }
                         break;
 
                     case "CParameterState":
                         {
-                            var key = p as CParameterState;
+                            CParameterState key = p as CParameterState;
                             ParameterValues[key] = src.ParameterValues[key];
                         }
                         break;
 
                     case "CDataState":
                         {
-                            var key = p as CDataState;
+                            CDataState key = p as CDataState;
                             DataValues[key] = src.DataValues[key];
                         }
                         break;
@@ -232,14 +232,14 @@ namespace Snapshot
                 {
                     case "CAttributeState":
                         {
-                            var key = p as CAttributeState;
+                            CAttributeState key = p as CAttributeState;
                             AttributeValues[key] = key.Attribute.Value;
                         }
                         break;
 
                     case "CParameterState":
                         {
-                            var key = p as CParameterState;
+                            CParameterState key = p as CParameterState;
                             int track = key.Track ?? -1;
                             ParameterValues[key] = new Tuple<int, int>(track, key.Parameter.GetValue(track));
                         }
@@ -247,7 +247,7 @@ namespace Snapshot
 
                     case "CDataState":
                         {
-                            var key = p as CDataState;
+                            CDataState key = p as CDataState;
                             DataValues[key] = key.Machine.Data;
                         }
                         break;
@@ -267,15 +267,15 @@ namespace Snapshot
             Application.Current.Dispatcher.BeginInvoke(
                 (Action)(() =>
                 {
-                    foreach (var v in AttributeValues.Where(x => x.Key.Active))
+                    foreach (KeyValuePair<CAttributeState, int> v in AttributeValues.Where(x => x.Key.Active))
                     {
                         v.Key.Attribute.Value = v.Value;
                     }
-                    foreach (var v in ParameterValues.Where(x => x.Key.Active))
+                    foreach (KeyValuePair<CParameterState, Tuple<int, int>> v in ParameterValues.Where(x => x.Key.Active))
                     {
                         v.Key.Parameter.SetValue(v.Value.Item1, v.Value.Item2);
                     }
-                    foreach (var v in DataValues.Where(x => x.Key.Active))
+                    foreach (KeyValuePair<CDataState, byte[]> v in DataValues.Where(x => x.Key.Active))
                     {
                         v.Key.Machine.Data = v.Value;
                     }
@@ -305,21 +305,21 @@ namespace Snapshot
                 {
                     case "CAttributeState":
                         {
-                            var key = p as CAttributeState;
+                            CAttributeState key = p as CAttributeState;
                             AttributeValues.Remove(key);
                         }
                         break;
 
                     case "CParameterState":
                         {
-                            var key = p as CParameterState;
+                            CParameterState key = p as CParameterState;
                             ParameterValues.Remove(key);
                         }
                         break;
 
                     case "CDataState":
                         {
-                            var key = p as CDataState;
+                            CDataState key = p as CDataState;
                             DataValues.Remove(key);
                         }
                         break;

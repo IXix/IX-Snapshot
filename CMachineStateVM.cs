@@ -27,7 +27,7 @@ namespace Snapshot
 
         private void OnMachinePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var m = sender as IMachine;
+            IMachine m = sender as IMachine;
 
             if (m != _state.Machine) return;
 
@@ -115,25 +115,25 @@ namespace Snapshot
         {
             if (_state.DataState != null)
             {
-                var s = new CPropertyStateVM(_state.DataState, this, _ownerVM);
+                CPropertyStateVM s = new CPropertyStateVM(_state.DataState, this, _ownerVM);
                 Children.Add(s);
             }
 
             if (_state.AttributeStates.Children.Count > 0)
             {
-                var s = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM);
+                CPropertyStateGroupVM s = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM);
                 Children.Add(s);
             }
 
             if (_state.GlobalStates.Children.Count > 0)
             {
-                var s = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM);
+                CPropertyStateGroupVM s = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM);
                 Children.Add(s);
             }
 
             if (_state.TrackStates.Children.Count > 0)
             {
-                var s = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM);
+                CTrackPropertyStateGroupVM s = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM);
                 Children.Add(s);
             }
         }
@@ -142,7 +142,7 @@ namespace Snapshot
         {
             try
             {
-                var trackParams = Children.First(x => x.GetType().Name == "CTrackPropertyStateGroupVM");
+                CTreeViewItemVM trackParams = Children.First(x => x.GetType().Name == "CTrackPropertyStateGroupVM");
 
                 int newCount = _state.Machine.TrackCount;
                 int count = trackParams.Children[0].Children.Count;
@@ -150,35 +150,23 @@ namespace Snapshot
 
                 if (delta < 0) // track(s?) removed
                 {
-                    foreach (var param in trackParams.Children)
+                    foreach (CTreeViewItemVM param in trackParams.Children)
                     {
-                        var vm = param.Children[newCount]; // newCount should be index of track to remove
+                        CTreeViewItemVM vm = param.Children[newCount]; // newCount should be index of track to remove
                         param.RemoveChild(vm);
                         param.UpdateTreeCheck();
                     }
                 }
                 else if (delta > 0) // track(s?) added
                 {
-                    /*
-                     * This is wrong. Adding the same property 'track' to all the groups.
-                     * 'track' needs to iterate too
-                     */
-                    //var track = _state.TrackStates.Children[0].Children.First(x => x.Track == count); // Count should be index of new track
-                    //foreach (var param in trackParams.Children)
-                    //{
-                    //    param.AddChild(new CPropertyStateVM(track, param, _ownerVM));
-                    //    param.UpdateTreeCheck();
-                    //}
-
                     int index = 0;
-                    foreach(var param in _state.TrackStates.Children)
+                    foreach(CPropertyStateGroup param in _state.TrackStates.Children)
                     {
-                        var property = param.Children.First(x => x.Track == count); // Count should be index of new track
-                        var paramVM = trackParams.Children[index];
+                        IPropertyState property = param.Children.First(x => x.Track == count); // Count should be index of new track
+                        CTreeViewItemVM paramVM = trackParams.Children[index];
                         paramVM.AddChild(new CPropertyStateVM(property, paramVM, _ownerVM));
                         index++;
                     }
-
                 }
             }
             catch
