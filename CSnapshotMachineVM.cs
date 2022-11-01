@@ -20,131 +20,131 @@ namespace Snapshot
 
             Owner.PropertyChanged += OwnerPropertyChanged;
 
-            cmdCapture = new SimpleCommand
+            CmdCapture = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Capture()
             };
-            cmdCaptureMissing = new SimpleCommand
+            CmdCaptureMissing = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.CaptureMissing()
             };
-            cmdRestore = new SimpleCommand
+            CmdRestore = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Restore()
             };
-            cmdClear = new SimpleCommand
+            CmdClear = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Clear()
             };
-            cmdPurge = new SimpleCommand
+            CmdPurge = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Purge()
             };
-            cmdMap = new SimpleCommand
+            CmdMap = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.MapCommand(x.ToString(), false)
             };
-            cmdMapSpecific = new SimpleCommand
+            CmdMapSpecific = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.MapCommand(x.ToString(), true)
             };
-            cmdSelectAll = new SimpleCommand
+            CmdSelectAll = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectAll()
             };
-            cmdSelectNone = new SimpleCommand
+            CmdSelectNone = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectNone()
             };
-            cmdSelectStored = new SimpleCommand
+            CmdSelectStored = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectStored()
             };
-            cmdSelectInvert = new SimpleCommand
+            CmdSelectInvert = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectInvert()
             };
 
-            cmdSelectAll_M = new SimpleCommand
+            CmdSelectAll_M = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectAll_M()
             };
-            cmdSelectNone_M = new SimpleCommand
+            CmdSelectNone_M = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectNone_M()
             };
-            cmdSelectInvert_M = new SimpleCommand
+            CmdSelectInvert_M = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectInvert_M()
             };
-            cmdSelectStoredA = new SimpleCommand
+            CmdSelectStoredA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectStoredA()
             };
-            cmdSelectStoredB = new SimpleCommand
+            CmdSelectStoredB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.SelectStoredB()
             };
-            cmdAtoB = new SimpleCommand
+            CmdAtoB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CopyAtoB()
             };
-            cmdBtoA = new SimpleCommand
+            CmdBtoA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CopyBtoA()
             };
 
-            cmdCaptureA = new SimpleCommand
+            CmdCaptureA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CaptureA()
             };
-            cmdCaptureMissingA = new SimpleCommand
+            CmdCaptureMissingA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CaptureMissingA()
             };
-            cmdPurgeA = new SimpleCommand
+            CmdPurgeA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.PurgeA()
             };
-            cmdClearSelectedA = new SimpleCommand
+            CmdClearSelectedA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.ClearSelectedA()
             };
-            cmdClearA = new SimpleCommand
+            CmdClearA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.ClearA()
             };
-            cmdRestoreA = new SimpleCommand
+            CmdRestoreA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.RestoreA()
             };
 
-            cmdCaptureB = new SimpleCommand
+            CmdCaptureB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CaptureB()
             };
-            cmdCaptureMissingB = new SimpleCommand
+            CmdCaptureMissingB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CaptureMissingB()
             };
-            cmdPurgeB = new SimpleCommand
+            CmdPurgeB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.PurgeB()
             };
-            cmdClearSelectedB = new SimpleCommand
+            CmdClearSelectedB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.ClearSelectedB()
             };
-            cmdClearB = new SimpleCommand
+            CmdClearB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.ClearB()
             };
-            cmdRestoreB = new SimpleCommand
+            CmdRestoreB = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.RestoreB()
             };
@@ -280,8 +280,7 @@ namespace Snapshot
 
         public void NotifyPropertyChanged(string name)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion
@@ -349,39 +348,39 @@ namespace Snapshot
         public ObservableCollection<CMachineStateVM> States { get; }
 
         #region Commands
-        public SimpleCommand cmdCapture { get; private set; }
-        public SimpleCommand cmdCaptureMissing { get; private set; }
-        public SimpleCommand cmdRestore { get; private set; }
-        public SimpleCommand cmdClear { get; private set; }
-        public SimpleCommand cmdPurge { get; private set; }
-        public SimpleCommand cmdMap { get; private set; }
-        public SimpleCommand cmdMapSpecific { get; private set; }
-        public SimpleCommand cmdSelectAll { get; private set; }
-        public SimpleCommand cmdSelectNone { get; private set; }
-        public SimpleCommand cmdSelectStored { get; private set; }
-        public SimpleCommand cmdSelectInvert { get; private set; }
+        public SimpleCommand CmdCapture { get; private set; }
+        public SimpleCommand CmdCaptureMissing { get; private set; }
+        public SimpleCommand CmdRestore { get; private set; }
+        public SimpleCommand CmdClear { get; private set; }
+        public SimpleCommand CmdPurge { get; private set; }
+        public SimpleCommand CmdMap { get; private set; }
+        public SimpleCommand CmdMapSpecific { get; private set; }
+        public SimpleCommand CmdSelectAll { get; private set; }
+        public SimpleCommand CmdSelectNone { get; private set; }
+        public SimpleCommand CmdSelectStored { get; private set; }
+        public SimpleCommand CmdSelectInvert { get; private set; }
 
-        public SimpleCommand cmdSelectAll_M { get; private set; }
-        public SimpleCommand cmdSelectNone_M { get; private set; }
-        public SimpleCommand cmdSelectInvert_M { get; private set; }
-        public SimpleCommand cmdSelectStoredA { get; private set; }
-        public SimpleCommand cmdSelectStoredB { get; private set; }
-        public SimpleCommand cmdAtoB { get; private set; }
-        public SimpleCommand cmdBtoA { get; private set; }
+        public SimpleCommand CmdSelectAll_M { get; private set; }
+        public SimpleCommand CmdSelectNone_M { get; private set; }
+        public SimpleCommand CmdSelectInvert_M { get; private set; }
+        public SimpleCommand CmdSelectStoredA { get; private set; }
+        public SimpleCommand CmdSelectStoredB { get; private set; }
+        public SimpleCommand CmdAtoB { get; private set; }
+        public SimpleCommand CmdBtoA { get; private set; }
 
-        public SimpleCommand cmdCaptureA { get; private set; }
-        public SimpleCommand cmdCaptureMissingA { get; private set; }
-        public SimpleCommand cmdPurgeA { get; private set; }
-        public SimpleCommand cmdClearSelectedA { get; private set; }
-        public SimpleCommand cmdClearA { get; private set; }
-        public SimpleCommand cmdRestoreA { get; private set; }
+        public SimpleCommand CmdCaptureA { get; private set; }
+        public SimpleCommand CmdCaptureMissingA { get; private set; }
+        public SimpleCommand CmdPurgeA { get; private set; }
+        public SimpleCommand CmdClearSelectedA { get; private set; }
+        public SimpleCommand CmdClearA { get; private set; }
+        public SimpleCommand CmdRestoreA { get; private set; }
 
-        public SimpleCommand cmdCaptureB { get; private set; }
-        public SimpleCommand cmdCaptureMissingB { get; private set; }
-        public SimpleCommand cmdPurgeB { get; private set; }
-        public SimpleCommand cmdClearSelectedB { get; private set; }
-        public SimpleCommand cmdClearB { get; private set; }
-        public SimpleCommand cmdRestoreB { get; private set; }
+        public SimpleCommand CmdCaptureB { get; private set; }
+        public SimpleCommand CmdCaptureMissingB { get; private set; }
+        public SimpleCommand CmdPurgeB { get; private set; }
+        public SimpleCommand CmdClearSelectedB { get; private set; }
+        public SimpleCommand CmdClearB { get; private set; }
+        public SimpleCommand CmdRestoreB { get; private set; }
         #endregion Commands
 
         #region Properties

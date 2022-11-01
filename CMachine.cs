@@ -23,7 +23,7 @@ namespace Snapshot
     [MachineDecl(Name = "IX Snapshot 1.1", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
-        IBuzzMachineHost host;
+        readonly IBuzzMachineHost host;
 
         private IMachine ThisMachine { get; set; }
         private IParameter SlotParam { get; set; }
@@ -34,7 +34,7 @@ namespace Snapshot
 
         public List<IPropertyState> AllProperties { get; private set; }
 
-        private List<CMachineSnapshot> _slots;
+        private readonly List<CMachineSnapshot> _slots;
         public List<CMachineSnapshot> Slots => _slots;
 
         public int ShowMode
@@ -307,7 +307,7 @@ namespace Snapshot
         public Dictionary<Action, CMidiEvent> MidiMap { get; private set; }
 
         // This is the mechanism to trigger UI actions in response to MIDI events
-        private Dictionary<Action, UInt32 /*code*/> _midiMapping;
+        private readonly Dictionary<Action, UInt32 /*code*/> _midiMapping;
 
         #region IBuzzMachine
 
@@ -371,7 +371,7 @@ namespace Snapshot
                     loading = true;
                     _loadedState = value;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _loadedState = new CMachineStateData();
                 }
@@ -1148,8 +1148,7 @@ namespace Snapshot
         public event PropertyChangedEventHandler PropertyChanged;
         public virtual void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 
@@ -1197,7 +1196,7 @@ namespace Snapshot
     public class Misc
     {
         // Byte count to formatted string solution - https://stackoverflow.com/a/48467634
-        private static string[] suffixes = new[] { "b", "K", "M", "G", "T", "P" };
+        private static readonly string[] suffixes = new[] { "b", "K", "M", "G", "T", "P" };
         public static string ToSize(double number, int precision = 2)
         {
             // unit is the number of bytes

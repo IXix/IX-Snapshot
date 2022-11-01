@@ -29,8 +29,7 @@ namespace Snapshot
 
         bool? _isChecked;
         bool? _isCheckedM;
-        
-        bool _preventManualIndeterminate;
+        readonly bool _preventManualIndeterminate;
         
         #endregion // Data
 

@@ -122,20 +122,12 @@ namespace Snapshot
 
         public void OnSelChanged(StateChangedEventArgs e)
         {
-            EventHandler<StateChangedEventArgs> handler = SelChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            SelChanged?.Invoke(this, e);
         }
 
         public void OnSizeChanged()
         {
-            EventHandler handler = SizeChanged;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            SizeChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
