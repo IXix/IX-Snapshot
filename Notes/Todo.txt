@@ -1,7 +1,5 @@
 RestoreOnSlotChange works but can it be optimised?
 
-bug: filter clear button doesn't empty the filter textbox
-
 Manager interface
 	Editing values would be nice.
 		Would have to make sure input was properly validated for the selected property

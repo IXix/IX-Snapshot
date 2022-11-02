@@ -14,6 +14,9 @@ namespace Snapshot
         {
             Owner = owner;
 
+            
+            _showMode = _showModeM = 2; // All
+
             States = new ObservableCollection<CMachineStateVM>(
                 (from state in Owner.States
                  select new CMachineStateVM(state, this))
@@ -72,7 +75,7 @@ namespace Snapshot
             };
             CmdFilterClear = new SimpleCommand
             {
-                ExecuteDelegate = x => Owner.FilterClear()
+                ExecuteDelegate = x => FilterClear()
             };
 
             CmdSelectAll_M = new SimpleCommand
@@ -105,7 +108,7 @@ namespace Snapshot
             };
             CmdFilterClearM = new SimpleCommand
             {
-                ExecuteDelegate = x => Owner.FilterClearM()
+                ExecuteDelegate = x => FilterClearM()
             };
 
             CmdCaptureA = new SimpleCommand
@@ -158,6 +161,11 @@ namespace Snapshot
                 ExecuteDelegate = x => Owner.RestoreB()
             };
         }
+
+        internal string _filterText;
+        internal string _filterTextM;
+        internal int _showMode;
+        internal int _showModeM;
 
         private void FilterVisibility()
         {
@@ -273,6 +281,16 @@ namespace Snapshot
             }
         }
 
+        public void FilterClear()
+        {
+            FilterText = "";
+        }
+
+        public void FilterClearM()
+        {
+            FilterTextM = "";
+        }
+
         private void OwnerPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
@@ -299,22 +317,6 @@ namespace Snapshot
                     {
                         s.OnPropertyChanged("Name");
                     }
-                    break;
-
-                case "FilterText":
-                    FilterVisibility();
-                    break;
-
-                case "FilterTextM":
-                    FilterVisibilityM();
-                    break;
-
-                case "Filter":
-                    UpdateVisibility();
-                    break;
-
-                case "FilterM":
-                    UpdateVisibilityM();
                     break;
 
                 case "CurrentSlot":
@@ -492,26 +494,52 @@ namespace Snapshot
 
         public string FilterText
         {
-            get => Owner.FilterText;
-            set => Owner.FilterText = value;
+            get { return _filterText; }
+            set
+            {
+                if (value != _filterText)
+                {
+                    _filterText = value;
+                    NotifyPropertyChanged("FilterText");
+                    FilterVisibility();
+                }
+            }
         }
 
         public string FilterTextM
         {
-            get => Owner.FilterTextM;
-            set => Owner.FilterTextM = value;
+            get { return _filterTextM; }
+            set
+            {
+                if (value != _filterTextM)
+                {
+                    _filterTextM = value;
+                    NotifyPropertyChanged("FilterTextM");
+                    FilterVisibilityM();
+                }
+            }
         }
 
         public int ShowMode
         {
-            get => Owner.ShowMode;
-            set => Owner.ShowMode = value;
+            get { return _showMode; }
+            set
+            {
+                _showMode = value;
+                NotifyPropertyChanged("Filter");
+                UpdateVisibility();
+            }
         }
 
         public int ShowModeM
         {
-            get => Owner.ShowModeM;
-            set => Owner.ShowModeM = value;
+            get { return _showModeM; }
+            set
+            {
+                _showModeM = value;
+                NotifyPropertyChanged("FilterM");
+                UpdateVisibilityM();
+            }
         }
 
         public CMachineSnapshot CurrentSlot => Owner.CurrentSlot;
