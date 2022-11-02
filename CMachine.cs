@@ -20,7 +20,7 @@ namespace Snapshot
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
-    [MachineDecl(Name = "IX Snapshot 1.1", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
+    [MachineDecl(Name = "IX Snapshot 1.2", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         readonly IBuzzMachineHost host;
@@ -319,6 +319,28 @@ namespace Snapshot
             Global.Buzz.Song.MachineAdded += (m) => { OnMachineAdded(m); };
             Global.Buzz.Song.MachineRemoved += (m) => { OnMachineRemoved(m); };
         }
+
+        public IEnumerable<IMenuItem> Commands
+        {
+            get
+            {
+                // Append non-empty slots to menu
+                // Selecting the menu item will make the relevant slot current and restore it
+                foreach(CMachineSnapshot slot in _slots.Where(x => x.HasData))
+                {
+                    yield return new MenuItemVM() 
+                    {
+                        Text = slot.Name,
+                        Command = new SimpleCommand()
+                        {
+                            CanExecuteDelegate = p => true,
+                            ExecuteDelegate = p => { Slot = slot.Index; ForceRestore(); }
+                        }
+                    };
+                }
+            }
+        }
+
 
         // Class to hold whatever needs saving to the song
         public class CMachineStateData
@@ -1099,6 +1121,16 @@ namespace Snapshot
             }
         }
 
+        internal void ForceRestore()
+        {
+            if (!loading)
+            {
+                Restore();
+                OnPropertyChanged("State");
+                OnPropertyChanged("CurrentSlot");
+            }
+        }
+
         // Called after the slot has changed
         internal void OnSlotChanged()
         {
@@ -1117,7 +1149,6 @@ namespace Snapshot
 
             OnPropertyChanged("State");
             OnPropertyChanged("CurrentSlot");
-            OnPropertyChanged("Filter");
         }
 
         #endregion Commands

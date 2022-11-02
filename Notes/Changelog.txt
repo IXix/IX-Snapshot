@@ -1,5 +1,6 @@
 2022.11.02
 	Implemented text based filtering of properties in treeviews
+	Implemented machine commands menu
 
 2022.11.01
 	Added Show combo to main an manager
