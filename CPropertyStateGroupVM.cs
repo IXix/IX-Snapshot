@@ -15,7 +15,7 @@ namespace Snapshot
             LoadChildren();
         }
 
-        public string Name
+        public override string Name
         {
             get { return _group.Name; }
         }

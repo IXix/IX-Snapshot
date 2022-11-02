@@ -8,25 +8,31 @@
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
              d:DesignHeight="500" d:DesignWidth="500" Height="500">
     <UserControl.Resources>
+        <Style TargetType="Grid">
+            <Setter Property="Margin" Value="1" />
+        </Style>
         <Style TargetType="StackPanel">
             <Setter Property="Margin" Value="1" />
         </Style>
-        <Style TargetType="ListBox">
-            <Setter Property="Margin" Value="2" />
+        <Style TargetType="Separator">
+            <Setter Property="Margin" Value="1,5" />
         </Style>
         <Style TargetType="Button">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="Margin" Value="3,2" />
+            <Setter Property="Margin" Value="2,1" />
+            <Setter Property="Padding" Value="1" />
         </Style>
         <Style TargetType="CheckBox">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FontSize" Value="14" />
+            <Setter Property="Margin" Value="3,1" />
+            <Setter Property="Padding" Value="1" />
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="Margin" Value="3,1" />
         </Style>
 
         <Style x:Key="tvi_text_base" TargetType="TextBlock">
@@ -49,7 +55,7 @@
                 <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </DataTemplate>
-        
+
         <!-- Main TreeViewItems-->
         <Style x:Key="tvi_main" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -79,13 +85,13 @@
             <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
             <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsCheckedM, UpdateSourceTrigger=PropertyChanged}" />
         </Style>
-        
+
         <Style x:Key="tvi_manager_a" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ResourceKey=tvi_manager}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding GotValueA, UpdateSourceTrigger=PropertyChanged}" Value="True">
                     <Setter Property="FontWeight" Value="Bold" />
                 </DataTrigger>
-            </Style.Triggers>            
+            </Style.Triggers>
         </Style>
         <Style x:Key="tvi_texta" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
             <Style.Triggers>
@@ -94,7 +100,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style x:Key="tvi_manager_b" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ResourceKey=tvi_manager}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding GotValueB, UpdateSourceTrigger=PropertyChanged}" Value="True">
@@ -110,10 +116,10 @@
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    
+
     <TabControl>
         <TabItem Header="Main">
-            <Grid x:Name="MainGrid" MinHeight="200" Margin="0,0,0,8">
+            <Grid x:Name="MainGrid" MinHeight="200">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -122,6 +128,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TreeView x:Name="MachineList" Grid.Row="0" ItemContainerStyle="{StaticResource tvi_main}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
@@ -174,17 +181,37 @@
                                 </DataTemplate>
                             </TreeView.Resources>
                         </TreeView>
-                        <StackPanel Grid.Row="1" Orientation="Horizontal">
-                            <Button x:Name="btnSelectAll" Command="{Binding CmdSelectAll}" MinWidth="30" Padding="3,1" ToolTip="Select all properties.">All</Button>
-                            <Button x:Name="btnSelectNone" Command="{Binding CmdSelectNone}" MinWidth="30" Padding="3,1" ToolTip="Deselect all properties.">None</Button>
-                            <Button x:Name="btnSelectStored" Command="{Binding CmdSelectStored}" MinWidth="30" Padding="3,1" ToolTip="Select only stored properties.">Stored</Button>
-                            <Button x:Name="btnSelectInvert" Command="{Binding CmdSelectInvert}" MinWidth="30" Padding="3,1" ToolTip="Invert the selection.">Invert</Button>
-                            <TextBlock VerticalAlignment="Center" Margin="3,1">Show:</TextBlock>
-                            <ComboBox Name="cbxShow" SelectedIndex="{Binding ShowMode, Mode=OneWayToSource}" Padding="3,1" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
-                                <ComboBoxItem Tag="Empty" Content="Empty" />
-                                <ComboBoxItem Tag="Stored" Content="Stored" />
-                                <ComboBoxItem Tag="All" Content="All" IsSelected="True" />
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="txtFilter" Grid.Column="0" VerticalContentAlignment="Center" Text="{Binding FilterText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="14" FontStyle="Italic"/>
+                            <TextBlock IsHitTestVisible="False" Text="Filter" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=txtFilter}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <Button x:Name="btnFilterClear" Grid.Column="1" Command="{Binding CmdFilterClear}" Width="30" Content="X" Foreground="Red" FontWeight="Bold" FontSize="12"/>
+                            <ComboBox Name="cbxShow" Grid.Column="2" SelectedIndex="{Binding ShowMode, Mode=OneWayToSource}" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
+                                <ComboBoxItem Tag="Empty" Content="Show Empty" />
+                                <ComboBoxItem Tag="Stored" Content="Show Stored" />
+                                <ComboBoxItem Tag="All" Content="Show All" IsSelected="True" />
                             </ComboBox>
+                        </Grid>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal">
+                            <Button x:Name="btnSelectAll" Command="{Binding CmdSelectAll}" MinWidth="30" ToolTip="Select all properties.">All</Button>
+                            <Button x:Name="btnSelectNone" Command="{Binding CmdSelectNone}" MinWidth="30" ToolTip="Deselect all properties.">None</Button>
+                            <Button x:Name="btnSelectStored" Command="{Binding CmdSelectStored}" MinWidth="30" ToolTip="Select only stored properties.">Stored</Button>
+                            <Button x:Name="btnSelectInvert" Command="{Binding CmdSelectInvert}" MinWidth="30" ToolTip="Invert the selection.">Invert</Button>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -217,7 +244,7 @@
                         <CheckBox x:Name="chkRestoreOnSlot" Content="Restore on slot change" IsChecked="{Binding RestoreOnSlotChange}" ToolTip="Automatically restore slot contents after changing to a new slot." />
                         <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}" ToolTip="Automatically restore current slot content when song is loaded." />
                         <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}" ToolTip="Automatically restore current slot content when playback stops." />
-                        <Separator Height="9" />
+                        <Separator />
                         <Button x:Name="btnCapture" ToolTip="Capture selected properties.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdCapture}" MouseAction="LeftClick" />
@@ -234,7 +261,7 @@
                             </Button.InputBindings>
                             Capture Missing
                         </Button>
-                        <Separator Height="9" />
+                        <Separator />
                         <Button x:Name="btnRestore" ToolTip="Restore all stored properties.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdRestore}" MouseAction="LeftClick" />
@@ -243,7 +270,7 @@
                             </Button.InputBindings>
                             Restore
                         </Button>
-                        <Separator Height="9" />
+                        <Separator />
                         <Button x:Name="btnClear" ToolTip="Discard all stored properties.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
@@ -276,6 +303,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition/>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -301,20 +329,20 @@
                     <Button x:Name="CopyAtoB" Command="{Binding CmdAtoB}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to right.">
                         <TextBlock Text="&gt;&gt;" />
                     </Button>
-                    <Separator Height="9" />
-                    <Button x:Name="btnSelectAll_M" Command="{Binding CmdSelectAll_M}" MinWidth="30" Padding="3,1" ToolTip="Select all properties.">A</Button>
-                    <Button x:Name="btnSelectNone_M" Command="{Binding CmdSelectNone_M}" MinWidth="30" Padding="3,1" ToolTip="Deselect all properties.">N</Button>
-                    <Button x:Name="btnSelectInvert_M" Command="{Binding CmdSelectInvert_M}" MinWidth="30" Padding="3,1" ToolTip="Invert the selection.">I</Button>
-                    <Separator Height="9" />
-                    <Button x:Name="btnSelectStored_A" Command="{Binding CmdSelectStoredA}" MinWidth="30" Padding="3,1" ToolTip="Select only properties with left values.">L</Button>
-                    <Button x:Name="btnSelectStored_B" Command="{Binding CmdSelectStoredB}" MinWidth="30" Padding="3,1" ToolTip="Select only properties with right values.">R</Button>
-                    <Separator Height="9" />
-                    <TextBlock>Show</TextBlock>
-                    <ComboBox Name="cbxShowM" SelectedIndex="{Binding ShowModeM, Mode=OneWayToSource}" Padding="3,1" ToolTip="Select which properties to show. Selected properties are always visible." HorizontalContentAlignment="Center" VerticalAlignment="Center">
+                    <Separator />
+                    <Button x:Name="btnSelectAll_M" Command="{Binding CmdSelectAll_M}" MinWidth="30" ToolTip="Select all properties.">A</Button>
+                    <Button x:Name="btnSelectNone_M" Command="{Binding CmdSelectNone_M}" MinWidth="30" ToolTip="Deselect all properties.">N</Button>
+                    <Button x:Name="btnSelectInvert_M" Command="{Binding CmdSelectInvert_M}" MinWidth="30" ToolTip="Invert the selection.">I</Button>
+                    <Separator />
+                    <Button x:Name="btnSelectStored_A" Command="{Binding CmdSelectStoredA}" MinWidth="30" ToolTip="Select only properties with left values.">L</Button>
+                    <Button x:Name="btnSelectStored_B" Command="{Binding CmdSelectStoredB}" MinWidth="30" ToolTip="Select only properties with right values.">R</Button>
+                    <Separator />
+                    <!--<TextBlock>Show</TextBlock>
+                    <ComboBox Name="cbxShowM" SelectedIndex="{Binding ShowModeM, Mode=OneWayToSource}" ToolTip="Select which properties to show. Selected properties are always visible." HorizontalContentAlignment="Center" VerticalAlignment="Center">
                         <ComboBoxItem Tag="Empty" Content="Empty" />
                         <ComboBoxItem Tag="Stored" Content="Stored" />
                         <ComboBoxItem Tag="All" Content="All" IsSelected="True" />
-                    </ComboBox>
+                    </ComboBox>-->
                 </StackPanel>
                 <ComboBox Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
                     <ComboBox.Style>
@@ -343,7 +371,7 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
+                                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
                                         <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding Name}" />
@@ -428,8 +456,33 @@
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-
-                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="0">
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="txtFilterM" Grid.Column="0" VerticalContentAlignment="Center" Text="{Binding FilterTextM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="14" FontStyle="Italic"/>
+                    <TextBlock IsHitTestVisible="False" Text="Filter" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=txtFilterM}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Button x:Name="btnFilterClearM" Grid.Column="1" Command="{Binding CmdFilterClearM}" Width="30" Content="X" Foreground="Red" FontWeight="Bold" FontSize="12"/>
+                    <ComboBox Name="cbxShowM" Grid.Column="2" SelectedIndex="{Binding ShowModeM, Mode=OneWayToSource}" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
+                        <ComboBoxItem Tag="Empty" Content="Show Empty" />
+                        <ComboBoxItem Tag="Stored" Content="Show Stored" />
+                        <ComboBoxItem Tag="All" Content="Show All" IsSelected="True" />
+                    </ComboBox>
+                </Grid>
+                <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="0">
                     <Button x:Name="btnCaptureA" ToolTip="Capture selected properties.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdCaptureA}" MouseAction="LeftClick" />
@@ -470,7 +523,7 @@
                     </Button>
                 </StackPanel>
 
-                <StackPanel Orientation="Vertical" Grid.Row="2" Grid.Column="2">
+                <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="2">
                     <Button x:Name="btnCaptureB" ToolTip="Capture selected properties.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdCaptureB}" MouseAction="LeftClick" />

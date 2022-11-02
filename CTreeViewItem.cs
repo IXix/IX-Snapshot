@@ -253,6 +253,11 @@ namespace Snapshot
             }
         }
 
+        public virtual string Name
+        {
+            get => "";
+        }
+
         public virtual bool GotValue
         {
             get => false;

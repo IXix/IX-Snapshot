@@ -1,5 +1,7 @@
 RestoreOnSlotChange works but can it be optimised?
 
+bug: filter clear button doesn't empty the filter textbox
+
 Manager interface
 	Editing values would be nice.
 		Would have to make sure input was properly validated for the selected property
@@ -19,9 +21,6 @@ Inertia for parameter changes
 	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.
 	There's no Tick() so can't interpolate every tick
 	Could we use a timer or a worker thread?
-
-Filter visibility of properties in the treeview somehow.
-	Hook a textbox up to the existing visibility/expandedness systems
 
 Some way of setting default property selection for individual machines would be nice
 

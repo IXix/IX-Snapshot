@@ -37,6 +37,32 @@ namespace Snapshot
         private readonly List<CMachineSnapshot> _slots;
         public List<CMachineSnapshot> Slots => _slots;
 
+        public string FilterText
+        {
+            get { return _filterText; }
+            set
+            {
+                if(value != _filterText)
+                {
+                    _filterText = value;
+                    OnPropertyChanged("FilterText");
+                }
+            }
+        }
+
+        public string FilterTextM
+        {
+            get { return _filterTextM; }
+            set
+            {
+                if (value != _filterTextM)
+                {
+                    _filterTextM = value;
+                    OnPropertyChanged("FilterTextM");
+                }
+            }
+        }
+
         public int ShowMode
         {
             get { return _showMode; }
@@ -416,6 +442,16 @@ namespace Snapshot
             {
                 s.Selected = !s.Selected;
             }
+        }
+
+        public void FilterClear()
+        {
+            FilterText = "";
+        }
+
+        public void FilterClearM()
+        {
+            FilterTextM = "";
         }
 
         public void SelectAll_M()
@@ -1033,6 +1069,8 @@ namespace Snapshot
 
         #region Global Parameters
         // Global params
+        internal string _filterText;
+        internal string _filterTextM;
         internal int _showMode;
         internal int _showModeM;
         internal int _slot;

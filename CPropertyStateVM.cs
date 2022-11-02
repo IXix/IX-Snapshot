@@ -69,7 +69,7 @@ namespace Snapshot
             _property.OnSelChanged(new StateChangedEventArgs() { Property = _property, Checked = _property.Selected, Checked_M = _property.Selected_M });
         }
 
-        public string Name => _property.Name;
+        public override string Name => _property.Name;
 
         public string DisplayName => _property.DisplayName;
     }

@@ -1,3 +1,6 @@
+2022.11.02
+	Implemented text based filtering of properties in treeviews
+
 2022.11.01
 	Added Show combo to main an manager
 		Show stored/empty/all properties in the treeviews

@@ -1,4 +1,5 @@
 ﻿using BuzzGUI.Common;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -69,6 +70,10 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.SelectInvert()
             };
+            CmdFilterClear = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.FilterClear()
+            };
 
             CmdSelectAll_M = new SimpleCommand
             {
@@ -97,6 +102,10 @@ namespace Snapshot
             CmdBtoA = new SimpleCommand
             {
                 ExecuteDelegate = x => Owner.CopyBtoA()
+            };
+            CmdFilterClearM = new SimpleCommand
+            {
+                ExecuteDelegate = x => Owner.FilterClearM()
             };
 
             CmdCaptureA = new SimpleCommand
@@ -148,6 +157,68 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.RestoreB()
             };
+        }
+
+        private void FilterVisibility()
+        {
+            foreach (CMachineStateVM s in States)
+            {
+                bool show1 = false;
+                foreach (CTreeViewItemVM c in s.Children) // groups
+                {
+                    bool show2 = false;
+                    foreach (CTreeViewItemVM cc in c.Children) // global/attrib/data/trackgroup
+                    {
+                        //if (cc.Name.Contains(FilterText))
+                        if(cc.Name.IndexOf(FilterText, 0, StringComparison.OrdinalIgnoreCase) != -1)
+                        {
+                            cc.IsVisible = System.Windows.Visibility.Visible;
+                            cc.IsExpanded = true;
+                            show1 = show2 = true;
+                        }
+                        else
+                        {
+                            cc.IsVisible = System.Windows.Visibility.Collapsed;
+                            cc.IsExpanded = false;
+                        }
+                    }
+                    c.IsVisible = show2 ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                    c.IsExpanded = show2;
+                }
+                s.IsVisible = show1 ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                s.IsExpanded = show1;
+            }
+        }
+
+        private void FilterVisibilityM()
+        {
+            foreach (CMachineStateVM s in States)
+            {
+                bool show1 = false;
+                foreach (CTreeViewItemVM c in s.Children) // groups
+                {
+                    bool show2 = false;
+                    foreach (CTreeViewItemVM cc in c.Children) // global/attrib/data/trackgroup
+                    {
+                        //if (cc.Name.Contains(FilterTextM))
+                        if (cc.Name.IndexOf(FilterTextM, 0, StringComparison.OrdinalIgnoreCase) != -1)
+                        {
+                            cc.IsVisibleM = System.Windows.Visibility.Visible;
+                            cc.IsExpandedM = true;
+                            show1 = show2 = true;
+                        }
+                        else
+                        {
+                            cc.IsVisibleM = System.Windows.Visibility.Collapsed;
+                            cc.IsExpandedM = false;
+                        }
+                    }
+                    c.IsVisibleM = show2 ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                    c.IsExpandedM = show2;
+                }
+                s.IsVisibleM = show1 ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                s.IsExpandedM = show1;
+            }
         }
 
         private void UpdateVisibility()
@@ -228,6 +299,14 @@ namespace Snapshot
                     {
                         s.OnPropertyChanged("Name");
                     }
+                    break;
+
+                case "FilterText":
+                    FilterVisibility();
+                    break;
+
+                case "FilterTextM":
+                    FilterVisibilityM();
                     break;
 
                 case "Filter":
@@ -359,6 +438,7 @@ namespace Snapshot
         public SimpleCommand CmdSelectNone { get; private set; }
         public SimpleCommand CmdSelectStored { get; private set; }
         public SimpleCommand CmdSelectInvert { get; private set; }
+        public SimpleCommand CmdFilterClear { get; private set; }
 
         public SimpleCommand CmdSelectAll_M { get; private set; }
         public SimpleCommand CmdSelectNone_M { get; private set; }
@@ -367,6 +447,7 @@ namespace Snapshot
         public SimpleCommand CmdSelectStoredB { get; private set; }
         public SimpleCommand CmdAtoB { get; private set; }
         public SimpleCommand CmdBtoA { get; private set; }
+        public SimpleCommand CmdFilterClearM { get; private set; }
 
         public SimpleCommand CmdCaptureA { get; private set; }
         public SimpleCommand CmdCaptureMissingA { get; private set; }
@@ -407,6 +488,18 @@ namespace Snapshot
             {
                 Owner.SelB = value;
             }
+        }
+
+        public string FilterText
+        {
+            get => Owner.FilterText;
+            set => Owner.FilterText = value;
+        }
+
+        public string FilterTextM
+        {
+            get => Owner.FilterTextM;
+            set => Owner.FilterTextM = value;
         }
 
         public int ShowMode

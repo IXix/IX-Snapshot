@@ -59,7 +59,7 @@ namespace Snapshot
             }
         }
 
-        public string Name => _state.Machine.Name;
+        public override string Name => _state.Machine.Name;
 
         internal CSnapshotMachineVM OwnerVM { get; set; }
 
