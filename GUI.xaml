@@ -337,12 +337,6 @@
                     <Button x:Name="btnSelectStored_A" Command="{Binding CmdSelectStoredA}" MinWidth="30" ToolTip="Select only properties with left values.">L</Button>
                     <Button x:Name="btnSelectStored_B" Command="{Binding CmdSelectStoredB}" MinWidth="30" ToolTip="Select only properties with right values.">R</Button>
                     <Separator />
-                    <!--<TextBlock>Show</TextBlock>
-                    <ComboBox Name="cbxShowM" SelectedIndex="{Binding ShowModeM, Mode=OneWayToSource}" ToolTip="Select which properties to show. Selected properties are always visible." HorizontalContentAlignment="Center" VerticalAlignment="Center">
-                        <ComboBoxItem Tag="Empty" Content="Empty" />
-                        <ComboBoxItem Tag="Stored" Content="Stored" />
-                        <ComboBoxItem Tag="All" Content="All" IsSelected="True" />
-                    </ComboBox>-->
                 </StackPanel>
                 <ComboBox Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
                     <ComboBox.Style>
