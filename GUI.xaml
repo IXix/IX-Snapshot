@@ -489,7 +489,7 @@
                         </Button.InputBindings>
                         Capture Missing
                     </Button>
-                    <Separator Height="5" />
+                    <Separator />
                     <Button x:Name="btnPurgeA" ToolTip="Discard properties that are not selected or belong to missing machines.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdPurgeA}" MouseAction="LeftClick" />
@@ -508,7 +508,7 @@
                         </Button.InputBindings>
                         Clear All
                     </Button>
-                    <Separator Height="5" />
+                    <Separator />
                     <Button x:Name="btnRestoreA" ToolTip="Apply stored values.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdRestoreA}" MouseAction="LeftClick" />
@@ -530,7 +530,7 @@
                         </Button.InputBindings>
                         Capture Missing
                     </Button>
-                    <Separator Height="5" />
+                    <Separator />
                     <Button x:Name="btnPurgeB" ToolTip="Discard properties that are not selected or belong to missing machines.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdPurgeB}" MouseAction="LeftClick" />
@@ -549,7 +549,7 @@
                         </Button.InputBindings>
                         Clear All
                     </Button>
-                    <Separator Height="5" />
+                    <Separator />
                     <Button x:Name="btnRestoreB" ToolTip="Apply stored values.">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdRestoreB}" MouseAction="LeftClick" />
