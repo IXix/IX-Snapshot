@@ -35,6 +35,12 @@
             <Setter Property="Margin" Value="3,1" />
         </Style>
 
+        <!-- Prevent treeview context menu items using the IsChecked state of the underlying property. -->
+        <!-- Don't know why just setting IsCheckable=False on the menuitem definitions doesn't work. -->
+        <Style x:Key="propertyMenuItem" TargetType="MenuItem">
+            <Setter Property="IsCheckable" Value="False" />
+        </Style>
+
         <Style x:Key="tvi_text_base" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="FontFamily" Value="Segoe UI" />
@@ -171,10 +177,10 @@
                                     <StackPanel Orientation="Horizontal">
                                         <StackPanel.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Header="Capture" Command="{Binding CmdCaptureProperty}" CommandParameter="{Binding MachineProperty}" />
-                                                <MenuItem Header="Restore" Command="{Binding CmdRestoreProperty}" CommandParameter="{Binding MachineProperty}" />
+                                                <MenuItem Header="Capture" Command="{Binding CmdCaptureProperty}" CommandParameter="{Binding MachineProperty}" Style="{StaticResource propertyMenuItem}" />
+                                                <MenuItem Header="Restore" Command="{Binding CmdRestoreProperty}" CommandParameter="{Binding MachineProperty}" Style="{StaticResource propertyMenuItem}" />
                                                 <Separator />
-                                                <MenuItem Header="Clear" Command="{Binding CmdClearProperty}" CommandParameter="{Binding MachineProperty}" />
+                                                <MenuItem Header="Clear" Command="{Binding CmdClearProperty}" CommandParameter="{Binding MachineProperty}" Style="{StaticResource propertyMenuItem}" />
                                             </ContextMenu>
                                         </StackPanel.ContextMenu>
                                         <CheckBox Focusable="False" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0,0,5,0" />

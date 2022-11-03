@@ -32,11 +32,13 @@ namespace Snapshot
             };
             CmdRestoreProperty = new SimpleCommand
             {
-                ExecuteDelegate = x => { Restore(x); }
+                ExecuteDelegate = x => { Restore(x); },
+                CanExecuteDelegate = x => { return GotValue; }
             };
             CmdClearProperty = new SimpleCommand
             {
-                ExecuteDelegate = x => { Clear(x); }
+                ExecuteDelegate = x => { Clear(x); },
+                CanExecuteDelegate = x => { return GotValue; }
             };
         }
 
