@@ -218,6 +218,44 @@ namespace Snapshot
             StoredProperties = StoredProperties.Union(src.StoredProperties).ToList();
         }
 
+        public void Capture(IPropertyState p)
+        {
+            switch (p.GetType().Name)
+            {
+                case "CAttributeState":
+                    {
+                        CAttributeState key = p as CAttributeState;
+                        AttributeValues[key] = key.Attribute.Value;
+                    }
+                    break;
+
+                case "CParameterState":
+                    {
+                        CParameterState key = p as CParameterState;
+                        int track = key.Track ?? -1;
+                        ParameterValues[key] = new Tuple<int, int>(track, key.Parameter.GetValue(track));
+                    }
+                    break;
+
+                case "CDataState":
+                    {
+                        CDataState key = p as CDataState;
+                        DataValues[key] = key.Machine.Data;
+                    }
+                    break;
+
+                default:
+                    throw new Exception("Unknown property type.");
+            }
+
+            if (!StoredProperties.Contains(p))
+            {
+                StoredProperties.Add(p);
+            }
+
+            OnPropertyChanged("HasData");
+        }
+
         public void Capture(List<IPropertyState> targets, bool clearExisting)
         {
             if(clearExisting)
@@ -261,6 +299,55 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
+        public void Restore(IPropertyState p)
+        {
+            if (!StoredProperties.Contains(p) || !p.Active) return;
+
+            switch (p.GetType().Name)
+            {
+                case "CAttributeState":
+                    {
+                        CAttributeState key = p as CAttributeState;
+                        int value = AttributeValues[key];
+                        Application.Current.Dispatcher.BeginInvoke(
+                            (Action)( () => { key.Attribute.Value = value; }
+                            ),
+                            DispatcherPriority.Send
+                            );
+                    }
+                    break;
+
+                case "CParameterState":
+                    {
+                        CParameterState key = p as CParameterState;
+                        Tuple<int, int> t = ParameterValues[key];
+                        int track = t.Item1;
+                        int value = t.Item2;
+                        Application.Current.Dispatcher.BeginInvoke(
+                            (Action)(() => { key.Parameter.SetValue(track, value); }
+                            ),
+                            DispatcherPriority.Send
+                            );
+                    }
+                    break;
+
+                case "CDataState":
+                    {
+                        CDataState key = p as CDataState;
+                        byte[] value = DataValues[key];
+                        Application.Current.Dispatcher.BeginInvoke(
+                            (Action)(() => { key.Machine.Data = value; }
+                            ),
+                            DispatcherPriority.Send
+                            );
+                    }
+                    break;
+
+                default:
+                    throw new Exception("Unknown property type.");
+            }
+        }
+
         public void Restore()
         {
             Application.Current.Dispatcher.BeginInvoke(
@@ -295,6 +382,43 @@ namespace Snapshot
             }
             OnPropertyChanged("HasData");
         }
+
+        public void Remove(IPropertyState p)
+        {
+            if (!StoredProperties.Contains(p)) return;
+
+            switch (p.GetType().Name)
+            {
+                case "CAttributeState":
+                    {
+                        CAttributeState key = p as CAttributeState;
+                        AttributeValues.Remove(key);
+                    }
+                    break;
+
+                case "CParameterState":
+                    {
+                        CParameterState key = p as CParameterState;
+                        ParameterValues.Remove(key);
+                    }
+                    break;
+
+                case "CDataState":
+                    {
+                        CDataState key = p as CDataState;
+                        DataValues.Remove(key);
+                    }
+                    break;
+
+                default:
+                    throw new Exception("Unknown property type.");
+            }
+
+            StoredProperties.Remove(p);
+
+            OnPropertyChanged("HasData");
+        }
+
 
         public void Remove(List<IPropertyState> targets)
         {

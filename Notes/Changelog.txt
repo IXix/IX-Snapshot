@@ -1,3 +1,6 @@
+2022.11.03
+	Implemented context menu for machine properties in main treeview
+
 2022.11.02
 	Implemented text based filtering of properties in treeviews
 	Implemented machine commands menu

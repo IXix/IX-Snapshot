@@ -10,10 +10,12 @@ Manager interface
 
 	Morphing?
 
-Context menu for treeview items? (for groups apply the action to all children)
-	Capture/Clear/Restore
-	Copy from left/right
-	Remove from all snapshot slots
+Context menu for treeview items
+	Implement menus for property groups
+		Apply action to all children
+	Remove from all snapshot slots?
+	Implement for manager A/B panes when working well in main view
+	Copy from left/right for manager?
 
 Inertia for parameter changes
 	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.

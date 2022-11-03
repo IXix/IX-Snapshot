@@ -168,6 +168,14 @@
 
                                 <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                                     <StackPanel Orientation="Horizontal">
+                                        <StackPanel.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Capture" Command="{Binding CmdCaptureProperty}" CommandParameter="{Binding MachineProperty}" />
+                                                <MenuItem Header="Restore" Command="{Binding CmdRestoreProperty}" CommandParameter="{Binding MachineProperty}" />
+                                                <Separator />
+                                                <MenuItem Header="Clear" Command="{Binding CmdClearProperty}" CommandParameter="{Binding MachineProperty}" />
+                                            </ContextMenu>
+                                        </StackPanel.ContextMenu>
                                         <CheckBox Focusable="False" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
