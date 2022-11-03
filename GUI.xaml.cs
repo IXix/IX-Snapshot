@@ -75,6 +75,12 @@ namespace Snapshot
             ComboBox cb = sender as ComboBox;
             Owner.Slot = cb.SelectedIndex + 1;
         }
+
+        private void TreeViewItem_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TreeViewItem tvi = sender as TreeViewItem;
+            tvi.IsSelected = true;
+        }
     }
 }
 
