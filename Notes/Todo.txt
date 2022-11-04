@@ -12,8 +12,8 @@ Manager interface
 
 Context menu for treeview items
 	Remove from all snapshot slots?
-	Implement for manager A/B panes when working well in main view
-	Copy from left/right for manager?
+	Set all same properties to value?
+		Copy from selected property to any other instances of the same property (same machine)
 
 Inertia for parameter changes
 	Would need to interpolate values and fire them off in Work(). Not sure how best to approach it.

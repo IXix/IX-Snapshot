@@ -324,6 +324,13 @@ namespace Snapshot
         {
             get
             {
+                IEnumerable<CMachineSnapshot> s = _slots.Where(x => x.HasData);
+                if (s.Count() == 0)
+                {
+                    yield return new MenuItemVM() { Text = "<no slot data>" };
+                    yield break;
+                }
+
                 // Append non-empty slots to menu
                 // Selecting the menu item will make the relevant slot current and restore it
                 foreach(CMachineSnapshot slot in _slots.Where(x => x.HasData))
