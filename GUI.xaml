@@ -34,6 +34,9 @@
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Margin" Value="3,1" />
         </Style>
+        <Style TargetType="ComboBox" x:Key="comboBase">
+            <Setter Property="Margin" Value="1,1"/>
+        </Style>
 
         <!-- Prevent treeview context menu items using the IsChecked state of the underlying property. -->
         <!-- Don't know why just setting IsCheckable=False on the menuitem definitions doesn't work. -->
@@ -349,18 +352,25 @@
                     <ColumnDefinition Width="40" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <ComboBox Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot A." IsTextSearchEnabled="False" >
-                    <ComboBox.Style>
-                        <Style TargetType="{x:Type ComboBox}">
-                            <Setter Property="FontWeight" Value="Normal" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SlotA.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                    <Setter Property="FontWeight" Value="Bold" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ComboBox.Style>
-                </ComboBox>
+                <Grid Grid.Row="0"  Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot A." IsTextSearchEnabled="False" >
+                        <ComboBox.Style>
+                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource comboBase}">
+                                <Setter Property="FontWeight" Value="Normal" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SlotA.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                    <Button Grid.Column="1" x:Name="BtnActivateA" Command="{Binding CmdActivateA}" Content="LOAD" />
+                </Grid>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
                     <Button x:Name="CopyBtoA" Command="{Binding CmdBtoA}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to left.">
                         <TextBlock Text="&lt;&lt;" />
@@ -377,18 +387,25 @@
                     <Button x:Name="btnSelectStored_B" Command="{Binding CmdSelectStoredB}" MinWidth="30" ToolTip="Select only properties with right values.">R</Button>
                     <Separator />
                 </StackPanel>
-                <ComboBox Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
-                    <ComboBox.Style>
-                        <Style TargetType="{x:Type ComboBox}">
-                            <Setter Property="FontWeight" Value="Normal" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SlotB.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                    <Setter Property="FontWeight" Value="Bold" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ComboBox.Style>
-                </ComboBox>
+                <Grid Grid.Row="0"  Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
+                        <ComboBox.Style>
+                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource comboBase}">
+                                <Setter Property="FontWeight" Value="Normal" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SlotB.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ComboBox.Style>
+                    </ComboBox>
+                    <Button Grid.Column="1" x:Name="BtnActivateB" Command="{Binding CmdActivateB}" Content="LOAD" />
+                </Grid>
                 <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemContainerStyle="{StaticResource tvi_manager_a}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">

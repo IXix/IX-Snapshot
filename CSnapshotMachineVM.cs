@@ -160,6 +160,14 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.RestoreB()
             };
+            CmdActivateA = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Slot = SlotA.Index; Owner.ForceRestore(); }
+            };
+            CmdActivateB = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Slot = SlotB.Index; Owner.ForceRestore(); },
+            };
         }
 
         internal string _filterText;
@@ -457,6 +465,7 @@ namespace Snapshot
         public SimpleCommand CmdClearSelectedA { get; private set; }
         public SimpleCommand CmdClearA { get; private set; }
         public SimpleCommand CmdRestoreA { get; private set; }
+        public SimpleCommand CmdActivateA { get; private set; }
 
         public SimpleCommand CmdCaptureB { get; private set; }
         public SimpleCommand CmdCaptureMissingB { get; private set; }
@@ -464,6 +473,8 @@ namespace Snapshot
         public SimpleCommand CmdClearSelectedB { get; private set; }
         public SimpleCommand CmdClearB { get; private set; }
         public SimpleCommand CmdRestoreB { get; private set; }
+        public SimpleCommand CmdActivateB { get; private set; }
+
         #endregion Commands
 
         #region Properties

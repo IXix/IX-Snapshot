@@ -8,6 +8,7 @@
 	Changed various instances of List<IPropertyState> to HashSet<IPropertyState>
 		Doesn't seem to have broken anything so far.
 	Machine Command menu now shows a placeholder if there are no slots with data.
+	Added load buttons to activate manager left/right panes
 
 2022.11.03
 	Implemented context menu for machine properties in main treeview

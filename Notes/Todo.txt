@@ -5,9 +5,6 @@ Manager interface
 		Would have to make sure input was properly validated for the selected property
 		Machine data values would have to be non-editable
 
-	Set current slot (maybe an "Activate" button for each pane)
-		Setting A/B as the current slot would enable MIDI control
-
 	Morphing?
 
 Context menu for treeview items
