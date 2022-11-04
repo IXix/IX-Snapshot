@@ -393,6 +393,14 @@
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -404,6 +412,14 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -415,6 +431,14 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -426,6 +450,14 @@
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -443,6 +475,14 @@
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -454,6 +494,14 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -465,6 +513,14 @@
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -476,6 +532,14 @@
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
                             <StackPanel Orientation="Horizontal">
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
                                 <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>

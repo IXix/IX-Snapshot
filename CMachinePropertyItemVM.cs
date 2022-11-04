@@ -19,17 +19,47 @@ namespace Snapshot
 
             CmdCapture = new SimpleCommand
             {
-                ExecuteDelegate = x => { Capture(x); }
+                ExecuteDelegate = x => { Capture(x, _ownerVM.CurrentSlot); }
             };
             CmdRestore = new SimpleCommand
             {
-                ExecuteDelegate = x => { Restore(x); },
+                ExecuteDelegate = x => { Restore(x, _ownerVM.CurrentSlot); },
                 CanExecuteDelegate = x => { return GotValue; }
             };
             CmdClear = new SimpleCommand
             {
-                ExecuteDelegate = x => { Clear(x); },
+                ExecuteDelegate = x => { Clear(x, _ownerVM.CurrentSlot); },
                 CanExecuteDelegate = x => { return GotValue; }
+            };
+
+            CmdCaptureA = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Capture(x, _ownerVM.SlotA); }
+            };
+            CmdRestoreA = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Restore(x, _ownerVM.SlotA); },
+                CanExecuteDelegate = x => { return GotValueA; }
+            };
+            CmdClearA = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Clear(x, _ownerVM.SlotA); },
+                CanExecuteDelegate = x => { return GotValueA; }
+            };
+
+            CmdCaptureB = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Capture(x, _ownerVM.SlotB); }
+            };
+            CmdRestoreB = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Restore(x, _ownerVM.SlotB); },
+                CanExecuteDelegate = x => { return GotValueB; }
+            };
+            CmdClearB = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Clear(x, _ownerVM.SlotB); },
+                CanExecuteDelegate = x => { return GotValueB; }
             };
         }
 
@@ -40,26 +70,59 @@ namespace Snapshot
         public SimpleCommand CmdRestore { get; private set; }
         public SimpleCommand CmdClear { get; private set; }
 
-        internal void Capture(object param)
+        public SimpleCommand CmdCaptureA { get; private set; }
+        public SimpleCommand CmdRestoreA { get; private set; }
+        public SimpleCommand CmdClearA { get; private set; }
+
+        public SimpleCommand CmdCaptureB { get; private set; }
+        public SimpleCommand CmdRestoreB { get; private set; }
+        public SimpleCommand CmdClearB { get; private set; }
+
+        internal void Capture(object param, CMachineSnapshot slot)
         {
-            List<IPropertyState> p = param as List<IPropertyState>;
-            _ownerVM.CurrentSlot.Capture(p, false);
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
+            slot.Capture(param as List<IPropertyState>, false);
+
+            if(slot == _ownerVM.CurrentSlot)
+            {
+                OnPropertyChanged("GotValue");
+                OnPropertyChanged("DisplayValue");
+            }
+            if (slot == _ownerVM.SlotA)
+            {
+                OnPropertyChanged("GotValueA");
+                OnPropertyChanged("DisplayValueA");
+            }
+            if (slot == _ownerVM.SlotB)
+            {
+                OnPropertyChanged("GotValueB");
+                OnPropertyChanged("DisplayValueB");
+            }
         }
 
-        internal void Restore(object param)
+        internal void Restore(object param, CMachineSnapshot slot)
         {
-            List<IPropertyState> p = param as List<IPropertyState>;
-            _ownerVM.CurrentSlot.Restore(p);
+            _ownerVM.CurrentSlot.Restore(param as List<IPropertyState>);
         }
 
-        internal void Clear(object param)
+        internal void Clear(object param, CMachineSnapshot slot)
         {
-            List<IPropertyState> p = param as List<IPropertyState>;
-            _ownerVM.CurrentSlot.Remove(p);
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
+            slot.Remove(param as List<IPropertyState>);
+
+            if (slot == _ownerVM.CurrentSlot)
+            {
+                OnPropertyChanged("GotValue");
+                OnPropertyChanged("DisplayValue");
+            }
+            if (slot == _ownerVM.SlotA)
+            {
+                OnPropertyChanged("GotValueA");
+                OnPropertyChanged("DisplayValueA");
+            }
+            if (slot == _ownerVM.SlotB)
+            {
+                OnPropertyChanged("GotValueB");
+                OnPropertyChanged("DisplayValueB");
+            }
         }
 
         public virtual string Name
