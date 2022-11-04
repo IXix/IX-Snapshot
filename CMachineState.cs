@@ -49,7 +49,7 @@ namespace Snapshot
 
     public interface IGroup<T> : INamed
     {
-        List<T> Children { get; }
+        HashSet<T> Children { get; }
     }
 
     public class CPropertyBase : IPropertyState
@@ -217,7 +217,7 @@ namespace Snapshot
             : base(owner, parent)
         {
             Name = name;
-            Children = new List<IPropertyState>();
+            Children = new HashSet<IPropertyState>();
         }
 
         public override string Name { get; }
@@ -251,7 +251,7 @@ namespace Snapshot
             }
         }
 
-        public List<IPropertyState> Children { get; }
+        public HashSet<IPropertyState> Children { get; }
     }
 
     public class CTrackPropertyStateGroup : CPropertyBase, IGroup<CPropertyStateGroup>
@@ -260,7 +260,7 @@ namespace Snapshot
             : base(owner, parent)
         {
             Name = name;
-            Children = new List<CPropertyStateGroup>();
+            Children = new HashSet<CPropertyStateGroup>();
         }
 
         public override string Name { get; }
@@ -294,7 +294,7 @@ namespace Snapshot
             }
         }
 
-        public List<CPropertyStateGroup> Children { get; }
+        public HashSet<CPropertyStateGroup> Children { get; }
     }
 
     public class CMachineState
@@ -306,7 +306,7 @@ namespace Snapshot
             _owner = owner;
             _active = true;
 
-            _allProperties = new List<IPropertyState>();
+            _allProperties = new HashSet<IPropertyState>();
 
             if((Machine.DLL.Info.Flags & MachineInfoFlags.LOAD_DATA_RUNTIME) == MachineInfoFlags.LOAD_DATA_RUNTIME && Machine.Data != null)
             {
@@ -487,7 +487,7 @@ namespace Snapshot
         public CPropertyStateGroup GlobalStates { get; private set; }
         public CTrackPropertyStateGroup TrackStates { get; private set; }
         public CPropertyStateGroup AttributeStates { get; private set; }
-        private readonly List<IPropertyState> _allProperties;
-        public List<IPropertyState> AllProperties => _allProperties;
+        private readonly HashSet<IPropertyState> _allProperties;
+        public HashSet<IPropertyState> AllProperties => _allProperties;
     }
 }

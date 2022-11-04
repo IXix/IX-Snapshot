@@ -398,6 +398,8 @@
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
+                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
@@ -416,6 +418,8 @@
                                     <ContextMenu>
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>
@@ -436,6 +440,8 @@
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
+                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
@@ -454,6 +460,8 @@
                                     <ContextMenu>
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>
@@ -480,6 +488,8 @@
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
+                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
@@ -498,6 +508,8 @@
                                     <ContextMenu>
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>
@@ -518,6 +530,8 @@
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
+                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>
                                 </StackPanel.ContextMenu>
@@ -536,6 +550,8 @@
                                     <ContextMenu>
                                         <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                        <Separator />
+                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                         <Separator />
                                         <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                     </ContextMenu>

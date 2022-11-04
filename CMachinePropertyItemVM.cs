@@ -15,7 +15,7 @@ namespace Snapshot
 
         {
             _ownerVM = ownerVM;
-            _properties = new List<IPropertyState>();
+            _properties = new HashSet<IPropertyState>();
 
             CmdCapture = new SimpleCommand
             {
@@ -61,10 +61,19 @@ namespace Snapshot
                 ExecuteDelegate = x => { Clear(x, _ownerVM.SlotB); },
                 CanExecuteDelegate = x => { return GotValueB; }
             };
+
+            CmdCopyAtoB = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Copy(x, _ownerVM.SlotA, _ownerVM.SlotB); },
+            };
+            CmdCopyBtoA = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Copy(x, _ownerVM.SlotB, _ownerVM.SlotA); },
+            };
         }
 
         protected readonly CSnapshotMachineVM _ownerVM;
-        protected List<IPropertyState> _properties;
+        protected HashSet<IPropertyState> _properties;
 
         public SimpleCommand CmdCapture { get; private set; }
         public SimpleCommand CmdRestore { get; private set; }
@@ -78,9 +87,12 @@ namespace Snapshot
         public SimpleCommand CmdRestoreB { get; private set; }
         public SimpleCommand CmdClearB { get; private set; }
 
+        public SimpleCommand CmdCopyAtoB { get; private set; }
+        public SimpleCommand CmdCopyBtoA { get; private set; }
+
         internal void Capture(object param, CMachineSnapshot slot)
         {
-            slot.Capture(param as List<IPropertyState>, false);
+            slot.Capture(param as HashSet<IPropertyState>, false);
 
             if(slot == _ownerVM.CurrentSlot)
             {
@@ -101,12 +113,12 @@ namespace Snapshot
 
         internal void Restore(object param, CMachineSnapshot slot)
         {
-            _ownerVM.CurrentSlot.Restore(param as List<IPropertyState>);
+            slot.Restore(param as HashSet<IPropertyState>);
         }
 
         internal void Clear(object param, CMachineSnapshot slot)
         {
-            slot.Remove(param as List<IPropertyState>);
+            slot.Remove(param as HashSet<IPropertyState>);
 
             if (slot == _ownerVM.CurrentSlot)
             {
@@ -119,6 +131,22 @@ namespace Snapshot
                 OnPropertyChanged("DisplayValueA");
             }
             if (slot == _ownerVM.SlotB)
+            {
+                OnPropertyChanged("GotValueB");
+                OnPropertyChanged("DisplayValueB");
+            }
+        }
+
+        internal void Copy(object param, CMachineSnapshot src, CMachineSnapshot dest)
+        {
+            dest.CopyFrom(param as HashSet<IPropertyState>, src);
+
+            if (dest == _ownerVM.SlotA)
+            {
+                OnPropertyChanged("GotValueA");
+                OnPropertyChanged("DisplayValueA");
+            }
+            if (dest == _ownerVM.SlotB)
             {
                 OnPropertyChanged("GotValueB");
                 OnPropertyChanged("DisplayValueB");
@@ -165,6 +193,6 @@ namespace Snapshot
             get => "";
         }
 
-        public List<IPropertyState> MachineProperties => _properties;
+        public HashSet<IPropertyState> MachineProperties => _properties;
     }
 }

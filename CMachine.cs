@@ -32,7 +32,7 @@ namespace Snapshot
 
         public CSnapshotMachineVM VM { get; }
 
-        public List<IPropertyState> AllProperties { get; private set; }
+        public HashSet<IPropertyState> AllProperties { get; private set; }
 
         private readonly List<CMachineSnapshot> _slots;
         public List<CMachineSnapshot> Slots => _slots;
@@ -307,7 +307,7 @@ namespace Snapshot
             }
 
             States = new ObservableCollection<CMachineState>();
-            AllProperties = new List<IPropertyState>();
+            AllProperties = new HashSet<IPropertyState>();
             VM = new CSnapshotMachineVM(this);
 
             ReadOnlyCollection<IMachine> machines = Global.Buzz.Song.Machines;
@@ -474,20 +474,7 @@ namespace Snapshot
 
         private void CopySelectedProperties(CMachineSnapshot src, CMachineSnapshot dest)
         {
-            CMachineSnapshot tmp = new CMachineSnapshot(src);
-
-            // Remove properties that aren't selected from the copy
-            tmp.AttributeValues.Remove(x => x.Checked_M == false);
-            tmp.ParameterValues.Remove(x => x.Checked_M == false);
-            tmp.DataValues.Remove(x => x.Checked_M == false);
-            tmp.StoredProperties.RemoveAll(x => x.Checked_M == false);
-
-            // Remove selected empty properties from destination slot
-            List<IPropertyState> lp = GetSelectedProperties(false);
-            lp.RemoveAll(x => tmp.ContainsProperty(x));
-            dest.Remove(lp);
-
-            dest.CopyFrom(tmp);
+            dest.CopyFrom(GetSelectedProperties(false), src);
         }
 
         public void CopyAtoB()
@@ -510,24 +497,24 @@ namespace Snapshot
             }
         }
 
-        internal List<IPropertyState> GetSelectedProperties(bool main)
+        internal HashSet<IPropertyState> GetSelectedProperties(bool main)
         {
-            List<IPropertyState> lp = new List<IPropertyState>();
+            HashSet<IPropertyState> selected = new HashSet<IPropertyState>();
             if (main)
             {
                 foreach (CMachineState state in States)
                 {
-                    lp.AddRange(state.AllProperties.Where(x => x.Checked));
+                    selected.UnionWith(state.AllProperties.Where(x => x.Checked));
                 }
             }
             else
             {
                 foreach (CMachineState state in States)
                 {
-                    lp.AddRange(state.AllProperties.Where(x => x.Checked_M));
+                    selected.UnionWith(state.AllProperties.Where(x => x.Checked_M));
                 }
             }
-            return lp;
+            return selected;
         }
 
         public void CaptureA()
@@ -538,8 +525,8 @@ namespace Snapshot
 
         public void CaptureMissingA()
         {
-            List<IPropertyState> targets = GetSelectedProperties(false);
-            targets.RemoveAll(x => SlotA.ContainsProperty(x) == true);
+            HashSet<IPropertyState> targets = GetSelectedProperties(false);
+            targets.RemoveWhere(x => SlotA.ContainsProperty(x) == true);
             SlotA.Capture(targets, false);
             OnPropertyChanged("State");
         }
@@ -587,8 +574,8 @@ namespace Snapshot
 
         public void CaptureMissingB()
         {
-            List<IPropertyState> targets = GetSelectedProperties(false);
-            targets.RemoveAll(x => SlotA.ContainsProperty(x) == true);
+            HashSet<IPropertyState> targets = GetSelectedProperties(false);
+            targets.RemoveWhere(x => SlotB.ContainsProperty(x) == true);
             SlotB.Capture(targets, false);
             OnPropertyChanged("State");
         }
@@ -1078,8 +1065,8 @@ namespace Snapshot
 
         internal void CaptureMissing()
         {
-            List<IPropertyState> targets = GetSelectedProperties(true);
-            targets.RemoveAll(x => CurrentSlot.ContainsProperty(x) == true);
+            HashSet<IPropertyState> targets = GetSelectedProperties(true);
+            targets.RemoveWhere(x => CurrentSlot.ContainsProperty(x) == true);
             CurrentSlot.Capture(targets, false);
             OnPropertyChanged("State");
         }
