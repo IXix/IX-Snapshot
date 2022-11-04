@@ -15,6 +15,7 @@ namespace Snapshot
 
         {
             _ownerVM = ownerVM;
+            _properties = new List<IPropertyState>();
 
             CmdCapture = new SimpleCommand
             {
@@ -33,6 +34,7 @@ namespace Snapshot
         }
 
         protected readonly CSnapshotMachineVM _ownerVM;
+        protected List<IPropertyState> _properties;
 
         public SimpleCommand CmdCapture { get; private set; }
         public SimpleCommand CmdRestore { get; private set; }
@@ -40,21 +42,21 @@ namespace Snapshot
 
         internal void Capture(object param)
         {
-            CPropertyBase p = param as CPropertyBase;
-            _ownerVM.CurrentSlot.Capture(p);
+            List<IPropertyState> p = param as List<IPropertyState>;
+            _ownerVM.CurrentSlot.Capture(p, false);
             OnPropertyChanged("GotValue");
             OnPropertyChanged("DisplayValue");
         }
 
         internal void Restore(object param)
         {
-            CPropertyBase p = param as CPropertyBase;
+            List<IPropertyState> p = param as List<IPropertyState>;
             _ownerVM.CurrentSlot.Restore(p);
         }
 
         internal void Clear(object param)
         {
-            CPropertyBase p = param as CPropertyBase;
+            List<IPropertyState> p = param as List<IPropertyState>;
             _ownerVM.CurrentSlot.Remove(p);
             OnPropertyChanged("GotValue");
             OnPropertyChanged("DisplayValue");
@@ -99,5 +101,7 @@ namespace Snapshot
         {
             get => "";
         }
+
+        public List<IPropertyState> MachineProperties => _properties;
     }
 }

@@ -11,8 +11,6 @@ Manager interface
 	Morphing?
 
 Context menu for treeview items
-	Implement menus for property groups
-		Apply action to all children
 	Remove from all snapshot slots?
 	Implement for manager A/B panes when working well in main view
 	Copy from left/right for manager?

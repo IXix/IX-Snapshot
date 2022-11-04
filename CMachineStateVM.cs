@@ -16,12 +16,11 @@ namespace Snapshot
         {
             _state = state;
             _trackCount = _state.Machine.TrackCount;
-            state.Machine.PropertyChanged += OnMachinePropertyChanged;
+            _properties = _state.AllProperties;
+            
             OwnerVM = ownerVM;
-            IsChecked = false;
-            IsCheckedM = false;
-            IsExpanded = true;
-            IsExpandedM = true;
+
+            state.Machine.PropertyChanged += OnMachinePropertyChanged;
             LoadChildren();
         }
 

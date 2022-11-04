@@ -299,52 +299,55 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Restore(IPropertyState p)
+        public void Restore(List<IPropertyState> properties)
         {
-            if (!StoredProperties.Contains(p) || !p.Active) return;
-
-            switch (p.GetType().Name)
+            foreach (IPropertyState p in properties)
             {
-                case "CAttributeState":
-                    {
-                        CAttributeState key = p as CAttributeState;
-                        int value = AttributeValues[key];
-                        Application.Current.Dispatcher.BeginInvoke(
-                            (Action)( () => { key.Attribute.Value = value; }
-                            ),
-                            DispatcherPriority.Send
-                            );
-                    }
-                    break;
+                if (!StoredProperties.Contains(p) || !p.Active) return;
 
-                case "CParameterState":
-                    {
-                        CParameterState key = p as CParameterState;
-                        Tuple<int, int> t = ParameterValues[key];
-                        int track = t.Item1;
-                        int value = t.Item2;
-                        Application.Current.Dispatcher.BeginInvoke(
-                            (Action)(() => { key.Parameter.SetValue(track, value); }
-                            ),
-                            DispatcherPriority.Send
-                            );
-                    }
-                    break;
+                switch (p.GetType().Name)
+                {
+                    case "CAttributeState":
+                        {
+                            CAttributeState key = p as CAttributeState;
+                            int value = AttributeValues[key];
+                            Application.Current.Dispatcher.BeginInvoke(
+                                (Action)(() => { key.Attribute.Value = value; }
+                                ),
+                                DispatcherPriority.Send
+                                );
+                        }
+                        break;
 
-                case "CDataState":
-                    {
-                        CDataState key = p as CDataState;
-                        byte[] value = DataValues[key];
-                        Application.Current.Dispatcher.BeginInvoke(
-                            (Action)(() => { key.Machine.Data = value; }
-                            ),
-                            DispatcherPriority.Send
-                            );
-                    }
-                    break;
+                    case "CParameterState":
+                        {
+                            CParameterState key = p as CParameterState;
+                            Tuple<int, int> t = ParameterValues[key];
+                            int track = t.Item1;
+                            int value = t.Item2;
+                            Application.Current.Dispatcher.BeginInvoke(
+                                (Action)(() => { key.Parameter.SetValue(track, value); }
+                                ),
+                                DispatcherPriority.Send
+                                );
+                        }
+                        break;
 
-                default:
-                    throw new Exception("Unknown property type.");
+                    case "CDataState":
+                        {
+                            CDataState key = p as CDataState;
+                            byte[] value = DataValues[key];
+                            Application.Current.Dispatcher.BeginInvoke(
+                                (Action)(() => { key.Machine.Data = value; }
+                                ),
+                                DispatcherPriority.Send
+                                );
+                        }
+                        break;
+
+                    default:
+                        throw new Exception("Unknown property type.");
+                }
             }
         }
 

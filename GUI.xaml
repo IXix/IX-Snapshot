@@ -142,6 +142,14 @@
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
+                                        <StackPanel.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                                <Separator />
+                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                            </ContextMenu>
+                                        </StackPanel.ContextMenu>
                                         <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
@@ -153,6 +161,14 @@
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
+                                        <StackPanel.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                                <Separator />
+                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                            </ContextMenu>
+                                        </StackPanel.ContextMenu>
                                         <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
@@ -164,6 +180,14 @@
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
+                                        <StackPanel.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                                <Separator />
+                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                            </ContextMenu>
+                                        </StackPanel.ContextMenu>
                                         <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
@@ -177,10 +201,10 @@
                                     <StackPanel Orientation="Horizontal">
                                         <StackPanel.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperty}" Style="{StaticResource propertyMenuItem}" />
-                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperty}" Style="{StaticResource propertyMenuItem}" />
+                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                                 <Separator />
-                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperty}" Style="{StaticResource propertyMenuItem}" />
+                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
                                             </ContextMenu>
                                         </StackPanel.ContextMenu>
                                         <CheckBox Focusable="False" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0,0,5,0" />

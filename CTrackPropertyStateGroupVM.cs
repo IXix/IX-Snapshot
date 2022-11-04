@@ -22,7 +22,11 @@ namespace Snapshot
             : base(parent, true, ownerVM)
         {
             _group = group;
-            IsChecked = false;
+            foreach(CPropertyStateGroup param in _group.Children)
+            {
+                _properties.Concat(param.Children);
+            }
+
             LoadChildren();
         }
 

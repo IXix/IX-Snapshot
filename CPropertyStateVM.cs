@@ -21,8 +21,11 @@ namespace Snapshot
             : base(parent, false, ownerVM)
         {
             _property = property;
+            _properties.Add(_property);
+
             IsChecked = _property.Checked;
             IsCheckedM = _property.Checked_M;
+
             _property.CheckChanged += CheckChanged;
             _property.SizeChanged += OnSizeChanged;
         }
@@ -72,7 +75,5 @@ namespace Snapshot
         public override string Name => _property.Name;
 
         public string DisplayName => _property.DisplayName;
-
-        public IPropertyState MachineProperty => _property;
     }
 }

@@ -11,7 +11,8 @@ namespace Snapshot
             : base(parentMachine, true, ownerVM)
         {
             _group = group;
-            IsChecked = false;
+            _properties = group.Children;
+
             LoadChildren();
         }
 
