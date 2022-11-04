@@ -16,7 +16,6 @@ namespace Snapshot
 
         readonly ObservableCollection<CTreeViewItemVM> _children;
         readonly CTreeViewItemVM _parent;
-        protected readonly CSnapshotMachineVM _ownerVM;
 
         bool _isExpanded;
         bool _isExpandedM;
@@ -35,10 +34,9 @@ namespace Snapshot
 
         #region Constructors
 
-        protected CTreeViewItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate, CSnapshotMachineVM ownerVM)
+        protected CTreeViewItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate)
         {
             _parent = parent;
-            _ownerVM = ownerVM;
             _preventManualIndeterminate = preventManualIndeterminate;
             _isChecked = false;
             _isCheckedM = false;
@@ -251,46 +249,6 @@ namespace Snapshot
                     reentrancyCheckM = false;
                 }
             }
-        }
-
-        public virtual string Name
-        {
-            get => "";
-        }
-
-        public virtual bool GotValue
-        {
-            get => false;
-        }
-
-        public virtual bool GotValueA
-        {
-            get => false;
-        }
-
-        public virtual bool GotValueB
-        {
-            get => false;
-        }
-
-        public virtual bool GotValueM
-        {
-            get => GotValueA || GotValueB;
-        }
-
-        public virtual string DisplayValue
-        {
-            get => "";
-        }
-
-        public virtual string DisplayValueA
-        {
-            get => "";
-        }
-
-        public virtual string DisplayValueB
-        {
-            get => "";
         }
 
         internal void UpdateTreeCheck(string tree = "")

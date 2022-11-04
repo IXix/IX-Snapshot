@@ -6,7 +6,7 @@ using System.Linq;
 namespace Snapshot
 {
     // Machines
-    public class CMachineStateVM : CTreeViewItemVM
+    public class CMachineStateVM : CMachinePropertyItemVM
     {
         public readonly CMachineState _state;
         public readonly int _trackCount;

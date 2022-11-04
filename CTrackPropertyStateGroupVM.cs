@@ -14,7 +14,7 @@ using System.Windows.Data;
 namespace Snapshot
 {
     // Groups
-    public class CTrackPropertyStateGroupVM : CTreeViewItemVM
+    public class CTrackPropertyStateGroupVM : CMachinePropertyItemVM
     {
         readonly CTrackPropertyStateGroup _group;
 
@@ -37,7 +37,7 @@ namespace Snapshot
             {
                 try
                 {
-                    CTreeViewItemVM c = Children.First(x => x.GotValue == true);
+                    CTreeViewItemVM c = Children.First(x => (x as CMachinePropertyItemVM).GotValue == true);
                     return true;
                 }
                 catch
@@ -53,7 +53,7 @@ namespace Snapshot
             {
                 try
                 {
-                    CTreeViewItemVM c = Children.First(x => x.GotValueA == true);
+                    CTreeViewItemVM c = Children.First(x => (x as CMachinePropertyItemVM).GotValueA == true);
                     return true;
                 }
                 catch
@@ -69,7 +69,7 @@ namespace Snapshot
             {
                 try
                 {
-                    CTreeViewItemVM c = Children.First(x => x.GotValueB == true);
+                    CTreeViewItemVM c = Children.First(x => (x as CMachinePropertyItemVM).GotValueB == true);
                     return true;
                 }
                 catch

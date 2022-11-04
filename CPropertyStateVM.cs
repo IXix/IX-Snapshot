@@ -13,7 +13,7 @@ using System.Windows.Data;
 
 namespace Snapshot
 {
-    public class CPropertyStateVM : CTreeViewItemVM
+    public class CPropertyStateVM : CMachinePropertyItemVM
     {
         readonly IPropertyState _property;
 
@@ -25,47 +25,6 @@ namespace Snapshot
             IsCheckedM = _property.Selected_M;
             _property.SelChanged += OnSelChanged;
             _property.SizeChanged += OnSizeChanged;
-
-            CmdCaptureProperty = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Capture(x); }
-            };
-            CmdRestoreProperty = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Restore(x); },
-                CanExecuteDelegate = x => { return GotValue; }
-            };
-            CmdClearProperty = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Clear(x); },
-                CanExecuteDelegate = x => { return GotValue; }
-            };
-        }
-
-        public SimpleCommand CmdCaptureProperty { get; private set; }
-        public SimpleCommand CmdRestoreProperty { get; private set; }
-        public SimpleCommand CmdClearProperty { get; private set; }
-
-        internal void Capture(object param)
-        {
-            CPropertyBase p = param as CPropertyBase;
-            _ownerVM.CurrentSlot.Capture(p);
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
-        }
-
-        internal void Restore(object param)
-        {
-            CPropertyBase p = param as CPropertyBase;
-            _ownerVM.CurrentSlot.Restore(p);
-        }
-
-        internal void Clear(object param)
-        {
-            CPropertyBase p = param as CPropertyBase;
-            _ownerVM.CurrentSlot.Remove(p);
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
         }
 
         private void OnSizeChanged(object sender, EventArgs e)

@@ -57,6 +57,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CMachinePropertyItemVM.cs" />
     <Compile Include="CMachineSnapshot.cs" />
     <Compile Include="CMachineState.cs" />
     <Compile Include="CMachine.cs" />

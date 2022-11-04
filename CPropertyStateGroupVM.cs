@@ -3,7 +3,7 @@
 namespace Snapshot
 {
     // Groups
-    public class CPropertyStateGroupVM : CTreeViewItemVM
+    public class CPropertyStateGroupVM : CMachinePropertyItemVM
     {
         readonly CPropertyStateGroup _group;
 
@@ -26,7 +26,7 @@ namespace Snapshot
             {
                 try
                 {
-                    CTreeViewItemVM c = Children.First(x => x.GotValue == true);
+                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValue == true);
                     return true;
                 }
                 catch
@@ -42,7 +42,7 @@ namespace Snapshot
             {
                 try
                 {
-                    CTreeViewItemVM c = Children.First(x => x.GotValueA == true);
+                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValueA == true);
                     return true;
                 }
                 catch
@@ -58,7 +58,7 @@ namespace Snapshot
             {
                 try
                 {
-                    CTreeViewItemVM c = Children.First(x => x.GotValueB == true);
+                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValueB == true);
                     return true;
                 }
                 catch

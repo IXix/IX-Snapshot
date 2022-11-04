@@ -172,10 +172,10 @@ namespace Snapshot
             foreach (CMachineStateVM s in States)
             {
                 bool show1 = false;
-                foreach (CTreeViewItemVM c in s.Children) // groups
+                foreach (CMachinePropertyItemVM c in s.Children) // groups
                 {
                     bool show2 = false;
-                    foreach (CTreeViewItemVM cc in c.Children) // global/attrib/data/trackgroup
+                    foreach (CMachinePropertyItemVM cc in c.Children) // global/attrib/data/trackgroup
                     {
                         //if (cc.Name.Contains(FilterText))
                         if(cc.Name.IndexOf(FilterText, 0, StringComparison.OrdinalIgnoreCase) != -1)
@@ -203,10 +203,10 @@ namespace Snapshot
             foreach (CMachineStateVM s in States)
             {
                 bool show1 = false;
-                foreach (CTreeViewItemVM c in s.Children) // groups
+                foreach (CMachinePropertyItemVM c in s.Children) // groups
                 {
                     bool show2 = false;
-                    foreach (CTreeViewItemVM cc in c.Children) // global/attrib/data/trackgroup
+                    foreach (CMachinePropertyItemVM cc in c.Children) // global/attrib/data/trackgroup
                     {
                         //if (cc.Name.Contains(FilterTextM))
                         if (cc.Name.IndexOf(FilterTextM, 0, StringComparison.OrdinalIgnoreCase) != -1)
@@ -237,15 +237,15 @@ namespace Snapshot
                 s.IsVisible = GetVisibility(s);
                 s.IsExpanded = GetExpanded(s);
 
-                foreach (CTreeViewItemVM c in s.Children)
+                foreach (CMachinePropertyItemVM c in s.Children)
                 {
                     c.IsVisible = GetVisibility(c);
                     c.IsExpanded = GetExpanded(c);
-                    foreach (CTreeViewItemVM cc in c.Children)
+                    foreach (CMachinePropertyItemVM cc in c.Children)
                     {
                         cc.IsExpanded = GetExpanded(cc);
                         cc.IsVisible = GetVisibility(cc);
-                        foreach (CTreeViewItemVM ccc in cc.Children)
+                        foreach (CMachinePropertyItemVM ccc in cc.Children)
                         {
                             GetExpanded(ccc);
                             ccc.IsVisible = GetVisibility(ccc);
@@ -263,15 +263,15 @@ namespace Snapshot
                 s.IsVisibleM = GetVisibilityM(s);
                 s.IsExpandedM = GetExpandedM(s);
 
-                foreach (CTreeViewItemVM c in s.Children)
+                foreach (CMachinePropertyItemVM c in s.Children)
                 {
                     c.IsVisibleM = GetVisibility(c);
                     c.IsExpandedM = GetExpanded(c);
-                    foreach (CTreeViewItemVM cc in c.Children)
+                    foreach (CMachinePropertyItemVM cc in c.Children)
                     {
                         cc.IsExpandedM = GetExpanded(cc);
                         cc.IsVisibleM = GetVisibility(cc);
-                        foreach (CTreeViewItemVM ccc in cc.Children)
+                        foreach (CMachinePropertyItemVM ccc in cc.Children)
                         {
                             GetExpanded(ccc);
                             ccc.IsVisibleM = GetVisibility(ccc);
@@ -370,7 +370,7 @@ namespace Snapshot
 
         public string SelectionInfo => Owner.SelectionInfo;
 
-        internal System.Windows.Visibility GetVisibility(CTreeViewItemVM tvi)
+        internal System.Windows.Visibility GetVisibility(CMachinePropertyItemVM tvi)
         {
             if (tvi.IsChecked != false)
                 return System.Windows.Visibility.Visible; // Don't hide selected items
@@ -388,7 +388,7 @@ namespace Snapshot
             }
         }
 
-        internal System.Windows.Visibility GetVisibilityM(CTreeViewItemVM tvi)
+        internal System.Windows.Visibility GetVisibilityM(CMachinePropertyItemVM tvi)
         {
             if (tvi.IsCheckedM != false)
                 return System.Windows.Visibility.Visible; // Don't hide selected items
@@ -406,12 +406,12 @@ namespace Snapshot
             }
         }
 
-        internal bool GetExpanded(CTreeViewItemVM tvi)
+        internal bool GetExpanded(CMachinePropertyItemVM tvi)
         {
             return tvi.IsChecked != false || tvi.GotValue; // Auto-expand selected items, items with selected children and items with values
         }
 
-        internal bool GetExpandedM(CTreeViewItemVM tvi)
+        internal bool GetExpandedM(CMachinePropertyItemVM tvi)
         {
             return tvi.IsCheckedM != false || tvi.GotValueM; // Auto-expand selected items, items with selected children and items with values
         }
