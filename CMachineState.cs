@@ -26,15 +26,15 @@ namespace Snapshot
         string DisplayName { get; }
     }
 
-    public interface ISelectable : INamed
+    public interface ICheckable : INamed
     {
-        bool Selected { get; set; }
-        bool Selected_M { get; set; }
-        event EventHandler<StateChangedEventArgs> SelChanged;
-        void OnSelChanged(StateChangedEventArgs e);
+        bool Checked { get; set; }
+        bool Checked_M { get; set; }
+        event EventHandler<StateChangedEventArgs> CheckChanged;
+        void OnCheckChanged(StateChangedEventArgs e);
     }
 
-    public interface IPropertyState : ISelectable
+    public interface IPropertyState : ICheckable
     {
         int? Track { get; }
         int Size { get; }
@@ -86,7 +86,7 @@ namespace Snapshot
         virtual public int Size => 0;
 
         protected bool m_selected;
-        virtual public bool Selected
+        virtual public bool Checked
         {
             get => m_selected;
             set
@@ -94,13 +94,13 @@ namespace Snapshot
                 if(m_selected != value)
                 {
                     m_selected = value;
-                    OnSelChanged(new StateChangedEventArgs() { Property = this, Checked = Selected, Checked_M = Selected_M });
+                    OnCheckChanged(new StateChangedEventArgs() { Property = this, Checked = Checked, Checked_M = Checked_M });
                 }
             }
         }
 
         protected bool m_selected_M;
-        virtual public bool Selected_M
+        virtual public bool Checked_M
         {
             get => m_selected_M;
             set
@@ -108,7 +108,7 @@ namespace Snapshot
                 if (m_selected_M != value)
                 {
                     m_selected_M = value;
-                    OnSelChanged(new StateChangedEventArgs() { Property = this, Checked = Selected, Checked_M = Selected_M });
+                    OnCheckChanged(new StateChangedEventArgs() { Property = this, Checked = Checked, Checked_M = Checked_M });
                 }
             }
         }
@@ -117,12 +117,12 @@ namespace Snapshot
 
         virtual public string DisplayName => throw new NotImplementedException();
 
-        public event EventHandler<StateChangedEventArgs> SelChanged;
+        public event EventHandler<StateChangedEventArgs> CheckChanged;
         public event EventHandler SizeChanged;
 
-        public void OnSelChanged(StateChangedEventArgs e)
+        public void OnCheckChanged(StateChangedEventArgs e)
         {
-            SelChanged?.Invoke(this, e);
+            CheckChanged?.Invoke(this, e);
         }
 
         public void OnSizeChanged()

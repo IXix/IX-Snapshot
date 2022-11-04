@@ -172,13 +172,13 @@ namespace Snapshot
         public int StoredCount => StoredProperties.Count;
 
         // How many stored properties are selected
-        public int SelectedCount => StoredProperties.Count(x => x.Selected);
-        public int SelectedCount_M => StoredProperties.Count(x => x.Selected_M);
+        public int SelectedCount => StoredProperties.Count(x => x.Checked);
+        public int SelectedCount_M => StoredProperties.Count(x => x.Checked_M);
 
         // How many properties are stored that aren't selected
-        public int RedundantCount => StoredProperties.Count(x => x.Active && x.Selected == false);
+        public int RedundantCount => StoredProperties.Count(x => x.Active && x.Checked == false);
 
-        public int RedundantCount_M => StoredProperties.Count(x => x.Active && x.Selected_M == false);
+        public int RedundantCount_M => StoredProperties.Count(x => x.Active && x.Checked_M == false);
 
         // How many properties are stored that are inactive (machine deleted)
         public int DeletedCount => StoredProperties.Count(x => x.Active == false);
@@ -374,11 +374,11 @@ namespace Snapshot
         {
             if (main)
             {
-                Remove(StoredProperties.Where(x => x.Active == false || x.Selected == false).ToList());
+                Remove(StoredProperties.Where(x => x.Active == false || x.Checked == false).ToList());
             }
             else
             {
-                Remove(StoredProperties.Where(x => x.Active == false || x.Selected_M == false).ToList());
+                Remove(StoredProperties.Where(x => x.Active == false || x.Checked_M == false).ToList());
             }
             OnPropertyChanged("HasData");
         }

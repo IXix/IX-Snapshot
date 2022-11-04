@@ -2,6 +2,7 @@
 	Added CMachinePropertyItemVM
 		moves machine specific stuff out of CTreeViewItemVM
 		simplifies adding context menu commands to the property group types
+	Refactoring to end the checked/selected naming confusion
 
 2022.11.03
 	Implemented context menu for machine properties in main treeview

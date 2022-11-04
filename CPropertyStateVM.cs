@@ -21,9 +21,9 @@ namespace Snapshot
             : base(parent, false, ownerVM)
         {
             _property = property;
-            IsChecked = _property.Selected;
-            IsCheckedM = _property.Selected_M;
-            _property.SelChanged += OnSelChanged;
+            IsChecked = _property.Checked;
+            IsCheckedM = _property.Checked_M;
+            _property.CheckChanged += CheckChanged;
             _property.SizeChanged += OnSizeChanged;
         }
 
@@ -64,9 +64,9 @@ namespace Snapshot
 
         protected override void OnCheckChanged()
         {
-            _property.Selected = (bool)IsChecked;
-            _property.Selected_M = (bool)IsCheckedM;
-            _property.OnSelChanged(new StateChangedEventArgs() { Property = _property, Checked = _property.Selected, Checked_M = _property.Selected_M });
+            _property.Checked = (bool)IsChecked;
+            _property.Checked_M = (bool)IsCheckedM;
+            _property.OnCheckChanged(new StateChangedEventArgs() { Property = _property, Checked = _property.Checked, Checked_M = _property.Checked_M });
         }
 
         public override string Name => _property.Name;
