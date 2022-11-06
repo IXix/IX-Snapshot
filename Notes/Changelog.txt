@@ -2,6 +2,7 @@
 	Added 'Clear selected' button to main tab
 	Checked items are no longer hidden by the text filter.
 	Added "Activate" button to manager
+	Mapping dialog improvements
 
 2022.11.04
 	Added CMachinePropertyItemVM

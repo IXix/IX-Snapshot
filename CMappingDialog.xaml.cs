@@ -49,7 +49,7 @@ namespace Snapshot
             {
                 SecondaryValues.Add(i.ToString());
             }
-            SecondaryValues.Add("Undefined");
+            SecondaryValues.Add("Any");
 
             Command = command;
             Settings = settings;

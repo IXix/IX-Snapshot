@@ -2,6 +2,12 @@ RestoreOnSlotChange works but can it be optimised?
 
 Icons
 
+MIDI mapping dialog sucks
+	Lists are zero based but should be one based
+
+Store snapshots on disk
+	Probably xml although not sure how the machine data will work with that.
+
 Manager interface
 	Editing values would be nice.
 		Would have to make sure input was properly validated for the selected property
