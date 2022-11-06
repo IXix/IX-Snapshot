@@ -321,6 +321,14 @@
                             </Button.InputBindings>
                             Clear
                         </Button>
+                        <Button x:Name="btnClearSelected" ToolTip="Discard all stored properties.">
+                            <Button.InputBindings>
+                                <MouseBinding Command="{Binding CmdClearSelected}" MouseAction="LeftClick" />
+                                <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" Gesture="RightClick" />
+                                <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" Gesture="Ctrl+RightClick" />
+                            </Button.InputBindings>
+                            Clear selected
+                        </Button>
                         <Button x:Name="btnPurge" ToolTip="Discard stored properties that are not selected or belong to missing machines.">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdPurge}" MouseAction="LeftClick" />
@@ -356,6 +364,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot A." IsTextSearchEnabled="False" >
                         <ComboBox.Style>
@@ -369,7 +378,8 @@
                             </Style>
                         </ComboBox.Style>
                     </ComboBox>
-                    <Button Grid.Column="1" x:Name="BtnActivateA" Command="{Binding CmdActivateA}" Content="LOAD" />
+                    <Button Grid.Column="1" x:Name="BtnActivateA" Command="{Binding CmdActivateA}" Content="ACT" />
+                    <Button Grid.Column="2" x:Name="BtnLoadA" Command="{Binding CmdLoadA}" Content="LOAD" />
                 </Grid>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
                     <Button x:Name="CopyBtoA" Command="{Binding CmdBtoA}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to left.">
@@ -391,6 +401,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
                         <ComboBox.Style>
@@ -404,7 +415,8 @@
                             </Style>
                         </ComboBox.Style>
                     </ComboBox>
-                    <Button Grid.Column="1" x:Name="BtnActivateB" Command="{Binding CmdActivateB}" Content="LOAD" />
+                    <Button Grid.Column="1" x:Name="BtnActivateB" Command="{Binding CmdActivateB}" Content="ACT" />
+                    <Button Grid.Column="2" x:Name="BtnLoadB" Command="{Binding CmdLoadB}" Content="LOAD" />
                 </Grid>
                 <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemContainerStyle="{StaticResource tvi_manager_a}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.Resources>

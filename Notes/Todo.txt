@@ -1,5 +1,7 @@
 RestoreOnSlotChange works but can it be optimised?
 
+Icons
+
 Manager interface
 	Editing values would be nice.
 		Would have to make sure input was properly validated for the selected property

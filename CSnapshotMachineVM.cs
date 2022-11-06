@@ -44,6 +44,11 @@ namespace Snapshot
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Clear()
             };
+            CmdClearSelected = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.ClearSelected()
+            };
             CmdPurge = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
@@ -135,6 +140,14 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.RestoreA()
             };
+            CmdActivateA = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Slot = SlotA.Index; }
+            };
+            CmdLoadA = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Slot = SlotA.Index; Owner.ForceRestore(); }
+            };
 
             CmdCaptureB = new SimpleCommand
             {
@@ -160,11 +173,11 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => Owner.RestoreB()
             };
-            CmdActivateA = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Slot = SlotA.Index; Owner.ForceRestore(); }
-            };
             CmdActivateB = new SimpleCommand
+            {
+                ExecuteDelegate = x => { Slot = SlotB.Index; },
+            };
+            CmdLoadB = new SimpleCommand
             {
                 ExecuteDelegate = x => { Slot = SlotB.Index; Owner.ForceRestore(); },
             };
@@ -186,7 +199,7 @@ namespace Snapshot
                     foreach (CMachinePropertyItemVM cc in c.Children) // global/attrib/data/trackgroup
                     {
                         //if (cc.Name.Contains(FilterText))
-                        if(cc.Name.IndexOf(FilterText, 0, StringComparison.OrdinalIgnoreCase) != -1)
+                        if((cc.IsChecked != false) || (cc.Name.IndexOf(FilterText, 0, StringComparison.OrdinalIgnoreCase) != -1))
                         {
                             cc.IsVisible = System.Windows.Visibility.Visible;
                             cc.IsExpanded = true;
@@ -217,7 +230,7 @@ namespace Snapshot
                     foreach (CMachinePropertyItemVM cc in c.Children) // global/attrib/data/trackgroup
                     {
                         //if (cc.Name.Contains(FilterTextM))
-                        if (cc.Name.IndexOf(FilterTextM, 0, StringComparison.OrdinalIgnoreCase) != -1)
+                        if ((cc.IsCheckedM != false) || (cc.Name.IndexOf(FilterTextM, 0, StringComparison.OrdinalIgnoreCase) != -1))
                         {
                             cc.IsVisibleM = System.Windows.Visibility.Visible;
                             cc.IsExpandedM = true;
@@ -441,6 +454,7 @@ namespace Snapshot
         public SimpleCommand CmdCaptureMissing { get; private set; }
         public SimpleCommand CmdRestore { get; private set; }
         public SimpleCommand CmdClear { get; private set; }
+        public SimpleCommand CmdClearSelected { get; private set; }
         public SimpleCommand CmdPurge { get; private set; }
         public SimpleCommand CmdMap { get; private set; }
         public SimpleCommand CmdMapSpecific { get; private set; }
@@ -466,6 +480,7 @@ namespace Snapshot
         public SimpleCommand CmdClearA { get; private set; }
         public SimpleCommand CmdRestoreA { get; private set; }
         public SimpleCommand CmdActivateA { get; private set; }
+        public SimpleCommand CmdLoadA { get; private set; }
 
         public SimpleCommand CmdCaptureB { get; private set; }
         public SimpleCommand CmdCaptureMissingB { get; private set; }
@@ -474,6 +489,7 @@ namespace Snapshot
         public SimpleCommand CmdClearB { get; private set; }
         public SimpleCommand CmdRestoreB { get; private set; }
         public SimpleCommand CmdActivateB { get; private set; }
+        public SimpleCommand CmdLoadB { get; private set; }
 
         #endregion Commands
 

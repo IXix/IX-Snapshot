@@ -1106,6 +1106,16 @@ namespace Snapshot
             }
         }
 
+        internal void ClearSelected()
+        {
+            string msg = string.Format("Discard {0} stored properties from {1}?", CurrentSlot.SelectedCount, CurrentSlot.Name);
+            if (Confirm("Confirm clear", msg))
+            {
+                CurrentSlot.Remove(GetSelectedProperties(true));
+                OnPropertyChanged("State");
+            }
+        }
+
         // Called before the slot is changed
         internal void OnSlotChanging()
         {
