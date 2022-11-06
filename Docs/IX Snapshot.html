@@ -1,0 +1,303 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>IX Snapshot 1.2</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <style type="text/css">
+        table {
+            background-color: #000000;
+            background-position: center center;
+            margin-top: 4pt;
+            border: thin none;
+            width: 100%;
+        }
+
+        td {
+            border: thin none;
+            text-align: left;
+            vertical-align: top;
+            background-color: #E0E0A0;
+            margin: 0px;
+            padding: 4pt;
+        }
+
+        .leftCell {
+            width: 15%;
+        }
+
+        body {
+            background-color: #CCCCCC;
+            padding: 3%;
+        }
+
+        h1 {
+            text-decoration: underline;
+            text-align: center;
+        }
+
+        h2 {
+            text-decoration: underline;
+        }
+
+        h3 {
+            margin: 10pt 0pt 5pt 0pt;
+        }
+
+        p {
+            margin: 2pt 0pt 2pt 0pt;
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>IX Snapshot 1.2</h1>
+
+    <h3>What does it do?</h3>
+    <p>Store and restore combinations of machine properties. Unlike Peer State, IX Snapshot can capture a machine's internal state data, allowing you to store properties that are not exposed as parameters or attributes.</p>
+
+    <h3><a name="Installation">Installation</a></h3>
+    <p>Copy "IX Snapshot.NET.dll" and this file to your Generators folder.</p>
+
+    <h3><a name="Parameters">Machine Parameters</a></h3>
+    <table>
+        <tr>
+            <td class="leftCell"><b>Name</b></td>
+            <td><b>Function</b></td>
+        </tr>
+        <tr>
+            <td class="leftCell">Slot</td>
+            <td>Selects the active slot. The active slot's state is shown in the main treeview.</td>
+        </tr>
+    </table>
+
+    <h3><a name="GUI">GUI</a></h3>
+    <p>Snapshot has a graphical interface incorporated into the machine parameters window. The window can be resized horizontally to give more room for the treeview controls, but resizing vertically is currently not possible.</p>
+    <p>The controls are organised into two sections, 'Main' and 'Manage', which can be selected using the tab controls at the top of the interface. </p>
+
+    <h3><a name="PatchTab">Main tab - Treeview controls</a></h3>
+    <table>
+        <tr>
+            <td class="leftCell"><b>Control</b></td>
+            <td><b>Function</b></td>
+        </tr>
+        <tr>
+            <td class="leftCell">Slot dropdown</td>
+            <td>Selects the active slot, the same as using the Slot parameter. You can also rename the active slot and slots which contain property values will appear bold.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Information panel</td>
+            <td>Shows information about properties and memory usage. Snapshots can grow to use significant amounts of memory if you capture the machine data for complex VST instruments.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Treeview</td>
+            <td>
+                <p>The treeview shows all of the machines in the Buzz machine view and their properties. Use the checkboxes to select which properties will be affected by the action buttons. Properties that have stored values in the active slot are shown in bold and the value is dispayed to the right of the property name.</p>
+                <p>Right-clicking an item will bring up a context menu which will allow you to manipulate that item (and it's children), regardless of whether its checkbox is selected.</p>
+                <p>Unfortunately, Snapshot cannot manipulate machine connection parameters such as amp and pan, so these will not be displayed.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftCell">Text Filter</td>
+            <td>The treeview will show only machine properties that contain the text in this control. Property selection overrides this setting though, so selected properties will always be displayed, even if they don't match the filter.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Filter clear button</td>
+            <td>Resets the text filter.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Filter dropdown</td>
+            <td>This control allows you to see only properties that are either stored or not stored in the active slot. As with the text filter, selected properties will always be shown.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">All button</td>
+            <td>Select all available properties.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">None button</td>
+            <td>Deselect all properties.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Stored button</td>
+            <td>Select only properties that are stored in the active slot.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Invert button</td>
+            <td>Invert the property selection.</td>
+        </tr>
+    </table>
+
+    <h3><a name="SlotControls">Main tab - Slot controls</a></h3>
+    <p>These controls allow you to add/remove selected properties to the active slot. Right-clicking a button will allow you to bind the button action to a MIDI event (see <a href="#MIDI">MIDI</a>)</a></p>
+    <table>
+        <tr>
+            <td class="leftCell">Capture button</td>
+            <td>Store the values of all selected properties in the active slot. Any existing values for the selected properties will be replaced with the current value. Only selected properties will be affected.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Capture Missing button</td>
+            <td>Store the values of any selected properties that do not already have a stored value.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Restore button</td>
+            <td>Restore all property values, whether selected or not, contained in the active slot.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Clear button</td>
+            <td>Discard all stored property values from the active slot.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Clear selected button</td>
+            <td>Discard selected property values from the active slot.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Purge button</td>
+            <td>Discard values from the active slot for any properties that are not selected or are no longer available.</td>
+        </tr>
+    </table>
+
+    <h3><a name="Options">Main tab - Option controls</a></h3>
+    <p>These checkboxes control Snapshot's behaviour.</p>
+    <table>
+        <tr>
+            <td class="leftCell"><b>Control</b></td>
+            <td><b>Function</b></td>
+        </tr>
+        <tr>
+            <td class="leftCell"> Confirm on clear/purge"</td>
+            <td>If checked, Snapshot will ask for confirmation before discarding stored property values.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Selection follows slot</td>
+            <td>If checked, when changing the active slot, the selection will automatically update to contain only properties that are stored in the new slot.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Select new machines</td>
+            <td>If checked, newly added machines will automatically have all their prooperties included in the selection.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Capture on slot change.</td>
+            <td>If checked, Snapshot will capture the selected property values, as if you had pressed the Capture button, before swicthing to the new slot.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Restore on slot change</td>
+            <td>If checked, Snapshot will restore property values contained in the new slot, as if you had pressed the Restore button.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Restore on song load</td>
+            <td>If checked, Snapshot will restore property values contained in the active slot once the song has finished loading.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Restore on transport stop</td>
+            <td>If checked, Snapshot will restore property values contained in the active slot when the song stops playing.</td>
+        </tr>
+    </table>
+
+    <h3><a name="ManagerTab">Manager tab</a></h3>
+    <p>The manager tab contains two sets of controls similar to those in the main tab. The controls beneath the treeviews operate on the selected properties in the appropriate view, while the controls in the central strip perform operations that involve both sides. The two treeviews are synchronised to show the same properties, so expanding/selecting an item on one side will automatically do the same on the other. Similarly, using the property filter controls will affect both sides simultaneously.</p>
+    <h3>Manager tab - Treeviews and slot controls</h3>
+    <p>The controls for the treeviews are the same as those in the main tab, with the exception that the slot dropdowns will not set the selected slot to be the active slot. To activate the slot, use the set/load buttons.</p>
+    <table>
+        <tr>
+            <td class="leftCell"><b>Control</b></td>
+            <td><b>Function</b></td>
+        </tr>
+        <tr>
+            <td class="leftCell">Set</td>
+            <td>Set the relevant slot to be the active slot (allowing MIDI operations). If <a href="#MainOptions">"Restore on slot change",/a> is selected, the slot values will be restored.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Load</td>
+            <td>Set the relevant slot to be the active slot (allowing MIDI operations) and restore all value.</td>
+        </tr>
+    </table>
+
+    <h3>Manager tab - Central controls</h3>
+    <p>The central controls, arranged vertically between the two treeviews, perform operations involving both visible slots. Due to limited space, the buttons labels aren't very descriptive but each control has a tooltip explaining its purpose..'</p>
+    <table>
+        <tr>
+            <td class="leftCell"><b>Control</b></td>
+            <td><b>Function</b></td>
+        </tr>
+        <tr>
+            <td class="leftCell">Copy to left</td>
+            <td>Copies selected property values from the right slot to the left. If an empty property is copied, the corresponding value in the destination slot will be cleared.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Copy to right</td>
+            <td>As above but the other way round.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">All button</td>
+            <td>Selects all properties in both treeviews.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">None button</td>
+            <td>Deselects all properties in both treeviews.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Invert button</td>
+            <td>Inverts the property selection in both treeviews.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Left button</td>
+            <td>Selects only properties that contain values on the left side.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Right button</td>
+            <td>Selects only properties that contain values on the right side.</td>
+        </tr>
+    </table>
+
+    <h3><a name="MIDI">MIDI</a></h3>
+    <p>Right-clicking a buttons in the main view will bring up a dialog allowing you to bind that button action to a MIDI event.</p>
+    <p>When the MIDI event is recieved, Snapshot will perform the specified action (capture, restore, etc.) on whichever slot happens to be active at the time.</p>
+    <p>If you hold CTRL when right-clicking the button, you can bind a MIDI event specifically to the active slot, allowing you to manipulate that slot even when it is no longer active.</p>
+    <p>Here are the controls available in the MIDI pop-up:</p>
+    <table>
+        <tr>
+            <td class="leftCell"><b>Control</b></td>
+            <td><b>Function</b></td>
+        </tr>
+        <tr>
+            <td class="leftCell">Type</td>
+            <td>Select whether you wish to bind to a Note-on, Note-off or Controller event.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Channel</td>
+            <td>Select the MIDI channel to use when listening for the event.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Note/Controller</td>
+            <td>Select which note or controller message you wish to listen for.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Controller Value</td>
+            <td>If listening for a controller message, which specific value to respond to.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Learn</td>
+            <td>When clicked, Snapshot will listen for MIDI events and populate the dialog controls automatically.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Okay</td>
+            <td>Accept the dialog settings and add the specified MIDI event to the internal MIDI map.</td>
+        </tr>
+        <tr>
+            <td class="leftCell">Cancel</td>
+            <td>Discard the dialog settings without changing the internal MIDI map.</td>
+        </tr>
+    </table>
+
+    <h3>Acknowledgements</h3>
+    <p>Massive thanks to WDE and UNZ for awesome helpfulness and of course to Oskari, for making everything possible.</p>
+
+    <h3>Contact</h3>
+    <p>Comments, requests, bug reports etc. are welcome. You can find me lurking in the <a href="http://forums.jeskola.net/">Buzz forums</a> or you can mail me via deenine[at]hotmail[dot]co[dot]uk (but don't expect a quick reply.)</p>
+
+    <h3>Disclaimer</h3>
+    <p>I still suck at this programming lark and I can't be held responsible for anything, ever.</p>
+
+    <p>- IX</p>
+</body>
+</html>

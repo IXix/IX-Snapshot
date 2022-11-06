@@ -90,6 +90,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Docs\IX Snapshot.html" />
     <Content Include="Notes\Changelog.txt" />
     <Content Include="Notes\Todo.txt" />
     <Content Include="postbuild.files.txt" />
