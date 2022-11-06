@@ -31,21 +31,21 @@ namespace Snapshot
             TypeValues.Add("Controller");
 
             ChannelValues = new List<string>();
-            for (Byte i = 0; i < 16; i++)
+            for (Byte i = 1; i <= 16; i++)
             {
                 ChannelValues.Add(i.ToString());
             }
             ChannelValues.Add("Any");
 
             PrimaryValues = new List<string>();
-            for (Byte i = 0; i < 128; i++)
+            for (Byte i = 1; i <= 128; i++)
             {
                 PrimaryValues.Add(i.ToString());
             }
             PrimaryValues.Add("Undefined");
 
             SecondaryValues = new List<string>();
-            for (Byte i = 0; i < 128; i++)
+            for (Byte i = 1; i <= 128; i++)
             {
                 SecondaryValues.Add(i.ToString());
             }

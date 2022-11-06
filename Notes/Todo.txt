@@ -15,6 +15,9 @@ Manager interface
 
 	Morphing?
 
+Mapping dialog
+	Would be nice if we could swap the content to display note names or controller names depending on which was selected
+
 Context menu for treeview items
 	Remove from all snapshot slots?
 	Set all same properties to value?
