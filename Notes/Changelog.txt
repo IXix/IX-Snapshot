@@ -1,3 +1,11 @@
+2022.11.18
+	param/attrib changes are now stored in lists to be processed by CMachine.Work()
+		Added CParamChange and CAttribChange
+		Trying to change large numbers of parameters in Work() causes Buzz to freeze if 'Restore on slot change' is enabled,
+			Sending them to the main thread to avoid this.
+			No idea how this might impact timing of changes.
+			Seems to work well enough so far but only tested with a single Qsamo.
+
 2022.11.06
 	Added 'Clear selected' button to main tab
 	Checked items are no longer hidden by the text filter.

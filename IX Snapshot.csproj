@@ -57,11 +57,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CAttribChange.cs" />
     <Compile Include="CMachinePropertyItemVM.cs" />
     <Compile Include="CMachineSnapshot.cs" />
     <Compile Include="CMachineState.cs" />
     <Compile Include="CMachine.cs" />
     <Compile Include="CMachineStateVM.cs" />
+    <Compile Include="CParamChange.cs" />
     <Compile Include="CPropertyStateGroupVM.cs" />
     <Compile Include="CSnapshotMachineVM.cs" />
     <Compile Include="CTrackPropertyStateGroupVM.cs" />

@@ -34,6 +34,9 @@ namespace Snapshot
 
         public HashSet<IPropertyState> AllProperties { get; private set; }
 
+        internal List<CParamChange> paramChanges;
+        internal List<CAttribChange> attribChanges;
+
         private readonly List<CMachineSnapshot> _slots;
         public List<CMachineSnapshot> Slots => _slots;
 
@@ -298,6 +301,10 @@ namespace Snapshot
             _midiMapping = new Dictionary<Action, UInt32>();
             _confirmClear = true;
 
+            changeLock = new object();
+            paramChanges = new List<CParamChange>();
+            attribChanges = new List<CAttribChange>();
+
             _slots = new List<CMachineSnapshot>();
             _slot = _slotA = 0;
             _slotB = 1;
@@ -392,6 +399,54 @@ namespace Snapshot
             {
                 Restore();
             }
+        }
+
+        public bool Work(Sample[] output, int n, WorkModes mode)
+        {
+            //if (host.MasterInfo.PosInTick == 0)
+            if (host.SubTickInfo.PosInSubTick == 0)
+            {
+                // Trying to change large numbers of parameters in Work() causes Buzz to freeze so send them to the main thread
+                _ = Application.Current.Dispatcher.BeginInvoke(
+                    (Action)(() =>
+                    {
+                        lock (changeLock)
+                        {
+                            foreach (CAttribChange a in attribChanges)
+                            {
+                                a.Work();
+                            }
+
+                            foreach (CParamChange p in paramChanges)
+                            {
+                                p.Work();
+                            }
+
+                            _ = attribChanges.RemoveAll(x => x.Finished);
+                            _ = paramChanges.RemoveAll(x => x.Finished);
+                        }
+                    }),
+                DispatcherPriority.Send
+                );
+            }
+
+            return false;
+        }
+
+        internal void ClearPendingChanges()
+        {
+            attribChanges.Clear();
+            paramChanges.Clear();
+        }
+
+        internal void RegisterAttribChange(IAttribute attr, int value)
+        {
+            attribChanges.Add(new CAttribChange(attr, value));
+        }
+
+        internal void RegisterParamChange(IParameter param, int track, int value)
+        {
+            paramChanges.Add(new CParamChange(param, track, value));
         }
 
         public void SelectAll()
@@ -1026,13 +1081,13 @@ namespace Snapshot
         }
         #endregion events
 
-        #region Global Parameters
-        // Global params
-        internal int _slot;
         internal int _slotA;
         internal int _slotB;
         private CMappingDialog _mappingDialog;
+        internal object changeLock;
 
+        #region Global Parameters
+        internal int _slot;
         [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 0, Description = "Active slot", Name = "Slot")]
         public int Slot
         {

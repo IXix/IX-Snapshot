@@ -417,17 +417,26 @@ namespace Snapshot
             _ = Application.Current.Dispatcher.BeginInvoke(
                 (Action)(() =>
                 {
-                    foreach (KeyValuePair<CAttributeState, int> v in AttributeValues.Where(x => x.Key.Active))
+                    lock (m_owner.changeLock)
                     {
-                        v.Key.Attribute.Value = v.Value;
-                    }
-                    foreach (KeyValuePair<CParameterState, Tuple<int, int>> v in ParameterValues.Where(x => x.Key.Active))
-                    {
-                        v.Key.Parameter.SetValue(v.Value.Item1, v.Value.Item2);
-                    }
-                    foreach (KeyValuePair<CDataState, byte[]> v in DataValues.Where(x => x.Key.Active))
-                    {
-                        v.Key.Machine.Data = v.Value;
+                        m_owner.ClearPendingChanges();
+
+                        // Data has to be changed via the UI thread
+                        foreach (KeyValuePair<CDataState, byte[]> v in DataValues.Where(x => x.Key.Active))
+                        {
+                            v.Key.Machine.Data = v.Value;
+                        }
+
+                        // Params and attributes will be changed in Work()
+                        foreach (KeyValuePair<CAttributeState, int> v in AttributeValues.Where(x => x.Key.Active))
+                        {
+                            m_owner.RegisterAttribChange(v.Key.Attribute, v.Value);
+                        }
+
+                        foreach (KeyValuePair<CParameterState, Tuple<int, int>> v in ParameterValues.Where(x => x.Key.Active))
+                        {
+                            m_owner.RegisterParamChange(v.Key.Parameter, v.Value.Item1, v.Value.Item2);
+                        }
                     }
                 }),
                 DispatcherPriority.Send
