@@ -419,7 +419,7 @@ namespace Snapshot
 
                             foreach (CParamChange p in paramChanges)
                             {
-                                p.Work();
+                                p.Work(n);
                             }
 
                             _ = attribChanges.RemoveAll(x => x.Finished);
@@ -446,7 +446,8 @@ namespace Snapshot
 
         internal void RegisterParamChange(IParameter param, int track, int value)
         {
-            paramChanges.Add(new CParamChange(param, track, value));
+            int duration = host.MasterInfo.SamplesPerSec * 5; // TEMP
+            paramChanges.Add(new CParamChange(param, track, value, duration));
         }
 
         public void SelectAll()
@@ -673,7 +674,7 @@ namespace Snapshot
 
         public void RestoreB()
         {
-            SlotA.Restore();
+            SlotB.Restore();
         }
 
         internal void MapCommand(string command, bool specific)

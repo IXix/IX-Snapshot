@@ -1,3 +1,17 @@
+Inertia for parameter changes
+	Basic system is in place but sending lots of changes causes Buzz UI to freeze until param changes are complete
+
+	Would be nice to have per-parameter smoothing times as well as a default time.
+		Make a Dictionary<key/*param*/, value /*CSmoothingInfo*/>
+			key same as for param values for easy lookup
+		A 'smoothing options' pop-up dialog in the treeviews
+			units - dropdown (ticks, beats, bars, ms, sec, minutes)
+			count - numeric field, or maybe allow expressions using regex, similar to Magic
+			override default - checkbox
+			maybe shape options if we're feeling fancy
+		Default smoothing can be exposed as machine params and UI controls
+			Might need to move the various option checkboxboxes to a new tab to free up space
+
 RestoreOnSlotChange works but can it be optimised?
 
 Icons
@@ -20,21 +34,6 @@ Context menu for treeview items
 	Set all same properties to value?
 		Copy from selected property to any other instances of the same property (same machine)
 
-Inertia for parameter changes
-	Implement param smoothing
-		Expand CParamChange to incrementally change the param value until target value is reached
-		One pole filter
-
-	Would be nice to have per-parameter smoothing times as well as a default time.
-		Make a Dictionary<key/*param*/, value /*CSmoothingInfo*/>
-			key same as for param values for easy lookup
-		A 'smoothing options' pop-up dialog in the treeviews
-			units - dropdown (ticks, beats, bars, ms, sec, minutes)
-			count - numeric field, or maybe allow expressions using regex, similar to Magic
-			override default - checkbox
-			maybe shape options if we're feeling fancy
-		Default smoothing can be exposed as machine params and UI controls
-			Might need to move the various option checkboxboxes to a new tab to free up space
 
 Some way of setting default property selection for individual machines would be nice
 

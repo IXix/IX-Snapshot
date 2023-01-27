@@ -1,3 +1,10 @@
+2023.01.27
+	Began implementation of param smoothing with selectable shape
+		Smoothing and shape *seem* to work as expected although haven't checked whether the timing is accurate.
+		Time and shape aren't exposed in the UI yet
+		Need to experiment with different ways of sending changes as currently Buzz UI freezes during operation
+	Fixed broken SlotB restore button (restored SlotA, copy/paste error)
+
 2022.11.18
 	param/attrib changes are now stored in lists to be processed by CMachine.Work()
 		Added CParamChange and CAttribChange
