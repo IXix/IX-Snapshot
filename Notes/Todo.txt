@@ -1,5 +1,7 @@
 Inertia for parameter changes
 	Basic system is in place but sending lots of changes causes Buzz UI to freeze until param changes are complete
+		Sending in subticks was very bad. Sending once per tick is okay but breaks down when there are hundreds of params.
+		Need to investigate using a worker thread to send param changes rather than pushing them to the main thread.
 
 	Would be nice to have per-parameter smoothing times as well as a default time.
 		Make a Dictionary<key/*param*/, value /*CSmoothingInfo*/>

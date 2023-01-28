@@ -11,15 +11,15 @@ namespace Snapshot
 {
     internal class CParamChange
     {
-        private readonly IParameter Parameter;
-        private readonly int track;
+        internal readonly IParameter Parameter;
+        internal readonly int track;
         private readonly int targetValue;
         private readonly int initialValue;
         private readonly int shape;
         private double phase = 0;
 
-        double duration = 0;
-        double elapsedTime = 0;
+        private double duration = 0;
+        private double elapsedTime = 0;
 
         public bool Finished { get; private set; }
 

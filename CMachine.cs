@@ -403,31 +403,37 @@ namespace Snapshot
 
         public bool Work(Sample[] output, int n, WorkModes mode)
         {
-            //if (host.MasterInfo.PosInTick == 0)
-            if (host.SubTickInfo.PosInSubTick == 0)
+            if (host.MasterInfo.PosInTick == 0)
+            // NOTE: Sending changes on subticks causes Buzz UI to freeze until changes are completed, so once per-tick it is.
             {
-                // Trying to change large numbers of parameters in Work() causes Buzz to freeze so send them to the main thread
+                // Params
+                // Trying to change large numbers of parameters in Work() causes Buzz to freeze, so send them to the main thread
+                int spt = host.MasterInfo.SamplesPerTick;
                 _ = Application.Current.Dispatcher.BeginInvoke(
                     (Action)(() =>
                     {
                         lock (changeLock)
                         {
-                            foreach (CAttribChange a in attribChanges)
-                            {
-                                a.Work();
-                            }
-
                             foreach (CParamChange p in paramChanges)
                             {
-                                p.Work(n);
+                                p.Work(spt);
                             }
-
-                            _ = attribChanges.RemoveAll(x => x.Finished);
-                            _ = paramChanges.RemoveAll(x => x.Finished);
                         }
                     }),
                 DispatcherPriority.Send
                 );
+
+                // Attributes and cleanup
+                lock (changeLock)
+                {
+                    foreach (CAttribChange a in attribChanges)
+                    {
+                        a.Work();
+                    }
+
+                    _ = attribChanges.RemoveAll(x => x.Finished);
+                    _ = paramChanges.RemoveAll(x => x.Finished);
+                }
             }
 
             return false;
@@ -446,6 +452,10 @@ namespace Snapshot
 
         internal void RegisterParamChange(IParameter param, int track, int value)
         {
+
+            // Clear any pending changes for same param
+            paramChanges.RemoveAll(x => x.Parameter == param && x.track == track);
+
             int duration = host.MasterInfo.SamplesPerSec * 5; // TEMP
             paramChanges.Add(new CParamChange(param, track, value, duration));
         }
