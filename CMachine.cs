@@ -30,6 +30,8 @@ namespace Snapshot
         internal Stopwatch timer;
         internal double workTimeStamp;
 
+        private Thread WorkThread;
+
         private IMachine ThisMachine { get; set; }
         private IParameter SlotParam { get; set; }
 
@@ -304,6 +306,12 @@ namespace Snapshot
             this.host = host;
             timer = new Stopwatch();
 
+            WorkThread = new Thread(SendChanges)
+            {
+                Priority = ThreadPriority.Highest
+            };
+            WorkThread.Start();
+
             MidiMap = new Dictionary<Action, CMidiEvent>();
             _midiMapping = new Dictionary<Action, UInt32>();
             _confirmClear = true;
@@ -410,27 +418,30 @@ namespace Snapshot
 
         private void SendChanges(object param)
         {
-            double totalsecs = timer.Elapsed.TotalSeconds;
-            double seconds = totalsecs - workTimeStamp;
-            workTimeStamp = totalsecs;
-
-            int samples = (int) Math.Round(host.MasterInfo.SamplesPerSec * seconds);
-            lock (changeLock)
+            while (true)
             {
-                // Params
-                foreach (CParamChange p in paramChanges)
+                double totalsecs = timer.Elapsed.TotalSeconds;
+                double seconds = totalsecs - workTimeStamp;
+                workTimeStamp = totalsecs;
+
+                int samples = (int)Math.Round(host.MasterInfo.SamplesPerSec * seconds);
+                lock (changeLock)
                 {
-                    p.Work(samples);
+                    // Params
+                    foreach (CParamChange p in paramChanges)
+                    {
+                        p.Work(samples);
+                    }
+
+                    // Attributes
+                    foreach (CAttribChange a in attribChanges)
+                    {
+                        a.Work();
+                    }
                 }
 
-                // Attributes
-                foreach (CAttribChange a in attribChanges)
-                {
-                    a.Work();
-                }
+                Cleanup(null);
             }
-
-            _ = ThreadPool.QueueUserWorkItem(Cleanup);
         }
 
         private void Cleanup(object param)
@@ -448,8 +459,6 @@ namespace Snapshot
             if (host.MasterInfo.PosInTick == 0)
             {
                 if (!timer.IsRunning) timer.Start();
-
-                _ = ThreadPool.QueueUserWorkItem(SendChanges);
             }
 
             return false;

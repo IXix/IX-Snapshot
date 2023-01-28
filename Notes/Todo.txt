@@ -1,9 +1,7 @@
 Inertia for parameter changes
-	Basic system is in place but sending lots of changes causes Buzz UI to freeze until param changes are complete
-		Sending in subticks was very bad. Sending once per tick is okay but breaks down when there are hundreds of params.
-		Need to investigate using a worker thread to send param changes rather than pushing them to the main thread.
-			ThreadPool works for hundreds of changes without freezing the UI or glitching playback but the timing isn't right.
-			Try creating our own thread with a higher priority.
+	Need to expose transition time and shape to the UI (shape can wait though)
+		Implement a machine param for default smoothing time then allow specific params to override the default time.
+		Possibly two params, one for count and one for units.
 
 	Would be nice to have per-parameter smoothing times as well as a default time.
 		Make a Dictionary<key/*param*/, value /*CSmoothingInfo*/>
