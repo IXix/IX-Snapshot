@@ -382,7 +382,7 @@ namespace Snapshot
                             Tuple<int, int> t = ParameterValues[key];
                             int track = t.Item1;
                             int value = t.Item2;
-                            m_owner.RegisterParamChange(key.Parameter, track, value, true);
+                            m_owner.RegisterParamChange(key.Parent.Machine, key.Parameter, track, value, true);
                         }
                         break;
 
@@ -417,7 +417,7 @@ namespace Snapshot
 
                 foreach (KeyValuePair<CParameterState, Tuple<int, int>> v in ParameterValues.Where(x => x.Key.Active))
                 {
-                    m_owner.RegisterParamChange(v.Key.Parameter, v.Value.Item1, v.Value.Item2);
+                    m_owner.RegisterParamChange(v.Key.Parent.Machine, v.Key.Parameter, v.Value.Item1, v.Value.Item2);
                 }
             }
 

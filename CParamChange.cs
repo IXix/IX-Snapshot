@@ -11,6 +11,7 @@ namespace Snapshot
 {
     internal class CParamChange
     {
+        internal readonly IMachine Machine;
         internal readonly IParameter Parameter;
         internal readonly int track;
         private readonly int targetValue;
@@ -23,9 +24,10 @@ namespace Snapshot
 
         public bool Finished { get; private set; }
 
-        public CParamChange(IParameter param, int track, int value, double duration = 0, int shape = 0)
+        public CParamChange(IMachine machine, IParameter param, int track, int value, double duration = 0, int shape = 0)
         {
             Finished = false;
+            Machine = machine;
             Parameter = param;
             this.track = track;
             this.duration = duration;

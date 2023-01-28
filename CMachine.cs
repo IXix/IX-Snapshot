@@ -25,12 +25,13 @@ namespace Snapshot
     [MachineDecl(Name = "IX Snapshot 1.2", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
-        readonly IBuzzMachineHost host;
+        private readonly IBuzzMachineHost host;
 
         internal Stopwatch timer;
         internal double workTimeStamp;
 
         private Thread WorkThread;
+        private int workFlag = 0;
 
         private IMachine ThisMachine { get; set; }
         private IParameter SlotParam { get; set; }
@@ -55,7 +56,7 @@ namespace Snapshot
             get { return _slotA; }
             set
             {
-                if(_slotA != value)
+                if (_slotA != value)
                 {
                     _slotA = value;
                     OnPropertyChanged("SlotA");
@@ -63,7 +64,7 @@ namespace Snapshot
                 }
             }
         }
-        
+
         public CMachineSnapshot SlotB => _slots[_slotB];
         public int SelB
         {
@@ -285,7 +286,7 @@ namespace Snapshot
 
         internal void UpdateSizeInfo()
         {
-            foreach(CMachineState s in States.Where(x => x.DataState != null))
+            foreach (CMachineState s in States.Where(x => x.DataState != null))
             {
                 s.DataState.UpdateSize();
             }
@@ -355,9 +356,9 @@ namespace Snapshot
 
                 // Append non-empty slots to menu
                 // Selecting the menu item will make the relevant slot current and restore it
-                foreach(CMachineSnapshot slot in _slots.Where(x => x.HasData))
+                foreach (CMachineSnapshot slot in _slots.Where(x => x.HasData))
                 {
-                    yield return new MenuItemVM() 
+                    yield return new MenuItemVM()
                     {
                         Text = slot.Name,
                         Command = new SimpleCommand()
@@ -420,6 +421,11 @@ namespace Snapshot
         {
             while (true)
             {
+                if (Interlocked.CompareExchange(ref workFlag, 1, 0) != 0)
+                {
+                    break;
+                }
+
                 double totalsecs = timer.Elapsed.TotalSeconds;
                 double seconds = totalsecs - workTimeStamp;
                 workTimeStamp = totalsecs;
@@ -427,10 +433,13 @@ namespace Snapshot
                 int samples = (int)Math.Round(host.MasterInfo.SamplesPerSec * seconds);
                 lock (changeLock)
                 {
+                    HashSet<IMachine> affectedMachines = new HashSet<IMachine>();
+
                     // Params
                     foreach (CParamChange p in paramChanges)
                     {
                         p.Work(samples);
+                        affectedMachines.Add(p.Machine);
                     }
 
                     // Attributes
@@ -438,9 +447,16 @@ namespace Snapshot
                     {
                         a.Work();
                     }
+
+                    foreach (IMachine m in affectedMachines)
+                    {
+                        m.SendControlChanges();
+                    }
                 }
 
                 Cleanup(null);
+
+                Interlocked.Exchange(ref workFlag, 0);
             }
         }
 
@@ -456,10 +472,8 @@ namespace Snapshot
 
         public bool Work(Sample[] output, int n, WorkModes mode)
         {
-            if (host.MasterInfo.PosInTick == 0)
-            {
-                if (!timer.IsRunning) timer.Start();
-            }
+            if (host.MasterInfo.PosInTick == 0 && !timer.IsRunning)
+                timer.Start();
 
             return false;
         }
@@ -479,20 +493,43 @@ namespace Snapshot
             attribChanges.Add(new CAttribChange(attr, value));
         }
 
-        internal void RegisterParamChange(IParameter param, int track, int value, bool clearPending = false)
+        internal void RegisterParamChange(IMachine machine, IParameter param, int track, int value, bool clearPending = false)
         {
 
             // Clear any pending changes for same param
-            if(clearPending)
+            if (clearPending)
                 paramChanges.RemoveAll(x => x.Parameter == param && x.track == track);
 
-            int duration = host.MasterInfo.SamplesPerSec * 5; // TEMP
-            paramChanges.Add(new CParamChange(param, track, value, duration));
+            double spu = 0;
+            switch (SmoothingUnits)
+            {
+                case 0: // Ticks
+                    spu = host.MasterInfo.SamplesPerTick; break;
+
+                case 1: // Beats
+                    spu = host.MasterInfo.SamplesPerTick * host.MasterInfo.TicksPerBeat; break;
+
+                case 2: // Samples
+                    spu = 1; break;
+
+                case 3: // Milliseconds
+                    spu = host.MasterInfo.SamplesPerSec * 0.001; break;
+
+                case 4: // Seconds
+                    spu = host.MasterInfo.SamplesPerSec; break;
+
+                case 5: // Minutes
+                    spu = host.MasterInfo.SamplesPerSec * 60; break;
+
+            }
+            int duration = (int)Math.Round(SmoothingCount * spu);
+
+            paramChanges.Add(new CParamChange(machine, param, track, value, duration));
         }
 
         public void SelectAll()
         {
-            foreach(IPropertyState s in AllProperties)
+            foreach (IPropertyState s in AllProperties)
             {
                 s.Checked = true;
             }
@@ -742,7 +779,7 @@ namespace Snapshot
 
             // Retrieve the mapping or use defaults
             CMidiEvent e;
-            if(MidiMap.ContainsKey(a))
+            if (MidiMap.ContainsKey(a))
             {
                 e = MidiMap[a];
             }
@@ -756,7 +793,7 @@ namespace Snapshot
             bool? result = _mappingDialog.ShowDialog();
 
             // Add/update mapping if necessary
-            if(result == true)
+            if (result == true)
             {
                 MidiMap[a] = e;
                 _midiMapping[a] = e.Encode();
@@ -1012,12 +1049,12 @@ namespace Snapshot
                 c1 = c1 & 0xFFFFFF | (noteOff << 24);
             }
 
-            if(LearnEvent != null)
+            if (LearnEvent != null)
             {
                 LearnEvent.Message = noteOn;
-                LearnEvent.Channel = (Byte) channel;
-                LearnEvent.Primary = (Byte) note;
-                LearnEvent.Secondary = (Byte) 128; // undefined
+                LearnEvent.Channel = (Byte)channel;
+                LearnEvent.Primary = (Byte)note;
+                LearnEvent.Secondary = (Byte)128; // undefined
                 LearnEvent = null;
                 _mappingDialog.Learning = false;
                 return;
@@ -1119,6 +1156,16 @@ namespace Snapshot
                 VM.RemoveState(s);
                 OnPropertyChanged("State");
             }
+            else
+            {
+                // This machine
+                Interlocked.Exchange(ref workFlag, 1); // Signal to end the work thread
+
+                Global.Buzz.Song.MachineAdded -= (x) => { OnMachineAdded(x); };
+                Global.Buzz.Song.MachineRemoved -= (x) => { OnMachineRemoved(x); };
+
+            }
+
         }
         #endregion events
 
@@ -1152,6 +1199,18 @@ namespace Snapshot
                     OnSlotChanged();
                 }
             }
+        }
+
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 60000, DefValue = 0, Description = "Smoothing time when updating parameters", Name = "Smoothing")]
+        public int SmoothingCount
+        {
+            get; set;
+        }
+
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 5, DefValue = 0, Description = "Time units for parameter smoothing", Name = "Smoothing units", ValueDescriptions = new String[] { "Ticks", "Beats", "Samples", "Milliseconds", "Seconds", "Minutes" })]
+        public int SmoothingUnits
+        {
+            get; set;
         }
 
         public CMidiEvent LearnEvent { get; internal set; }

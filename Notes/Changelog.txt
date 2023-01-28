@@ -4,6 +4,8 @@
 	Changed to using a dedicated thread with a high priority rather than using ThreadPool.
 		Timing seems better but needs more testing.
 		Not sure whether the changes are interpolating smoothly. UI for params is steppy.
+	Params updates are no longer restricted to once per tick (smooth updates even on low tick resolution)
+	Added machine params for smoothing time
 
 2023.01.27
 	Began implementation of param smoothing with selectable shape
