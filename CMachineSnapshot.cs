@@ -372,11 +372,7 @@ namespace Snapshot
                         {
                             CAttributeState key = p as CAttributeState;
                             int value = AttributeValues[key];
-                            _ = Application.Current.Dispatcher.BeginInvoke(
-                                (Action)(() => { key.Attribute.Value = value; }
-                                ),
-                                DispatcherPriority.Send
-                                );
+                            m_owner.RegisterAttribChange(key.Attribute, value, true);
                         }
                         break;
 
@@ -386,11 +382,7 @@ namespace Snapshot
                             Tuple<int, int> t = ParameterValues[key];
                             int track = t.Item1;
                             int value = t.Item2;
-                            _ = Application.Current.Dispatcher.BeginInvoke(
-                                (Action)(() => { key.Parameter.SetValue(track, value); }
-                                ),
-                                DispatcherPriority.Send
-                                );
+                            m_owner.RegisterParamChange(key.Parameter, track, value, true);
                         }
                         break;
 
@@ -414,28 +406,30 @@ namespace Snapshot
 
         public void Restore()
         {
+            lock (m_owner.changeLock)
+            {
+                m_owner.ClearPendingChanges();
+
+                foreach (KeyValuePair<CAttributeState, int> v in AttributeValues.Where(x => x.Key.Active))
+                {
+                    m_owner.RegisterAttribChange(v.Key.Attribute, v.Value);
+                }
+
+                foreach (KeyValuePair<CParameterState, Tuple<int, int>> v in ParameterValues.Where(x => x.Key.Active))
+                {
+                    m_owner.RegisterParamChange(v.Key.Parameter, v.Value.Item1, v.Value.Item2);
+                }
+            }
+
+            // Data has to be changed via the main thread
             _ = Application.Current.Dispatcher.BeginInvoke(
                 (Action)(() =>
                 {
                     lock (m_owner.changeLock)
                     {
-                        m_owner.ClearPendingChanges();
-
-                        // Data has to be changed via the UI thread
                         foreach (KeyValuePair<CDataState, byte[]> v in DataValues.Where(x => x.Key.Active))
                         {
                             v.Key.Machine.Data = v.Value;
-                        }
-
-                        // Params and attributes will be changed in Work()
-                        foreach (KeyValuePair<CAttributeState, int> v in AttributeValues.Where(x => x.Key.Active))
-                        {
-                            m_owner.RegisterAttribChange(v.Key.Attribute, v.Value);
-                        }
-
-                        foreach (KeyValuePair<CParameterState, Tuple<int, int>> v in ParameterValues.Where(x => x.Key.Active))
-                        {
-                            m_owner.RegisterParamChange(v.Key.Parameter, v.Value.Item1, v.Value.Item2);
                         }
                     }
                 }),

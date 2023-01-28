@@ -1,3 +1,7 @@
+2023.01.28
+	Adapted code to send param changes out via a worker thread from ThreadPool
+		Better for Buzz stability but timing is off.
+
 2023.01.27
 	Began implementation of param smoothing with selectable shape
 		Smoothing and shape *seem* to work as expected although haven't checked whether the timing is accurate.

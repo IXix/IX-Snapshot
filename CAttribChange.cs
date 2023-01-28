@@ -4,7 +4,7 @@ namespace Snapshot
 {
     internal class CAttribChange
     {
-        private readonly IAttribute Attribute;
+        internal readonly IAttribute Attribute;
         private readonly int targetValue;
 
         public bool Finished { get; private set; }
@@ -18,6 +18,7 @@ namespace Snapshot
 
         public void Work()
         {
+            if (Finished) return;
             Attribute.Value = targetValue;
             Finished = true;
         }

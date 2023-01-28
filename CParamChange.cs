@@ -36,6 +36,8 @@ namespace Snapshot
 
         public void Work(int numsamples)
         {
+            if (Finished) return;
+
             if (duration < 1)
             {
                 Parameter.SetValue(track, targetValue);
@@ -89,6 +91,7 @@ namespace Snapshot
             }
 
             int currentValue = (int)Math.Round(initialValue + (targetValue - initialValue) * phase);
+            currentValue = Math.Min(Math.Max(currentValue, Parameter.MinValue), Parameter.MaxValue);
 
             Parameter.SetValue(track, currentValue);
 

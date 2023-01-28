@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
@@ -12,6 +13,7 @@ using Buzz.MachineInterface;
 using BuzzGUI.Interfaces;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 
 namespace Snapshot
 {
@@ -24,6 +26,9 @@ namespace Snapshot
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         readonly IBuzzMachineHost host;
+
+        internal Stopwatch timer;
+        internal double workTimeStamp;
 
         private IMachine ThisMachine { get; set; }
         private IParameter SlotParam { get; set; }
@@ -297,6 +302,8 @@ namespace Snapshot
         public CMachine(IBuzzMachineHost host)
         {
             this.host = host;
+            timer = new Stopwatch();
+
             MidiMap = new Dictionary<Action, CMidiEvent>();
             _midiMapping = new Dictionary<Action, UInt32>();
             _confirmClear = true;
@@ -401,39 +408,48 @@ namespace Snapshot
             }
         }
 
+        private void SendChanges(object param)
+        {
+            double totalsecs = timer.Elapsed.TotalSeconds;
+            double seconds = totalsecs - workTimeStamp;
+            workTimeStamp = totalsecs;
+
+            int samples = (int) Math.Round(host.MasterInfo.SamplesPerSec * seconds);
+            lock (changeLock)
+            {
+                // Params
+                foreach (CParamChange p in paramChanges)
+                {
+                    p.Work(samples);
+                }
+
+                // Attributes
+                foreach (CAttribChange a in attribChanges)
+                {
+                    a.Work();
+                }
+            }
+
+            _ = ThreadPool.QueueUserWorkItem(Cleanup);
+        }
+
+        private void Cleanup(object param)
+        // Remove spent items from the change lists
+        {
+            lock (changeLock)
+            {
+                _ = attribChanges.RemoveAll(x => x.Finished);
+                _ = paramChanges.RemoveAll(x => x.Finished);
+            }
+        }
+
         public bool Work(Sample[] output, int n, WorkModes mode)
         {
             if (host.MasterInfo.PosInTick == 0)
-            // NOTE: Sending changes on subticks causes Buzz UI to freeze until changes are completed, so once per-tick it is.
             {
-                // Params
-                // Trying to change large numbers of parameters in Work() causes Buzz to freeze, so send them to the main thread
-                int spt = host.MasterInfo.SamplesPerTick;
-                _ = Application.Current.Dispatcher.BeginInvoke(
-                    (Action)(() =>
-                    {
-                        lock (changeLock)
-                        {
-                            foreach (CParamChange p in paramChanges)
-                            {
-                                p.Work(spt);
-                            }
-                        }
-                    }),
-                DispatcherPriority.Send
-                );
+                if (!timer.IsRunning) timer.Start();
 
-                // Attributes and cleanup
-                lock (changeLock)
-                {
-                    foreach (CAttribChange a in attribChanges)
-                    {
-                        a.Work();
-                    }
-
-                    _ = attribChanges.RemoveAll(x => x.Finished);
-                    _ = paramChanges.RemoveAll(x => x.Finished);
-                }
+                _ = ThreadPool.QueueUserWorkItem(SendChanges);
             }
 
             return false;
@@ -445,16 +461,21 @@ namespace Snapshot
             paramChanges.Clear();
         }
 
-        internal void RegisterAttribChange(IAttribute attr, int value)
+        internal void RegisterAttribChange(IAttribute attr, int value, bool clearPending = false)
         {
+            // Clear any pending changes for same attribute
+            if (clearPending)
+                attribChanges.RemoveAll(x => x.Attribute == attr);
+
             attribChanges.Add(new CAttribChange(attr, value));
         }
 
-        internal void RegisterParamChange(IParameter param, int track, int value)
+        internal void RegisterParamChange(IParameter param, int track, int value, bool clearPending = false)
         {
 
             // Clear any pending changes for same param
-            paramChanges.RemoveAll(x => x.Parameter == param && x.track == track);
+            if(clearPending)
+                paramChanges.RemoveAll(x => x.Parameter == param && x.track == track);
 
             int duration = host.MasterInfo.SamplesPerSec * 5; // TEMP
             paramChanges.Add(new CParamChange(param, track, value, duration));
@@ -1144,7 +1165,7 @@ namespace Snapshot
             OnPropertyChanged("State");
         }
 
-        internal void Restore()
+        internal void Restore(object param = null)
         {
             CMachineSnapshot s = CurrentSlot;
             if(s.HasData)
@@ -1206,7 +1227,7 @@ namespace Snapshot
         {
             if (_restoreOnSlotChange && !loading)
             {
-                Restore();
+                ThreadPool.QueueUserWorkItem(Restore);
             }
 
             if (_selectionFollowsSlot)
