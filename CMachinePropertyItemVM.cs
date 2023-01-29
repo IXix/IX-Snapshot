@@ -31,6 +31,13 @@ namespace Snapshot
                 ExecuteDelegate = x => { Clear(x, _ownerVM.CurrentSlot); },
                 CanExecuteDelegate = x => { return GotValue; }
             };
+            CmdClearAll = new SimpleCommand
+            {
+                ExecuteDelegate = x => {
+                    string msg = string.Format("Remove {0} from all slots? Are you sure?", Name);
+                    if (_ownerVM.Owner.Confirm("Confirm clear", msg, true)) ClearAll(x);
+                },
+            };
 
             CmdCaptureA = new SimpleCommand
             {
@@ -78,6 +85,7 @@ namespace Snapshot
         public SimpleCommand CmdCapture { get; private set; }
         public SimpleCommand CmdRestore { get; private set; }
         public SimpleCommand CmdClear { get; private set; }
+        public SimpleCommand CmdClearAll { get; private set; }
 
         public SimpleCommand CmdCaptureA { get; private set; }
         public SimpleCommand CmdRestoreA { get; private set; }
@@ -114,6 +122,14 @@ namespace Snapshot
         internal void Restore(object param, CMachineSnapshot slot)
         {
             slot.Restore(param as HashSet<IPropertyState>);
+        }
+
+        internal void ClearAll(object param)
+        {
+            foreach(var slot in _ownerVM.Slots)
+            {
+                Clear(param, slot);
+            }
         }
 
         internal void Clear(object param, CMachineSnapshot slot)

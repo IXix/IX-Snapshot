@@ -44,10 +44,20 @@ namespace Snapshot
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.Clear()
             };
+            CmdClearAll = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.ClearAll()
+            };
             CmdClearSelected = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.ClearSelected()
+            };
+            CmdClearSelectedAll = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => Owner.ClearSelectedAll()
             };
             CmdPurge = new SimpleCommand
             {
@@ -317,6 +327,7 @@ namespace Snapshot
             switch (e.PropertyName)
             {
                 case "State":
+                    NotifyPropertyChanged("Slots");
                     NotifyPropertyChanged("CurrentSlot");
                     NotifyPropertyChanged("SlotA");
                     NotifyPropertyChanged("SlotB");
@@ -387,7 +398,7 @@ namespace Snapshot
 
         #endregion
 
-        private CMachine Owner { get; set; }
+        public CMachine Owner { get; private set; }
 
         public string SelectionInfo => Owner.SelectionInfo;
 
@@ -454,7 +465,9 @@ namespace Snapshot
         public SimpleCommand CmdCaptureMissing { get; private set; }
         public SimpleCommand CmdRestore { get; private set; }
         public SimpleCommand CmdClear { get; private set; }
+        public SimpleCommand CmdClearAll { get; private set; }
         public SimpleCommand CmdClearSelected { get; private set; }
+        public SimpleCommand CmdClearSelectedAll { get; private set; }
         public SimpleCommand CmdPurge { get; private set; }
         public SimpleCommand CmdMap { get; private set; }
         public SimpleCommand CmdMapSpecific { get; private set; }

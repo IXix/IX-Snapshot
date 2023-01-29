@@ -599,9 +599,9 @@ namespace Snapshot
             }
         }
 
-        bool Confirm(string title, string msg)
+        internal bool Confirm(string title, string msg, bool force=false)
         {
-            if (ConfirmClear)
+            if (ConfirmClear || force)
             {
                 MessageBoxResult result = MessageBox.Show(msg, title, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.No)
@@ -1201,7 +1201,7 @@ namespace Snapshot
             }
         }
 
-        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 60000, DefValue = 0, Description = "Smoothing time when updating parameters", Name = "Smoothing")]
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 1000, DefValue = 0, Description = "Smoothing time when updating parameters", Name = "Smoothing")]
         public int SmoothingCount
         {
             get; set;
@@ -1254,9 +1254,23 @@ namespace Snapshot
 
         internal void Clear()
         {
-            if (Confirm("Confirm clear", "Discard all stored properties?"))
+            string msg = string.Format("Discard all stored properties from {0}?", CurrentSlot.Name);
+            if (Confirm("Confirm clear", msg))
             {
                 CurrentSlot.Clear();
+                OnPropertyChanged("State");
+            }
+        }
+
+        internal void ClearAll()
+        {
+            string msg = string.Format("Discard all stored properties from all slots? Are you sure?");
+            if (Confirm("Confirm clear all", msg, true))
+            {
+                foreach(CMachineSnapshot slot in Slots)
+                {
+                    slot.Clear();
+                }
                 OnPropertyChanged("State");
             }
         }
@@ -1267,6 +1281,20 @@ namespace Snapshot
             if (Confirm("Confirm clear", msg))
             {
                 CurrentSlot.Remove(GetSelectedProperties(true));
+                OnPropertyChanged("State");
+            }
+        }
+
+        internal void ClearSelectedAll()
+        {
+            string msg = string.Format("Discard {0} selected properties from all slots? Are you sure?", CurrentSlot.SelectedCount);
+            if (Confirm("Confirm clear", msg, true))
+            {
+                HashSet<IPropertyState> sel = GetSelectedProperties(true);
+                foreach (CMachineSnapshot slot in Slots)
+                {
+                    slot.Remove(sel);
+                }
                 OnPropertyChanged("State");
             }
         }

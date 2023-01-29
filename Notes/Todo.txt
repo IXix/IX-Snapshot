@@ -1,4 +1,16 @@
-Move info to new tab to make room in main tab for more controls.
+Update docs
+	Changed order of buttons in main tab to match those in manager
+	Move info to a separate tab
+	Ctrl+Alt+Leftclick on "Clear all" and "Clear selected" buttons in any tab clears properties from all slots. Will always prompt.
+	Added "Remove from all slots" to treeview item context menus. Will always promt.
+	Smoothing:
+		Global params Smoothing and Smoothing Units.
+		Warn about CPU with many params
+
+Improve information shown on info tab
+	Show sizes for all slots
+
+Undo/redo would be useful
 
 Inertia for parameter changes
 	Expose transition shape to the UI
@@ -31,7 +43,7 @@ Mapping dialog
 	Would be nice if we could swap the content to display note names or controller names depending on which was selected
 
 Context menu for treeview items
-	Remove from all snapshot slots?
+	Remove from all slots?
 	Set all same properties to value?
 		Copy from selected property to any other instances of the same property (same machine)
 

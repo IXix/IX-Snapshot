@@ -1,3 +1,10 @@
+2023.01.29
+	Ctrl+Alt+Leftclick on clear all/clear selected now removes data from all slots.
+	Added "Remove from all slots" to treeview item context menus
+	Changed order of buttons in main tab to match those in manager and adjusted labels
+	Moved info text to a separate tab
+	Added override to disregard user setting for confirm on clear when removing data from all slots.
+
 2023.01.28
 	Adapted code to send param changes out via a worker thread from ThreadPool
 		Better for Buzz stability but timing is off.
