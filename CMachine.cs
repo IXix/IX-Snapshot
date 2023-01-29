@@ -419,6 +419,8 @@ namespace Snapshot
 
         private void SendChanges(object param)
         {
+            if (!timer.IsRunning) timer.Start();
+
             while (true)
             {
                 if (Interlocked.CompareExchange(ref workFlag, 1, 0) != 0)
@@ -470,13 +472,12 @@ namespace Snapshot
             }
         }
 
+        /*
         public bool Work(Sample[] output, int n, WorkModes mode)
         {
-            if (host.MasterInfo.PosInTick == 0 && !timer.IsRunning)
-                timer.Start();
-
             return false;
         }
+        */
 
         internal void ClearPendingChanges()
         {
@@ -1176,7 +1177,7 @@ namespace Snapshot
 
         #region Global Parameters
         internal int _slot;
-        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 0, Description = "Active slot", Name = "Slot")]
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 127, DefValue = 0, Description = "Current slot shown in the main tab", Name = "Active Slot")]
         public int Slot
         {
             get => _slot;

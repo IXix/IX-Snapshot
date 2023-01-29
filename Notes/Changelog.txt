@@ -4,6 +4,7 @@
 	Changed order of buttons in main tab to match those in manager and adjusted labels
 	Moved info text to a separate tab
 	Added override to disregard user setting for confirm on clear when removing data from all slots.
+	Removed Work() as no longer needed.
 
 2023.01.28
 	Adapted code to send param changes out via a worker thread from ThreadPool
