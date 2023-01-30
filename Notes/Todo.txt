@@ -3,27 +3,18 @@ Update docs
 	Move info to a separate tab
 	Ctrl+Alt+Leftclick on "Clear all" and "Clear selected" buttons in any tab clears properties from all slots. Will always prompt.
 	Added "Remove from all slots" to treeview item context menus. Will always promt.
+	Added notes for slots
 	Smoothing:
 		Global params Smoothing and Smoothing Units.
 		Warn about CPU with many params
 
-Improve information shown on info tab
-	Show sizes for all slots
-
 Undo/redo would be useful
 
 Inertia for parameter changes
-	Expose transition shape to the UI
-	Allow specific params to override the default time set by the machine params.
-
-	Would be nice to have per-parameter smoothing times as well as a default time.
-		Make a Dictionary<key/*param*/, value /*CSmoothingInfo*/>
-			key same as for param values for easy lookup
-		A 'smoothing options' pop-up dialog in the treeviews
-			units - dropdown (ticks, beats, samples, ms, sec, minutes)
-			count - numeric field, or maybe allow expressions using regex, similar to Magic
-			override default - checkbox
-			shape selector - dropdown
+	Expose shape to the UI (add machine param)
+	Expose per-propert units, count and shape to the UI
+	Implement override of machine level smoothing when param changes are scheduled.
+	
 
 RestoreOnSlotChange works but can it be optimised?
 

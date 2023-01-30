@@ -209,6 +209,16 @@ namespace Snapshot
             get => "";
         }
 
+        public virtual int? SmoothingCount
+        {
+            get => null;
+        }
+
+        public virtual int? SmoothingUnits
+        {
+            get => null;
+        }
+
         public HashSet<IPropertyState> MachineProperties => _properties;
     }
 }

@@ -110,6 +110,10 @@ namespace Snapshot
             }
         }
 
+        public override int? SmoothingCount => _state.SmoothingCount;
+
+        public override int? SmoothingUnits => _state.SmoothingUnits;
+
         protected override void LoadChildren()
         {
             if (_state.DataState != null)

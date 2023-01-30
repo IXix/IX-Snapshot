@@ -83,6 +83,10 @@ namespace Snapshot
             }
         }
 
+        public override int? SmoothingCount => _group.SmoothingCount;
+
+        public override int? SmoothingUnits => _group.SmoothingUnits;
+
         protected override void LoadChildren()
         {
             foreach (CPropertyStateGroup pg in _group.Children)
