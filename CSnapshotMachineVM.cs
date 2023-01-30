@@ -332,6 +332,7 @@ namespace Snapshot
                     NotifyPropertyChanged("SlotA");
                     NotifyPropertyChanged("SlotB");
                     NotifyPropertyChanged("SlotName");
+                    NotifyPropertyChanged("Notes");
                     NotifyPropertyChanged("SelectionInfo");
                     foreach (CMachineStateVM s in States)
                     {
@@ -400,7 +401,7 @@ namespace Snapshot
 
         public CMachine Owner { get; private set; }
 
-        public string SelectionInfo => Owner.SelectionInfo;
+        public string SelectionInfo => Owner.Info;
 
         internal System.Windows.Visibility GetVisibility(CMachinePropertyItemVM tvi)
         {
@@ -583,6 +584,12 @@ namespace Snapshot
         }
 
         public CMachineSnapshot CurrentSlot => Owner.CurrentSlot;
+
+        public string Notes
+        {
+            get => CurrentSlot.Notes;
+            set => CurrentSlot.Notes = value;
+        }
 
         public int Slot
         {

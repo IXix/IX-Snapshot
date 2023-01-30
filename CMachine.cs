@@ -131,22 +131,46 @@ namespace Snapshot
             }
         }
 
-        public string SelectionInfo => string.Format(
-            "{0} of {1} properties selected\n" +
-            "{2} stored\n" +
-            "{3} selected but not stored\n" +
-            "{4} stored but not selected\n" +
-            "{5} stored for missing properties\n" +
-            "Slot size: {6}\n" +
-            "Total Size: {7}",
-            SelCount,
-            AllProperties.Count,
-            StoredCount,
-            MissingCount,
-            RedundantCount,
-            DeletedCount,
-            Misc.ToSize(Size),
-            Misc.ToSize(TotalSize));
+        public string Info
+        {
+            get
+            {
+                string txt = string.Format("{0} of {1} properties selected\n", SelCount, AllProperties.Count);
+
+                txt += "\n";
+
+                txt += string.Format("Active slot is {0}: {1} ({2})", CurrentSlot.Index, CurrentSlot.Name, Misc.ToSize(CurrentSlot.Size));
+                if (CurrentSlot.Notes != "")
+                    txt += string.Format(" - \"{0}\"", CurrentSlot.Notes);
+                txt += "\n";
+
+                txt += string.Format(
+                    "{0} stored\n" +
+                    "{1} selected but not stored\n" +
+                    "{2} stored but not selected\n" +
+                    "{3} stored for missing properties\n",
+                    StoredCount,
+                    MissingCount,
+                    RedundantCount,
+                    DeletedCount
+                    );
+
+                txt += "\n";
+
+                txt += "Used slots:\n";
+                foreach(CMachineSnapshot slot in Slots.Where(x => x.HasData))
+                {
+                    txt += string.Format("{0}: {1} ({2})", slot.Index, slot.Name, Misc.ToSize(slot.Size));
+                    if (slot.Notes != "")
+                        txt += string.Format(" - \"{0}\"", slot.Notes);
+                    txt += "\n";
+                }
+
+                txt += string.Format("Total size: {0}", Misc.ToSize(TotalSize));
+
+                return txt;
+            }
+        }
 
         private bool _confirmClear;
         public bool ConfirmClear

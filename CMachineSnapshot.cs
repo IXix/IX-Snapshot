@@ -16,6 +16,7 @@ namespace Snapshot
             m_owner = owner;
             Index = index;
             Name = string.Format("Slot {0}", Index);
+            Notes = "";
             AttributeValues = new Dictionary<CAttributeState, int>();
             ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>();
             DataValues = new Dictionary<CDataState, byte[]>();
@@ -182,6 +183,9 @@ namespace Snapshot
 
         // How many properties are stored that are inactive (machine deleted)
         public int DeletedCount => StoredProperties.Count(x => x.Active == false);
+
+        // So you can remember what the this snapshot has in it and why, because you're getting old.
+        public string Notes { get; internal set; }
 
         public void CopyFrom(CMachineSnapshot src)
         {

@@ -132,7 +132,7 @@
             <Grid x:Name="MainGrid" MinHeight="200">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                     <Grid>
@@ -270,9 +270,17 @@
                         <RowDefinition/>
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0">
-                        <TextBlock>Slot Name</TextBlock>
-                        <ComboBox ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select current slot." IsTextSearchEnabled="False">
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0">Slot Name</TextBlock>
+                        <ComboBox Grid.Row="1" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select current slot." IsTextSearchEnabled="False">
                             <ComboBox.Style>
                                 <Style TargetType="{x:Type ComboBox}">
                                     <Setter Property="FontWeight" Value="Normal" />
@@ -284,7 +292,20 @@
                                 </Style>
                             </ComboBox.Style>
                         </ComboBox>
-                    </StackPanel>
+                        <TextBox Grid.Row="2" x:Name="txtNotes" Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Top" AcceptsReturn="True" TextWrapping="WrapWithOverflow" Padding="5,2"/>
+                        <TextBlock Grid.Row="2" IsHitTestVisible="False" Text="Notes" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="DarkGray" Padding="5,2">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=txtNotes}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
                     <StackPanel Grid.Row="1">
                         <CheckBox x:Name="chkConfirmClear" Content="Confirm on clear/purge" IsChecked="{Binding ConfirmClear}" ToolTip="Ask for confirmation when discarding stored properties." />
                         <CheckBox x:Name="chkSelFollowsSlot" Content="Selection follows slot" IsChecked="{Binding SelectionFollowsSlot}" ToolTip="When changing slot, only stored properties will be selected." />
