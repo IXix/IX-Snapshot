@@ -64,8 +64,46 @@
                 <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </DataTemplate>
+        
+        <!-- TreeViewItem context menus-->
+        <CompositeCollection x:Key="common_treeitemmenu">
+            <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+        </CompositeCollection>
 
-        <!-- Main TreeViewItems-->
+        <ContextMenu x:Key="main_treeitemmenu">
+            <ContextMenu.ItemsSource>
+                <CompositeCollection>
+                    <CollectionContainer Collection="{StaticResource common_treeitemmenu}" />
+                </CompositeCollection>
+            </ContextMenu.ItemsSource>
+        </ContextMenu>
+
+        <ContextMenu x:Key="manager_treeitemmenuA">
+            <ContextMenu.ItemsSource>
+                <CompositeCollection>
+                    <CollectionContainer Collection="{StaticResource common_treeitemmenu}" />
+                    <Separator />
+                    <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                </CompositeCollection>
+            </ContextMenu.ItemsSource>
+        </ContextMenu>
+
+        <ContextMenu x:Key="manager_treeitemmenuB">
+            <ContextMenu.ItemsSource>
+                <CompositeCollection>
+                    <CollectionContainer Collection="{StaticResource common_treeitemmenu}" />
+                    <Separator />
+                    <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+                </CompositeCollection>
+            </ContextMenu.ItemsSource>
+        </ContextMenu>
+
+        <!-- Main TreeViewItem Styles-->        
         <Style x:Key="tvi_main" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
@@ -86,7 +124,7 @@
             <Setter Property="FontWeight" Value="Normal" />
         </Style>
 
-        <!-- Manager TreeViewItems -->
+        <!-- Manager TreeViewItem Styles -->
         <Style x:Key="tvi_manager" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelectedM, Mode=TwoWay}" />
@@ -144,17 +182,7 @@
                         <TreeView x:Name="MachineList" Grid.Row="0" ItemContainerStyle="{StaticResource tvi_main}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                             <TreeView.Resources>
                                 <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <StackPanel.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                            </ContextMenu>
-                                        </StackPanel.ContextMenu>
+                                    <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
                                         <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
@@ -165,17 +193,7 @@
                                 </HierarchicalDataTemplate>
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <StackPanel.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                            </ContextMenu>
-                                        </StackPanel.ContextMenu>
+                                    <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
                                         <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
@@ -186,17 +204,7 @@
                                 </HierarchicalDataTemplate>
 
                                 <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <StackPanel.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                            </ContextMenu>
-                                        </StackPanel.ContextMenu>
+                                    <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
                                         <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
@@ -207,17 +215,7 @@
                                 </HierarchicalDataTemplate>
 
                                 <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <StackPanel.ContextMenu>
-                                            <ContextMenu>
-                                                <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                                <Separator />
-                                                <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                            </ContextMenu>
-                                        </StackPanel.ContextMenu>
+                                    <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
                                         <CheckBox Focusable="False" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                         <ContentPresenter>
                                             <ContentPresenter.Content>
@@ -451,19 +449,7 @@
                 <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0" ItemContainerStyle="{StaticResource tvi_manager_a}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuA}">
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -474,19 +460,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuA}">
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -497,19 +471,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuA}">
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -520,19 +482,7 @@
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuA}">
                                 <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -549,19 +499,7 @@
                 <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="2" ItemContainerStyle="{StaticResource tvi_manager_b}" ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}">
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuB}">
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -572,19 +510,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuB}">
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -595,19 +521,7 @@
                         </HierarchicalDataTemplate>
 
                         <HierarchicalDataTemplate DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuB}">
                                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick"  VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
@@ -618,19 +532,7 @@
                         </HierarchicalDataTemplate>
 
                         <DataTemplate DataType="{x:Type local:CPropertyStateVM}">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                        <Separator />
-                                        <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                                    </ContextMenu>
-                                </StackPanel.ContextMenu>
+                            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuB}">
                                 <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
                                 <ContentPresenter>
                                     <ContentPresenter.Content>
