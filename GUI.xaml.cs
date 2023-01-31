@@ -85,9 +85,7 @@ namespace Snapshot
 
     public class ItemTemplateSelector : DataTemplateSelector
     {
-        public HierarchicalDataTemplate MachineStateTemplate { get; set; }
-        public HierarchicalDataTemplate PropertyGroupTemplate { get; set; }
-        public HierarchicalDataTemplate TrackPropertyGroupTemplate { get; set; }
+        public HierarchicalDataTemplate PropertyContainerTemplate { get; set; }
         public DataTemplate PropertyStateTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
@@ -95,13 +93,9 @@ namespace Snapshot
             switch (item.GetType().Name)
             {
                 case "CMachineStateVM":
-                    return MachineStateTemplate;
-
                 case "CTrackPropertyStateGroupVM":
-                    return TrackPropertyGroupTemplate;
-
                 case "CPropertyStateGroupVM":
-                    return PropertyGroupTemplate;
+                    return PropertyContainerTemplate;
 
                 case "CPropertyStateVM":
                     return PropertyStateTemplate;

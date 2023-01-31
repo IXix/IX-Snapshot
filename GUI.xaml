@@ -164,7 +164,9 @@
             </Style.Triggers>
         </Style>
         
-        <HierarchicalDataTemplate x:Key="machine_state_template" DataType="{x:Type local:CMachineStateVM}" ItemsSource="{Binding Children}">
+        <!-- Treeview Item Templates-->
+        <!-- Things that contain properties or other containers of properties -->
+        <HierarchicalDataTemplate x:Key="property_container_template" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
                 <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                 <ContentPresenter>
@@ -175,28 +177,7 @@
             </StackPanel>
         </HierarchicalDataTemplate>
 
-        <HierarchicalDataTemplate x:Key="property_group_template" DataType="{x:Type local:CPropertyStateGroupVM}" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
-                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </HierarchicalDataTemplate>
-
-        <HierarchicalDataTemplate x:Key="track_property_group_template" DataType="{x:Type local:CTrackPropertyStateGroupVM}" ItemsSource="{Binding Children}" >
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
-                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </HierarchicalDataTemplate>
-
+        <!-- Actual properties -->
         <DataTemplate x:Key="property_template" DataType="{x:Type local:CPropertyStateVM}">
             <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
                 <CheckBox Focusable="False" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0,0,5,0" />
@@ -211,10 +192,9 @@
             </StackPanel>
         </DataTemplate>
 
+        <!-- Treeview item template selector class defined in code behind-->
         <local:ItemTemplateSelector x:Key="item_template_selector"
-            MachineStateTemplate="{StaticResource machine_state_template}"
-            PropertyGroupTemplate="{StaticResource property_group_template}"
-            TrackPropertyGroupTemplate="{StaticResource track_property_group_template}"
+            PropertyContainerTemplate="{StaticResource property_container_template}"
             PropertyStateTemplate="{StaticResource property_template}" />
 
     </UserControl.Resources>
