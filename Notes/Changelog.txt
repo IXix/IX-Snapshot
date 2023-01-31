@@ -1,6 +1,6 @@
 2023.01.31
-	Implemented dynamic data template selection for main treeview
-		Item template are now defined in the user control resources.
+	Implemented dynamic data template selection for treeviews
+		Item templates are now defined in the user control resources.
 
 2023.01.30
 	Added snaphot notes

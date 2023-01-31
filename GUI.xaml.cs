@@ -101,7 +101,7 @@ namespace Snapshot
                     return PropertyStateTemplate;
 
                 default:
-                    throw new Exception("Unexpected case indexer SelectTemplate");
+                    throw new Exception("Unexpected case in SelectTemplate");
             }
         }
     }
