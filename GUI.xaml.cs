@@ -82,5 +82,34 @@ namespace Snapshot
             tvi.IsSelected = true;
         }
     }
+
+    public class ItemTemplateSelector : DataTemplateSelector
+    {
+        public HierarchicalDataTemplate MachineStateTemplate { get; set; }
+        public HierarchicalDataTemplate PropertyGroupTemplate { get; set; }
+        public HierarchicalDataTemplate TrackPropertyGroupTemplate { get; set; }
+        public DataTemplate PropertyStateTemplate { get; set; }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            switch (item.GetType().Name)
+            {
+                case "CMachineStateVM":
+                    return MachineStateTemplate;
+
+                case "CTrackPropertyStateGroupVM":
+                    return TrackPropertyGroupTemplate;
+
+                case "CPropertyStateGroupVM":
+                    return PropertyGroupTemplate;
+
+                case "CPropertyStateVM":
+                    return PropertyStateTemplate;
+
+                default:
+                    throw new Exception("Unexpected case indexer SelectTemplate");
+            }
+        }
+    }
 }
 
