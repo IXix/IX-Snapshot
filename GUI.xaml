@@ -8,40 +8,7 @@
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
              d:DesignHeight="500" d:DesignWidth="500" Height="500">
     <UserControl.Resources>
-        
-        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
-        <!-- TreeViewItem context menus-->
-        <ContextMenu x:Key="main_treeitemmenu">
-            <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-        </ContextMenu>
 
-        <ContextMenu x:Key="manager_treeitemmenuA">
-            <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-        </ContextMenu>
-
-        <ContextMenu x:Key="manager_treeitemmenuB">
-            <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-        </ContextMenu>
-        
         <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
         <!-- General styles-->
         <Style TargetType="Grid">
@@ -110,6 +77,40 @@
                 <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </DataTemplate>
+
+        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+        <!-- TreeViewItem context menus-->
+        <ContextMenu x:Key="main_treeitemmenu">
+            <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="manager_treeitemmenuA">
+            <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="manager_treeitemmenuB">
+            <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+        </ContextMenu>
+
 
         <!-- ******* TreeViewItem Styles ******* -->
         <Style x:Key="tvis_item" TargetType="{x:Type TreeViewItem}">
@@ -235,9 +236,8 @@
         <local:ItemTemplateSelector x:Key="tvi_template_selector"
             PropertyContainerTemplate="{StaticResource property_container_template}"
             PropertyStateTemplate="{StaticResource property_template}" />
-
+        
         <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
-
     </UserControl.Resources>
 
     <TabControl>
