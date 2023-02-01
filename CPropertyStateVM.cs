@@ -74,7 +74,7 @@ namespace Snapshot
 
         public override string Name => _property.Name;
 
-        public string DisplayName => _property.DisplayName;
+        public override string DisplayName => _property.DisplayName;
 
         public override int? SmoothingCount => _property.SmoothingCount;
 

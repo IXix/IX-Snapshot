@@ -174,6 +174,11 @@ namespace Snapshot
             get => "";
         }
 
+        public virtual string DisplayName
+        {
+            get => Name;
+        }
+
         public virtual bool GotValue
         {
             get => false;

@@ -8,36 +8,81 @@
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
              d:DesignHeight="500" d:DesignWidth="500" Height="500">
     <UserControl.Resources>
+        
+        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+        <!-- TreeViewItem context menus-->
+        <ContextMenu x:Key="main_treeitemmenu">
+            <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="manager_treeitemmenuA">
+            <MenuItem Header="Capture" Command="{Binding CmdCaptureA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <MenuItem Header="Restore" Command="{Binding CmdRestoreA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Clear" Command="{Binding CmdClearA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+        </ContextMenu>
+
+        <ContextMenu x:Key="manager_treeitemmenuB">
+            <MenuItem Header="Capture" Command="{Binding CmdCaptureB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <MenuItem Header="Restore" Command="{Binding CmdRestoreB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Clear" Command="{Binding CmdClearB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+            <Separator />
+            <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
+        </ContextMenu>
+        
+        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+        <!-- General styles-->
         <Style TargetType="Grid">
             <Setter Property="Margin" Value="1" />
         </Style>
+        
         <Style TargetType="StackPanel">
             <Setter Property="Margin" Value="1" />
         </Style>
+        
         <Style TargetType="Separator">
             <Setter Property="Margin" Value="1,5" />
         </Style>
+        
         <Style TargetType="Button">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Margin" Value="2,1" />
             <Setter Property="Padding" Value="1" />
         </Style>
+        
         <Style TargetType="CheckBox">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Margin" Value="3,1" />
             <Setter Property="Padding" Value="1" />
         </Style>
+        
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Margin" Value="3,1" />
         </Style>
+        
         <Style TargetType="ComboBox" x:Key="comboBase">
             <Setter Property="Margin" Value="1,1"/>
         </Style>
 
+        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+        <!-- Named styles -->
+        
         <!-- Prevent treeview context menu items using the IsChecked state of the underlying property. -->
         <!-- Don't know why just setting IsCheckable=False on the menuitem definitions doesn't work. -->
         <Style x:Key="propertyMenuItem" TargetType="MenuItem">
@@ -50,7 +95,7 @@
             <Setter Property="FontSize" Value="14" />
         </Style>
 
-        <!-- Slot ComboBox items-->
+        <!-- ******** Slot ComboBox items ******* -->
         <Style x:Key="cbi_slots" TargetType="ComboBoxItem">
             <Setter Property="FontWeight" Value="Normal" />
             <Style.Triggers>
@@ -59,119 +104,113 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+
         <DataTemplate x:Key="slot_combo_item">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
         </DataTemplate>
-        
-        <!-- TreeViewItem context menus-->
-        <CompositeCollection x:Key="common_treeitemmenu">
-            <MenuItem Header="Capture" Command="{Binding CmdCapture}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <MenuItem Header="Restore" Command="{Binding CmdRestore}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Clear" Command="{Binding CmdClear}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-        </CompositeCollection>
 
-        <ContextMenu x:Key="main_treeitemmenu">
-            <ContextMenu.ItemsSource>
-                <CompositeCollection>
-                    <CollectionContainer Collection="{StaticResource common_treeitemmenu}" />
-                </CompositeCollection>
-            </ContextMenu.ItemsSource>
-        </ContextMenu>
-
-        <ContextMenu x:Key="manager_treeitemmenuA">
-            <ContextMenu.ItemsSource>
-                <CompositeCollection>
-                    <CollectionContainer Collection="{StaticResource common_treeitemmenu}" />
-                    <Separator />
-                    <MenuItem Header="Copy to right" Command="{Binding CmdCopyAtoB}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                </CompositeCollection>
-            </ContextMenu.ItemsSource>
-        </ContextMenu>
-
-        <ContextMenu x:Key="manager_treeitemmenuB">
-            <ContextMenu.ItemsSource>
-                <CompositeCollection>
-                    <CollectionContainer Collection="{StaticResource common_treeitemmenu}" />
-                    <Separator />
-                    <MenuItem Header="Copy to left" Command="{Binding CmdCopyBtoA}" CommandParameter="{Binding MachineProperties}" Style="{StaticResource propertyMenuItem}" />
-                </CompositeCollection>
-            </ContextMenu.ItemsSource>
-        </ContextMenu>
-
-        <!-- Main TreeViewItem Styles-->        
-        <Style x:Key="tvi_main" TargetType="{x:Type TreeViewItem}">
-            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-            <Setter Property="Visibility" Value="{Binding IsVisible, Mode=OneWay}" />
+        <!-- ******* TreeViewItem Styles ******* -->
+        <Style x:Key="tvis_item" TargetType="{x:Type TreeViewItem}">
             <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
             <EventSetter Event="PreviewMouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown" />
             <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
             <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" />
-        </Style>
-        <Style x:Key="tvi_text" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="tvi_value" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
-            <Setter Property="FontWeight" Value="Normal" />
-        </Style>
 
-        <!-- Manager TreeViewItem Styles -->
-        <Style x:Key="tvi_manager" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay}" />
             <Setter Property="IsSelected" Value="{Binding IsSelectedM, Mode=TwoWay}" />
             <Setter Property="Visibility" Value="{Binding IsVisibleM, Mode=OneWay}" />
-            <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
-            <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
-            <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsCheckedM, UpdateSourceTrigger=PropertyChanged}" />
-        </Style>
-
-        <Style x:Key="tvi_manager_a" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ResourceKey=tvi_manager}">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding GotValueA, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="tvi_texta" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding GotValueA, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold" />
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                 AncestorType={x:Type TreeView}}, Path=Name}" Value="MachineList">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="Visibility" Value="{Binding IsVisible, Mode=OneWay}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="tvi_manager_b" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ResourceKey=tvi_manager}">
+        <Style x:Key="tvis_panel" TargetType="StackPanel">
+            <Setter Property="ContextMenu" Value="{StaticResource main_treeitemmenu}" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding GotValueB, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold" />
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type TreeView}}, Path=Name}" Value="ListA">
+                    <Setter Property="ContextMenu" Value="{StaticResource manager_treeitemmenuA}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type TreeView}}, Path=Name}" Value="ListB">
+                    <Setter Property="ContextMenu" Value="{StaticResource manager_treeitemmenuB}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="tvi_textb" TargetType="TextBlock" BasedOn="{StaticResource tvi_text_base}">
+
+        <Style x:Key="tvis_checkbox" TargetType="CheckBox">
+            <Setter Property="IsChecked" Value="{Binding IsCheckedM}" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding GotValueB, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold" />
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type TreeView}}, Path=Name}" Value="MachineList">
+                    <Setter Property="IsChecked" Value="{Binding IsChecked}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
-        <!-- Main Treeview Item Templates -->
+
+        <Style x:Key="tvis_property_name" TargetType="TextBlock">
+            <Setter Property="Text" Value="{Binding DisplayName}" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                 AncestorType={x:Type TreeView}}, Path=Name}" Value="MachineList" />
+                        <Condition Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="FontWeight" Value="Bold" />
+                </MultiDataTrigger>
+
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                 AncestorType={x:Type TreeView}}, Path=Name}" Value="ListA" />
+                        <Condition Binding="{Binding GotValueA, UpdateSourceTrigger=PropertyChanged}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="FontWeight" Value="Bold" />
+                </MultiDataTrigger>
+
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                                 AncestorType={x:Type TreeView}}, Path=Name}" Value="ListB" />
+                        <Condition Binding="{Binding GotValueB, UpdateSourceTrigger=PropertyChanged}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="FontWeight" Value="Bold" />
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="tvis_property_value" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Text" Value="{Binding DisplayValue}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type TreeView}}, Path=Name}" Value="ListA">
+                    <Setter Property="Text" Value="{Binding DisplayValueA}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type TreeView}}, Path=Name}" Value="ListB">
+                    <Setter Property="Text" Value="{Binding DisplayValueB}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+        <!-- General Treeview Item Templates -->
         <!-- Things that contain properties or other containers of properties -->
         <HierarchicalDataTemplate x:Key="property_container_template" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
-                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsChecked}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
+            <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
+                <CheckBox IsThreeState="True" Focusable="False" Click="OnThreeStateClick" Style="{StaticResource tvis_checkbox}" VerticalAlignment="Center" Margin="0,0,5,0" />
                 <ContentPresenter>
                     <ContentPresenter.Content>
-                        <TextBlock Style="{StaticResource tvi_text}" Text="{Binding Name}" />
+                        <TextBlock Style="{StaticResource tvis_property_name}" />
                     </ContentPresenter.Content>
                 </ContentPresenter>
             </StackPanel>
@@ -179,68 +218,13 @@
 
         <!-- Actual properties -->
         <DataTemplate x:Key="property_template" DataType="{x:Type local:CPropertyStateVM}">
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource main_treeitemmenu}">
-                <CheckBox Focusable="False" IsChecked="{Binding IsChecked}" VerticalAlignment="Center" Margin="0,0,5,0" />
+            <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
+                <CheckBox Focusable="False" Style="{StaticResource tvis_checkbox}" VerticalAlignment="Center" Margin="0,0,5,0" />
                 <ContentPresenter>
                     <ContentPresenter.Content>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource tvi_text}" Text="{Binding DisplayName}" />
-                            <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValue}" />
-                        </StackPanel>
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- Manager Treeview Item Templates-->
-        <!-- Containers A-->
-        <HierarchicalDataTemplate x:Key="property_container_templateA" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuA}">
-                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding Name}" />
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </HierarchicalDataTemplate>
-
-        <!-- Properties A -->
-        <DataTemplate x:Key="property_templateA" DataType="{x:Type local:CPropertyStateVM}">
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuA}">
-                <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding DisplayName}" />
-                            <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValueA}" />
-                        </StackPanel>
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- Containers B -->
-        <HierarchicalDataTemplate x:Key="property_container_templateB" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuB}">
-                <CheckBox IsThreeState="True" Focusable="False" IsChecked="{Binding IsCheckedM}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <TextBlock Style="{StaticResource tvi_textb}" Text="{Binding Name}" />
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </HierarchicalDataTemplate>
-
-        <!-- Properties B -->
-        <DataTemplate x:Key="property_templateB" DataType="{x:Type local:CPropertyStateVM}">
-            <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource manager_treeitemmenuB}">
-                <CheckBox Focusable="False" IsChecked="{Binding IsCheckedM}" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource tvi_texta}" Text="{Binding DisplayName}" />
-                            <TextBlock Style="{StaticResource tvi_value}" Text="{Binding DisplayValueB}" />
+                            <TextBlock Style="{StaticResource tvis_property_name}" />
+                            <TextBlock Style="{StaticResource tvis_property_value}" />
                         </StackPanel>
                     </ContentPresenter.Content>
                 </ContentPresenter>
@@ -248,19 +232,11 @@
         </DataTemplate>
 
         <!-- Treeview item template selector class defined in code behind-->
-        <local:ItemTemplateSelector x:Key="item_template_selector"
+        <local:ItemTemplateSelector x:Key="tvi_template_selector"
             PropertyContainerTemplate="{StaticResource property_container_template}"
             PropertyStateTemplate="{StaticResource property_template}" />
 
-        <!-- Treeview item template selector for A pane-->
-        <local:ItemTemplateSelector x:Key="item_template_selectorA"
-            PropertyContainerTemplate="{StaticResource property_container_templateA}"
-            PropertyStateTemplate="{StaticResource property_templateA}" />
-
-        <!-- Treeview item template selector for B pane-->
-        <local:ItemTemplateSelector x:Key="item_template_selectorB"
-            PropertyContainerTemplate="{StaticResource property_container_templateB}"
-            PropertyStateTemplate="{StaticResource property_templateB}" />
+        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
     </UserControl.Resources>
 
@@ -281,9 +257,9 @@
                         
                         <!-- Treeview content templates defined in resources -->
                         <TreeView x:Name="MachineList" Grid.Row="0"
-                                  ItemContainerStyle="{StaticResource tvi_main}"
+                                  ItemContainerStyle="{StaticResource tvis_item}"
                                   ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}"
-                                  ItemTemplateSelector="{StaticResource item_template_selector}" />
+                                  ItemTemplateSelector="{StaticResource tvi_template_selector}" />
 
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
@@ -505,15 +481,15 @@
                 
                 <!-- Treeview content templates defined in resources -->
                 <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0"
-                          ItemContainerStyle="{StaticResource tvi_manager_a}"
+                          ItemContainerStyle="{StaticResource tvis_item}"
                           ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}"
-                          ItemTemplateSelector="{StaticResource item_template_selectorA}" />
+                          ItemTemplateSelector="{StaticResource tvi_template_selector}" />
 
                 <!-- Treeview content templates defined in resources -->
                 <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="2"
-                          ItemContainerStyle="{StaticResource tvi_manager_b}"
+                          ItemContainerStyle="{StaticResource tvis_item}"
                           ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}"
-                          ItemTemplateSelector="{StaticResource item_template_selectorB}" />
+                          ItemTemplateSelector="{StaticResource tvi_template_selector}" />
 
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
@@ -521,6 +497,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
+                    
                     <TextBox x:Name="txtFilterM" Grid.Column="0" VerticalContentAlignment="Center" Text="{Binding FilterTextM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="14" FontStyle="Italic"/>
                     <TextBlock IsHitTestVisible="False" Text="Filter" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                         <TextBlock.Style>
@@ -541,6 +518,7 @@
                         <ComboBoxItem Tag="All" Content="Show All" IsSelected="True" />
                     </ComboBox>
                 </Grid>
+                
                 <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="0">
                     <Button x:Name="btnCaptureA" ToolTip="Capture selected properties.">
                         <Button.InputBindings>

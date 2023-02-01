@@ -1,3 +1,9 @@
+2023.02.01
+	Overhaul of treeview XAML
+		Reduced duplication by use of data triggers in styles to set bindings dynamically
+		Fixed broken context menus
+			May be a way to simplify these with setters for bindings too but not thought about how yet.
+
 2023.01.31
 	Implemented dynamic data template selection for treeviews
 		Item templates are now defined in the user control resources.
