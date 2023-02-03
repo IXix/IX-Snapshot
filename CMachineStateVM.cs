@@ -1,5 +1,6 @@
 ﻿using BuzzGUI.Common;
 using BuzzGUI.Interfaces;
+using System;
 using System.ComponentModel;
 using System.Linq;
 
@@ -11,13 +12,12 @@ namespace Snapshot
         public readonly CMachineState _state;
         public readonly int _trackCount;
 
-        public CMachineStateVM(CMachineState state, CSnapshotMachineVM ownerVM)
-            : base(null, true, ownerVM)
+        public CMachineStateVM(CMachineState state, CSnapshotMachineVM ownerVM, int view)
+            : base(null, true, ownerVM, view)
         {
             _state = state;
             _trackCount = _state.Machine.TrackCount;
             _properties = _state.AllProperties;
-            
             OwnerVM = ownerVM;
 
             state.Machine.PropertyChanged += OnMachinePropertyChanged;
@@ -68,39 +68,7 @@ namespace Snapshot
             {
                 try
                 {
-                    IPropertyState v = _state.AllProperties.First(x => OwnerVM.CurrentSlot.ContainsProperty(x));
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-        public override bool GotValueA
-        {
-            get
-            {
-                try
-                {
-                    IPropertyState v = _state.AllProperties.First(x => OwnerVM.SlotA.ContainsProperty(x));
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-        public override bool GotValueB
-        {
-            get
-            {
-                try
-                {
-                    IPropertyState v = _state.AllProperties.First(x => OwnerVM.SlotB.ContainsProperty(x));
+                    _ = _state.AllProperties.First(x => ReferenceSlot().ContainsProperty(x));
                     return true;
                 }
                 catch
@@ -118,27 +86,36 @@ namespace Snapshot
         {
             if (_state.DataState != null)
             {
-                CPropertyStateVM s = new CPropertyStateVM(_state.DataState, this, _ownerVM);
+                CPropertyStateVM s = new CPropertyStateVM(_state.DataState, this, _ownerVM, _viewRef);
                 Children.Add(s);
+                s.PropertyChanged += OnChildPropertyChanged;
             }
 
             if (_state.AttributeStates.Children.Count > 0)
             {
-                CPropertyStateGroupVM s = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM);
+                CPropertyStateGroupVM s = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM, _viewRef);
+                s.PropertyChanged += OnChildPropertyChanged;
                 Children.Add(s);
             }
 
             if (_state.GlobalStates.Children.Count > 0)
             {
-                CPropertyStateGroupVM s = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM);
+                CPropertyStateGroupVM s = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM, _viewRef);
+                s.PropertyChanged += OnChildPropertyChanged;
                 Children.Add(s);
             }
 
             if (_state.TrackStates.Children.Count > 0)
             {
-                CTrackPropertyStateGroupVM s = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM);
+                CTrackPropertyStateGroupVM s = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM, _viewRef);
+                s.PropertyChanged += OnChildPropertyChanged;
                 Children.Add(s);
             }
+        }
+
+        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(e.PropertyName);
         }
 
         internal void OnTrackCountChanged()
@@ -167,7 +144,7 @@ namespace Snapshot
                     {
                         IPropertyState property = param.Children.First(x => x.Track == count); // Count should be index of new track
                         CTreeViewItemVM paramVM = trackParams.Children[index];
-                        paramVM.AddChild(new CPropertyStateVM(property, paramVM, _ownerVM));
+                        paramVM.AddChild(new CPropertyStateVM(property, paramVM, _ownerVM, _viewRef));
                         index++;
                     }
                 }

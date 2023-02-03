@@ -10,163 +10,122 @@ namespace Snapshot
     // TreeViewItemVM with extra stuff for dealing with machine properties
     public class CMachinePropertyItemVM : CTreeViewItemVM
     {
-        protected CMachinePropertyItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate, CSnapshotMachineVM ownerVM)
+        protected CMachinePropertyItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate, CSnapshotMachineVM ownerVM, int view
+            )
             : base(parent, preventManualIndeterminate)
 
         {
             _ownerVM = ownerVM;
+            _viewRef = view;
             _properties = new HashSet<IPropertyState>();
+
+            Init();
 
             CmdCapture = new SimpleCommand
             {
-                ExecuteDelegate = x => { Capture(x, _ownerVM.CurrentSlot); }
+                ExecuteDelegate = x => { Capture(); }
             };
             CmdRestore = new SimpleCommand
             {
-                ExecuteDelegate = x => { Restore(x, _ownerVM.CurrentSlot); },
+                ExecuteDelegate = x => { Restore(); },
                 CanExecuteDelegate = x => { return GotValue; }
             };
             CmdClear = new SimpleCommand
             {
-                ExecuteDelegate = x => { Clear(x, _ownerVM.CurrentSlot); },
+                ExecuteDelegate = x => { Clear(); },
                 CanExecuteDelegate = x => { return GotValue; }
             };
             CmdClearAll = new SimpleCommand
             {
-                ExecuteDelegate = x => {
+                ExecuteDelegate = x =>
+                {
                     string msg = string.Format("Remove {0} from all slots? Are you sure?", Name);
-                    if (_ownerVM.Owner.Confirm("Confirm clear", msg, true)) ClearAll(x);
+                    if (_ownerVM.Owner.Confirm("Confirm clear", msg, true)) ClearAll();
                 },
             };
 
-            CmdCaptureA = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Capture(x, _ownerVM.SlotA); }
-            };
-            CmdRestoreA = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Restore(x, _ownerVM.SlotA); },
-                CanExecuteDelegate = x => { return GotValueA; }
-            };
-            CmdClearA = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Clear(x, _ownerVM.SlotA); },
-                CanExecuteDelegate = x => { return GotValueA; }
-            };
-
-            CmdCaptureB = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Capture(x, _ownerVM.SlotB); }
-            };
-            CmdRestoreB = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Restore(x, _ownerVM.SlotB); },
-                CanExecuteDelegate = x => { return GotValueB; }
-            };
-            CmdClearB = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Clear(x, _ownerVM.SlotB); },
-                CanExecuteDelegate = x => { return GotValueB; }
-            };
-
-            CmdCopyAtoB = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Copy(x, _ownerVM.SlotA, _ownerVM.SlotB); },
-            };
-            CmdCopyBtoA = new SimpleCommand
-            {
-                ExecuteDelegate = x => { Copy(x, _ownerVM.SlotB, _ownerVM.SlotA); },
-            };
         }
 
         protected readonly CSnapshotMachineVM _ownerVM;
         protected HashSet<IPropertyState> _properties;
+        protected int _viewRef;
 
         public SimpleCommand CmdCapture { get; private set; }
         public SimpleCommand CmdRestore { get; private set; }
         public SimpleCommand CmdClear { get; private set; }
         public SimpleCommand CmdClearAll { get; private set; }
+        public SimpleCommand CmdCopyAcross { get; private set; }
 
-        public SimpleCommand CmdCaptureA { get; private set; }
-        public SimpleCommand CmdRestoreA { get; private set; }
-        public SimpleCommand CmdClearA { get; private set; }
+        internal Func<CMachineSnapshot> ReferenceSlot;
 
-        public SimpleCommand CmdCaptureB { get; private set; }
-        public SimpleCommand CmdRestoreB { get; private set; }
-        public SimpleCommand CmdClearB { get; private set; }
-
-        public SimpleCommand CmdCopyAtoB { get; private set; }
-        public SimpleCommand CmdCopyBtoA { get; private set; }
-
-        internal void Capture(object param, CMachineSnapshot slot)
+        private void Init()
         {
-            slot.Capture(param as HashSet<IPropertyState>, false);
+            switch (_viewRef)
+            {
+                case 0: // "MachineList"
+                    ReferenceSlot = () => { return _ownerVM.CurrentSlot; };
+                    CmdCopyAcross = new SimpleCommand
+                    {
+                        ExecuteDelegate = x => { /*do nothing */ }
+                    };
+                    break;
 
-            if(slot == _ownerVM.CurrentSlot)
-            {
-                OnPropertyChanged("GotValue");
-                OnPropertyChanged("DisplayValue");
-            }
-            if (slot == _ownerVM.SlotA)
-            {
-                OnPropertyChanged("GotValueA");
-                OnPropertyChanged("DisplayValueA");
-            }
-            if (slot == _ownerVM.SlotB)
-            {
-                OnPropertyChanged("GotValueB");
-                OnPropertyChanged("DisplayValueB");
+                case 1: // "ListA"
+                    ReferenceSlot = () => { return _ownerVM.SlotA; };
+                    CmdCopyAcross = new SimpleCommand
+                    {
+                        ExecuteDelegate = x => {CopyAcross(_ownerVM.SlotB);}
+                    };
+                    break;
+
+                case 2: // "ListB"
+                    ReferenceSlot = () => { return _ownerVM.SlotB; };
+                    CmdCopyAcross = new SimpleCommand
+                    {
+                        ExecuteDelegate = x => { CopyAcross(_ownerVM.SlotA); }
+                    };
+                    break;
+
+                default:
+                    ReferenceSlot = null;
+                    break;
             }
         }
 
-        internal void Restore(object param, CMachineSnapshot slot)
+        internal void Capture()
         {
-            slot.Restore(param as HashSet<IPropertyState>);
+            ReferenceSlot().Capture(_properties, false);
+            OnPropertyChanged("GotValue");
+            OnPropertyChanged("DisplayValue");
         }
 
-        internal void ClearAll(object param)
+        internal void Restore()
+        {
+            ReferenceSlot().Restore(_properties);
+        }
+
+        internal void ClearAll()
         {
             foreach(var slot in _ownerVM.Slots)
             {
-                Clear(param, slot);
+                slot.Remove(_properties);
             }
+            OnPropertyChanged("GotValue");
+            OnPropertyChanged("DisplayValue");
         }
 
-        internal void Clear(object param, CMachineSnapshot slot)
+        internal void Clear()
         {
-            slot.Remove(param as HashSet<IPropertyState>);
-
-            if (slot == _ownerVM.CurrentSlot)
-            {
-                OnPropertyChanged("GotValue");
-                OnPropertyChanged("DisplayValue");
-            }
-            if (slot == _ownerVM.SlotA)
-            {
-                OnPropertyChanged("GotValueA");
-                OnPropertyChanged("DisplayValueA");
-            }
-            if (slot == _ownerVM.SlotB)
-            {
-                OnPropertyChanged("GotValueB");
-                OnPropertyChanged("DisplayValueB");
-            }
+            ReferenceSlot().Remove(_properties);
+            OnPropertyChanged("GotValue");
+            OnPropertyChanged("DisplayValue");
         }
 
-        internal void Copy(object param, CMachineSnapshot src, CMachineSnapshot dest)
+        internal void CopyAcross(CMachineSnapshot dest)
         {
-            dest.CopyFrom(param as HashSet<IPropertyState>, src);
-
-            if (dest == _ownerVM.SlotA)
-            {
-                OnPropertyChanged("GotValueA");
-                OnPropertyChanged("DisplayValueA");
-            }
-            if (dest == _ownerVM.SlotB)
-            {
-                OnPropertyChanged("GotValueB");
-                OnPropertyChanged("DisplayValueB");
-            }
+            dest.CopyFrom(_properties, ReferenceSlot());
+            OnPropertyChanged("GotValue");
+            OnPropertyChanged("DisplayValue");
         }
 
         public virtual string Name
@@ -184,32 +143,7 @@ namespace Snapshot
             get => false;
         }
 
-        public virtual bool GotValueA
-        {
-            get => false;
-        }
-
-        public virtual bool GotValueB
-        {
-            get => false;
-        }
-
-        public virtual bool GotValueM
-        {
-            get => GotValueA || GotValueB;
-        }
-
         public virtual string DisplayValue
-        {
-            get => "";
-        }
-
-        public virtual string DisplayValueA
-        {
-            get => "";
-        }
-
-        public virtual string DisplayValueB
         {
             get => "";
         }
@@ -224,6 +158,19 @@ namespace Snapshot
             get => null;
         }
 
-        public HashSet<IPropertyState> MachineProperties => _properties;
+        public HashSet<IPropertyState> Properties => _properties;
+
+        protected event EventHandler<StateChangedEventArgs> StateChanged;
+        protected void NotifyStateChanged()
+        {
+            StateChangedEventArgs e = new StateChangedEventArgs()
+            {
+                Checked = IsChecked,
+                Checked_M = IsCheckedM,
+                Expanded = IsExpanded,
+                Expanded_M = IsExpandedM,
+            };
+            StateChanged?.Invoke(this, e);
+        }
     }
 }

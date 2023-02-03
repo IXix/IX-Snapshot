@@ -1,3 +1,13 @@
+2023.02.03
+	Massive mess update.
+		Decided to go back to having a separate VM for each of the three treeviews.
+			It makes more sense to have them separate, especially for XAML binding of properties and menus.
+		Got a bit carried away and changed lots of stuff without doing source control.
+			Things got messy and lots of stuff is somewhat broken but the core is probably better.
+			Looking to implement a new system for updating the UI based on individual properties firing events.
+				Everything is too complex and messy. Need to find a simple system that will work for everything.
+
+
 2023.02.01
 	Overhaul of treeview XAML
 		Reduced duplication by use of data triggers in styles to set bindings dynamically

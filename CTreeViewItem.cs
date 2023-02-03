@@ -253,7 +253,7 @@ namespace Snapshot
 
         internal void UpdateTreeCheck(string tree = "")
         {
-            switch(tree)
+            switch (tree)
             {
                 case "":
                     {
@@ -309,10 +309,12 @@ namespace Snapshot
         /// </summary>
         protected virtual void LoadChildren()
         {
+            throw new System.NotImplementedException();
         }
 
         protected virtual void OnCheckChanged()
         {
+            throw new System.NotImplementedException();
         }
 
         public CTreeViewItemVM Parent
@@ -328,14 +330,7 @@ namespace Snapshot
 
         public virtual void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-                foreach (CTreeViewItemVM c in Children)
-                {
-                    c.OnPropertyChanged(propertyName);
-                }
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         internal bool RemoveChild(CTreeViewItemVM VM)

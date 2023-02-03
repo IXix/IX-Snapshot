@@ -13,14 +13,21 @@ namespace Snapshot
         public CSnapshotMachineVM(CMachine owner)
         {
             Owner = owner;
-
             
             _showMode = _showModeM = 2; // All
 
-            States = new ObservableCollection<CMachineStateVM>(
-                (from state in Owner.States
-                 select new CMachineStateVM(state, this))
-                .ToList());
+            States = new ObservableCollection<CMachineStateVM>();
+            StatesA = new ObservableCollection<CMachineStateVM>();
+            StatesB = new ObservableCollection<CMachineStateVM>();
+            foreach(CMachineState s in Owner.States)
+            {
+                AddState(s);
+            }
+
+            foreach (CMachineSnapshot s in Owner.Slots)
+            {
+                s.PropertyChanged += OnSlotPropertyChanged;
+            }
 
             Owner.PropertyChanged += OwnerPropertyChanged;
 
@@ -193,14 +200,87 @@ namespace Snapshot
             };
         }
 
+        private void OnSlotPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case "HasData":
+                    NotifyPropertyChanged("Slots");
+
+                    if ((sender as CMachineSnapshot) == CurrentSlot)
+                    {
+                        NotifyPropertyChanged("States");
+                        foreach (CMachineStateVM s in States)
+                        {
+                            s.OnPropertyChanged("GotValue");
+                            s.OnPropertyChanged("DisplayValue");
+                        }
+                    }
+
+                    if ((sender as CMachineSnapshot) == SlotA)
+                    {
+                        NotifyPropertyChanged("StatesA");
+                        foreach (CMachineStateVM s in StatesA)
+                        {
+                            s.OnPropertyChanged("GotValue");
+                            s.OnPropertyChanged("DisplayValue");
+                        }
+                    }
+
+                    if ((sender as CMachineSnapshot) == SlotB)
+                    {
+                        NotifyPropertyChanged("StatesB");
+                        NotifyPropertyChanged("StatesB");
+                        foreach (CMachineStateVM s in StatesB)
+                        {
+                            s.OnPropertyChanged("GotValue");
+                            s.OnPropertyChanged("DisplayValue");
+                        }
+                    }
+
+                    NotifyPropertyChanged("SelectionInfo");
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "IsExpandedM":
+                    break;
+
+                case "IsExpanded":
+                    break;
+
+                case "IsChecked":
+                    break;
+
+                case "IsCheckedM":
+                    break;
+
+                case "GotValue":
+                    break;
+
+                case "DisplayValue":
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
         internal string _filterText;
         internal string _filterTextM;
         internal int _showMode;
         internal int _showModeM;
 
-        private void FilterVisibility()
+        private void FilterVisibility(ObservableCollection<CMachineStateVM> statelist)
         {
-            foreach (CMachineStateVM s in States)
+            foreach (CMachineStateVM s in statelist)
             {
                 bool show1 = false;
                 foreach (CMachinePropertyItemVM c in s.Children) // groups
@@ -229,9 +309,9 @@ namespace Snapshot
             }
         }
 
-        private void FilterVisibilityM()
+        private void FilterVisibilityM(ObservableCollection<CMachineStateVM> statelist)
         {
-            foreach (CMachineStateVM s in States)
+            foreach (CMachineStateVM s in statelist)
             {
                 bool show1 = false;
                 foreach (CMachinePropertyItemVM c in s.Children) // groups
@@ -239,8 +319,8 @@ namespace Snapshot
                     bool show2 = false;
                     foreach (CMachinePropertyItemVM cc in c.Children) // global/attrib/data/trackgroup
                     {
-                        //if (cc.Name.Contains(FilterTextM))
-                        if ((cc.IsCheckedM != false) || (cc.Name.IndexOf(FilterTextM, 0, StringComparison.OrdinalIgnoreCase) != -1))
+                        //if (cc.Name.Contains(FilterText))
+                        if ((cc.IsChecked != false) || (cc.Name.IndexOf(FilterText, 0, StringComparison.OrdinalIgnoreCase) != -1))
                         {
                             cc.IsVisibleM = System.Windows.Visibility.Visible;
                             cc.IsExpandedM = true;
@@ -260,10 +340,10 @@ namespace Snapshot
             }
         }
 
-        private void UpdateVisibility()
+        private void UpdateVisibility(ObservableCollection<CMachineStateVM> statelist)
         {
             // Set visibility and expandedness for main treeview
-            foreach (CMachineStateVM s in States)
+            foreach (CMachineStateVM s in statelist)
             {
                 s.IsVisible = GetVisibility(s);
                 s.IsExpanded = GetExpanded(s);
@@ -286,13 +366,13 @@ namespace Snapshot
             }
         }
 
-        private void UpdateVisibilityM()
+        private void UpdateVisibilityM(ObservableCollection<CMachineStateVM> statelist)
         {
-            // Set visibility and expandedness for manager treeviews
-            foreach (CMachineStateVM s in States)
+            // Set visibility and expandedness for main treeview
+            foreach (CMachineStateVM s in statelist)
             {
-                s.IsVisibleM = GetVisibilityM(s);
-                s.IsExpandedM = GetExpandedM(s);
+                s.IsVisibleM = GetVisibility(s);
+                s.IsExpandedM = GetExpanded(s);
 
                 foreach (CMachinePropertyItemVM c in s.Children)
                 {
@@ -328,20 +408,26 @@ namespace Snapshot
             {
                 case "State":
                     NotifyPropertyChanged("Slots");
-                    NotifyPropertyChanged("CurrentSlot");
-                    NotifyPropertyChanged("SlotA");
-                    NotifyPropertyChanged("SlotB");
                     NotifyPropertyChanged("SlotName");
                     NotifyPropertyChanged("Notes");
                     NotifyPropertyChanged("SelectionInfo");
+                    NotifyPropertyChanged("CurrentSlot");
                     foreach (CMachineStateVM s in States)
                     {
                         s.OnPropertyChanged("GotValue");
-                        s.OnPropertyChanged("GotValueA");
-                        s.OnPropertyChanged("GotValueB");
                         s.OnPropertyChanged("DisplayValue");
-                        s.OnPropertyChanged("DisplayValueA");
-                        s.OnPropertyChanged("DisplayValueB");
+                    }
+                    NotifyPropertyChanged("SlotA");
+                    foreach (CMachineStateVM s in StatesA)
+                    {
+                        s.OnPropertyChanged("GotValue");
+                        s.OnPropertyChanged("DisplayValue");
+                    }
+                    NotifyPropertyChanged("SlotB");
+                    foreach (CMachineStateVM s in StatesB)
+                    {
+                        s.OnPropertyChanged("GotValue");
+                        s.OnPropertyChanged("DisplayValue");
                     }
                     break;
 
@@ -356,8 +442,8 @@ namespace Snapshot
                     {
                         foreach (CMachineStateVM s in States)
                         {
-                            s.OnPropertyChanged("GotValueA");
-                            s.OnPropertyChanged("DisplayValueA");
+                            s.OnPropertyChanged("GotValue");
+                            s.OnPropertyChanged("DisplayValue");
                         }
                     }
                     break;
@@ -365,20 +451,20 @@ namespace Snapshot
                 case "SlotA":
                     NotifyPropertyChanged("SlotA");
                     NotifyPropertyChanged("CanCopy");
-                    foreach (CMachineStateVM s in States)
+                    foreach (CMachineStateVM s in StatesA)
                     {
-                        s.OnPropertyChanged("GotValueA");
-                        s.OnPropertyChanged("DisplayValueA");
+                        s.OnPropertyChanged("GotValue");
+                        s.OnPropertyChanged("DisplayValue");
                     }
                     break;
 
                 case "SlotB":
                     NotifyPropertyChanged("SlotB");
                     NotifyPropertyChanged("CanCopy");
-                    foreach (CMachineStateVM s in States)
+                    foreach (CMachineStateVM s in StatesB)
                     {
-                        s.OnPropertyChanged("GotValueB");
-                        s.OnPropertyChanged("DisplayValueB");
+                        s.OnPropertyChanged("GotValue");
+                        s.OnPropertyChanged("DisplayValue");
                     }
                     break;
 
@@ -421,45 +507,36 @@ namespace Snapshot
             }
         }
 
-        internal System.Windows.Visibility GetVisibilityM(CMachinePropertyItemVM tvi)
-        {
-            if (tvi.IsCheckedM != false)
-                return System.Windows.Visibility.Visible; // Don't hide selected items
-
-            switch (ShowModeM)
-            {
-                case 0: // Empty
-                    return tvi.GotValueM ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
-
-                case 1: // Stored
-                    return tvi.GotValueM ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-
-                default:
-                    return System.Windows.Visibility.Visible;
-            }
-        }
-
         internal bool GetExpanded(CMachinePropertyItemVM tvi)
         {
-            return tvi.IsChecked != false || tvi.GotValue; // Auto-expand selected items, items with selected children and items with values
-        }
-
-        internal bool GetExpandedM(CMachinePropertyItemVM tvi)
-        {
-            return tvi.IsCheckedM != false || tvi.GotValueM; // Auto-expand selected items, items with selected children and items with values
+            return tvi.IsExpanded;
         }
 
         public void AddState(CMachineState state)
         {
-            States.Add(new CMachineStateVM(state, this));
+            var s0 = new CMachineStateVM(state, this, 0);
+            s0.PropertyChanged += OnItemPropertyChanged;
+            States.Add(s0);
+
+            var s1 = new CMachineStateVM(state, this, 1);
+            s1.PropertyChanged += OnItemPropertyChanged;
+            StatesA.Add(s1);
+
+            var s2 = new CMachineStateVM(state, this, 2);
+            s2.PropertyChanged += OnItemPropertyChanged;
+            StatesB.Add(s2);
         }
 
         public void RemoveState(CMachineState state)
         {
             States.RemoveAt(States.FindIndex(x => x._state == state));
+            StatesA.RemoveAt(States.FindIndex(x => x._state == state));
+            StatesB.RemoveAt(States.FindIndex(x => x._state == state));
         }
 
         public ObservableCollection<CMachineStateVM> States { get; }
+        public ObservableCollection<CMachineStateVM> StatesA { get; }
+        public ObservableCollection<CMachineStateVM> StatesB { get; }
 
         #region Commands
         public SimpleCommand CmdCapture { get; private set; }
@@ -542,7 +619,7 @@ namespace Snapshot
                 {
                     _filterText = value;
                     NotifyPropertyChanged("FilterText");
-                    FilterVisibility();
+                    FilterVisibility(States);
                 }
             }
         }
@@ -556,7 +633,8 @@ namespace Snapshot
                 {
                     _filterTextM = value;
                     NotifyPropertyChanged("FilterTextM");
-                    FilterVisibilityM();
+                    FilterVisibilityM(StatesA);
+                    FilterVisibilityM(StatesB);
                 }
             }
         }
@@ -568,7 +646,7 @@ namespace Snapshot
             {
                 _showMode = value;
                 NotifyPropertyChanged("Filter");
-                UpdateVisibility();
+                UpdateVisibility(States);
             }
         }
 
@@ -579,7 +657,8 @@ namespace Snapshot
             {
                 _showModeM = value;
                 NotifyPropertyChanged("FilterM");
-                UpdateVisibilityM();
+                UpdateVisibilityM(StatesA);
+                UpdateVisibilityM(StatesB);
             }
         }
 

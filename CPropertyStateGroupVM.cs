@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.ComponentModel;
+using System.Linq;
 
 namespace Snapshot
 {
@@ -7,8 +9,8 @@ namespace Snapshot
     {
         readonly CPropertyStateGroup _group;
 
-        public CPropertyStateGroupVM(CPropertyStateGroup group, CTreeViewItemVM parentMachine, CSnapshotMachineVM ownerVM)
-            : base(parentMachine, true, ownerVM)
+        public CPropertyStateGroupVM(CPropertyStateGroup group, CTreeViewItemVM parentMachine, CSnapshotMachineVM ownerVM, int view)
+            : base(parentMachine, true, ownerVM, view)
         {
             _group = group;
             _properties = group.Children;
@@ -27,39 +29,7 @@ namespace Snapshot
             {
                 try
                 {
-                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValue == true);
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-        public override bool GotValueA
-        {
-            get
-            {
-                try
-                {
-                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValueA == true);
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-        public override bool GotValueB
-        {
-            get
-            {
-                try
-                {
-                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValueB == true);
+                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValue);
                     return true;
                 }
                 catch
@@ -73,12 +43,20 @@ namespace Snapshot
 
         public override int? SmoothingUnits => _group.SmoothingUnits;
 
+        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            NotifyStateChanged();
+        }
+
         protected override void LoadChildren()
         {
             foreach (IPropertyState p in _group.Children)
             {
-                Children.Add(new CPropertyStateVM(p, this, _ownerVM));
+                CPropertyStateVM s = new CPropertyStateVM(p, this, _ownerVM, _viewRef);
+                s.PropertyChanged += OnChildPropertyChanged;
+                Children.Add(s);
             }
         }
+
     }
 }

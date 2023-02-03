@@ -18,10 +18,11 @@ namespace Snapshot
     {
         readonly CTrackPropertyStateGroup _group;
 
-        public CTrackPropertyStateGroupVM(CTrackPropertyStateGroup group, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM)
-            : base(parent, true, ownerVM)
+        public CTrackPropertyStateGroupVM(CTrackPropertyStateGroup group, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM, int view)
+            : base(parent, true, ownerVM, view)
         {
             _group = group;
+
             foreach(CPropertyStateGroup param in _group.Children)
             {
                 _properties.Concat(param.Children);
@@ -41,39 +42,7 @@ namespace Snapshot
             {
                 try
                 {
-                    CTreeViewItemVM c = Children.First(x => (x as CMachinePropertyItemVM).GotValue == true);
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-        public override bool GotValueA
-        {
-            get
-            {
-                try
-                {
-                    CTreeViewItemVM c = Children.First(x => (x as CMachinePropertyItemVM).GotValueA == true);
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-
-        public override bool GotValueB
-        {
-            get
-            {
-                try
-                {
-                    CTreeViewItemVM c = Children.First(x => (x as CMachinePropertyItemVM).GotValueB == true);
+                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValue);
                     return true;
                 }
                 catch
@@ -91,7 +60,7 @@ namespace Snapshot
         {
             foreach (CPropertyStateGroup pg in _group.Children)
             {
-                Children.Add(new CPropertyStateGroupVM(pg, this, _ownerVM));
+                Children.Add(new CPropertyStateGroupVM(pg, this, _ownerVM, _viewRef));
             }
         }
     }

@@ -17,8 +17,8 @@ namespace Snapshot
     {
         readonly IPropertyState _property;
 
-        public CPropertyStateVM(IPropertyState property, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM)
-            : base(parent, false, ownerVM)
+        public CPropertyStateVM(IPropertyState property, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM, int view)
+            : base(parent, false, ownerVM, view)
         {
             _property = property;
             _properties.Add(_property);
@@ -27,49 +27,41 @@ namespace Snapshot
             IsCheckedM = _property.Checked_M;
 
             _property.CheckChanged += CheckChanged;
-            _property.SizeChanged += OnSizeChanged;
+            _property.StateChanged += OnSizeChanged;
         }
 
         private void OnSizeChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("DisplayName");
         }
-
         public override bool GotValue
         {
-            get { return _ownerVM.CurrentSlot.ContainsProperty(_property); }
-        }
-
-        public override bool GotValueA
-        {
-            get { return _ownerVM.SlotA.ContainsProperty(_property); }
-        }
-
-        public override bool GotValueB
-        {
-            get { return _ownerVM.SlotB.ContainsProperty(_property); }
+            get
+            {
+                try
+                {
+                    return ReferenceSlot().ContainsProperty(_property);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
         }
 
         public override string DisplayValue
         {
-            get { return _ownerVM.CurrentSlot.GetPropertyDisplayValue(_property); }
-        }
-
-        public override string DisplayValueA
-        {
-            get { return _ownerVM.SlotA.GetPropertyDisplayValue(_property); }
-        }
-
-        public override string DisplayValueB
-        {
-            get { return _ownerVM.SlotB.GetPropertyDisplayValue(_property); }
+            get
+            {
+                return ReferenceSlot().GetPropertyDisplayValue(_property);
+            }
         }
 
         protected override void OnCheckChanged()
         {
             _property.Checked = (bool)IsChecked;
             _property.Checked_M = (bool)IsCheckedM;
-            _property.OnCheckChanged(new StateChangedEventArgs() { Property = _property, Checked = _property.Checked, Checked_M = _property.Checked_M });
+            _property.OnStateChanged();
         }
 
         public override string Name => _property.Name;

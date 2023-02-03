@@ -17,6 +17,8 @@ namespace Snapshot
         public IPropertyState Property { get; set; }
         public bool? Checked { get; set; }
         public bool? Checked_M { get; set; }
+        public bool Expanded { get; set; }
+        public bool Expanded_M { get; set; }
         public bool Selected { get; set; }
     }
 
@@ -34,7 +36,13 @@ namespace Snapshot
         void OnCheckChanged(StateChangedEventArgs e);
     }
 
-    public interface IPropertyState : ICheckable, ISmoothable
+    public interface IExpandable
+    {
+        bool Expanded { get; set; }
+        bool Expanded_M { get; set; }
+    }
+
+    public interface IPropertyState : ICheckable, IExpandable, ISmoothable
     {
         int? Track { get; }
         int Size { get; }
@@ -43,8 +51,8 @@ namespace Snapshot
         CMachine Owner { get; }
         CMachineState Parent { get; }
 
-        event EventHandler SizeChanged;
-        void OnSizeChanged();
+        event EventHandler StateChanged;
+        void OnStateChanged();
     }
 
     public interface ISmoothable
@@ -53,7 +61,7 @@ namespace Snapshot
         int? SmoothingUnits { get; set; }
     }
 
-    public interface IGroup<T> : INamed
+    public interface IGroup<T> : INamed, IExpandable
     {
         HashSet<T> Children { get; }
     }
@@ -65,7 +73,7 @@ namespace Snapshot
             _owner = owner;
             _parent = parent;
             _active = true;
-            m_selected = false;
+            m_checked = false;
             m_smoothingCount = null;
             m_smoothingUnits = null;
             Track = null;
@@ -93,30 +101,54 @@ namespace Snapshot
 
         virtual public int Size => 0;
 
-        protected bool m_selected;
+        protected bool m_checked;
         virtual public bool Checked
         {
-            get => m_selected;
+            get => m_checked;
             set
             {
-                if(m_selected != value)
+                if(m_checked != value)
                 {
-                    m_selected = value;
-                    OnCheckChanged(new StateChangedEventArgs() { Property = this, Checked = Checked, Checked_M = Checked_M });
+                    m_checked = value;
                 }
             }
         }
 
-        protected bool m_selected_M;
+        protected bool m_checked_M;
         virtual public bool Checked_M
         {
-            get => m_selected_M;
+            get => m_checked_M;
             set
             {
-                if (m_selected_M != value)
+                if (m_checked_M != value)
                 {
-                    m_selected_M = value;
-                    OnCheckChanged(new StateChangedEventArgs() { Property = this, Checked = Checked, Checked_M = Checked_M });
+                    m_checked_M = value;
+                }
+            }
+        }
+
+        private bool m_expanded;
+        public bool Expanded
+        {
+            get => m_expanded;
+            set
+            {
+                if (m_expanded != value)
+                {
+                    m_expanded = value;
+                }
+            }
+        }
+
+        private bool m_expanded_M;
+        public bool Expanded_M
+        {
+            get => m_expanded_M;
+            set
+            {
+                if (m_expanded_M != value)
+                {
+                    m_expanded_M = value;
                 }
             }
         }
@@ -140,16 +172,16 @@ namespace Snapshot
         }
 
         public event EventHandler<StateChangedEventArgs> CheckChanged;
-        public event EventHandler SizeChanged;
+        public event EventHandler StateChanged;
 
         public void OnCheckChanged(StateChangedEventArgs e)
         {
             CheckChanged?.Invoke(this, e);
         }
 
-        public void OnSizeChanged()
+        public void OnStateChanged()
         {
-            SizeChanged?.Invoke(this, EventArgs.Empty);
+            StateChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 
@@ -240,7 +272,7 @@ namespace Snapshot
             Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
                 _size = Machine.Data.Length;
-                OnSizeChanged();
+                OnStateChanged();
             }));
         }
     }
@@ -407,7 +439,7 @@ namespace Snapshot
         public HashSet<CPropertyStateGroup> Children { get; }
     }
 
-    public class CMachineState : ISmoothable
+    public class CMachineState : ISmoothable, IExpandable
     {
         public CMachineState(CMachine owner, IMachine m)
         {
@@ -635,6 +667,32 @@ namespace Snapshot
                 foreach (IPropertyState p in TrackStates.Children)
                 {
                     p.SmoothingUnits = value;
+                }
+            }
+        }
+
+        private bool m_expanded;
+        public bool Expanded
+        {
+            get => m_expanded;
+            set
+            {
+                if (m_expanded != value)
+                {
+                    m_expanded = value;
+                }
+            }
+        }
+
+        private bool m_expanded_M;
+        public bool Expanded_M
+        {
+            get => m_expanded_M;
+            set
+            {
+                if (m_expanded_M != value)
+                {
+                    m_expanded_M = value;
                 }
             }
         }
