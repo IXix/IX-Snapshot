@@ -180,7 +180,7 @@
         <!-- Actual properties -->
         <DataTemplate x:Key="property_template" DataType="{x:Type local:CPropertyStateVM}">
             <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
-                <CheckBox Focusable="False" Style="{StaticResource tvis_checkbox}" VerticalAlignment="Center" Margin="0,0,5,0" />
+                <CheckBox Focusable="False" Style="{StaticResource tvis_checkbox}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                 <ContentPresenter>
                     <ContentPresenter.Content>
                         <StackPanel Orientation="Horizontal">

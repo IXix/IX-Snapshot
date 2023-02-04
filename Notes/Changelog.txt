@@ -1,3 +1,6 @@
+2023.02.04
+	Working towards fixing the mess. Still very broken.
+
 2023.02.03
 	Massive mess update.
 		Decided to go back to having a separate VM for each of the three treeviews.

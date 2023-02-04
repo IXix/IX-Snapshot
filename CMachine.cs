@@ -40,7 +40,7 @@ namespace Snapshot
 
         public CSnapshotMachineVM VM { get; }
 
-        public HashSet<IPropertyState> AllProperties { get; private set; }
+        public HashSet<CPropertyBase> AllProperties { get; private set; }
 
         internal List<CParamChange> paramChanges;
         internal List<CAttribChange> attribChanges;
@@ -271,7 +271,7 @@ namespace Snapshot
         }
 
         // How many properties are selected
-        public int SelCount => AllProperties.Count(x => x.Checked && x.Active);
+        public int SelCount => AllProperties.Count(x => x.Checked == true && x.Active);
 
         // How many properties have been captured
         public int StoredCount => CurrentSlot.StoredCount;
@@ -283,7 +283,7 @@ namespace Snapshot
         public int DeletedCount => CurrentSlot.DeletedCount;
 
         // How many selected properties have not been captured
-        public int MissingCount => AllProperties.Where(x => x.Checked && x.Active).Except(CurrentSlot.StoredProperties).Count();
+        public int MissingCount => AllProperties.Where(x => x.Checked == true && x.Active).Except(CurrentSlot.StoredProperties).Count();
 
         public string Name
         {
@@ -354,7 +354,7 @@ namespace Snapshot
             }
 
             States = new ObservableCollection<CMachineState>();
-            AllProperties = new HashSet<IPropertyState>();
+            AllProperties = new HashSet<CPropertyBase>();
             VM = new CSnapshotMachineVM(this);
 
             ReadOnlyCollection<IMachine> machines = Global.Buzz.Song.Machines;
@@ -554,7 +554,7 @@ namespace Snapshot
 
         public void SelectAll()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked = true;
             }
@@ -562,7 +562,7 @@ namespace Snapshot
 
         public void SelectNone()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked = false;
             }
@@ -570,7 +570,7 @@ namespace Snapshot
 
         public void SelectStored()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked = s.GotValue;
             }
@@ -578,7 +578,7 @@ namespace Snapshot
 
         public void SelectInvert()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked = !s.Checked;
             }
@@ -586,7 +586,7 @@ namespace Snapshot
 
         public void SelectAll_M()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked_M = true;
             }
@@ -594,7 +594,7 @@ namespace Snapshot
 
         public void SelectNone_M()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked_M = false;
             }
@@ -602,7 +602,7 @@ namespace Snapshot
 
         public void SelectInvert_M()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked_M = !s.Checked_M;
             }
@@ -610,7 +610,7 @@ namespace Snapshot
 
         public void SelectStoredA()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked_M = SlotA.ContainsProperty(s);
             }
@@ -618,7 +618,7 @@ namespace Snapshot
 
         public void SelectStoredB()
         {
-            foreach (IPropertyState s in AllProperties)
+            foreach (CPropertyBase s in AllProperties)
             {
                 s.Checked_M = SlotB.ContainsProperty(s);
             }
@@ -662,21 +662,21 @@ namespace Snapshot
             }
         }
 
-        internal HashSet<IPropertyState> GetSelectedProperties(bool main)
+        internal HashSet<CPropertyBase> GetSelectedProperties(bool main)
         {
-            HashSet<IPropertyState> selected = new HashSet<IPropertyState>();
+            HashSet<CPropertyBase> selected = new HashSet<CPropertyBase>();
             if (main)
             {
                 foreach (CMachineState state in States)
                 {
-                    selected.UnionWith(state.AllProperties.Where(x => x.Checked));
+                    selected.UnionWith(state.AllProperties.Where(x => x.Checked == true));
                 }
             }
             else
             {
                 foreach (CMachineState state in States)
                 {
-                    selected.UnionWith(state.AllProperties.Where(x => x.Checked_M));
+                    selected.UnionWith(state.AllProperties.Where(x => x.Checked_M == true));
                 }
             }
             return selected;
@@ -690,7 +690,7 @@ namespace Snapshot
 
         public void CaptureMissingA()
         {
-            HashSet<IPropertyState> targets = GetSelectedProperties(false);
+            HashSet<CPropertyBase> targets = GetSelectedProperties(false);
             targets.RemoveWhere(x => SlotA.ContainsProperty(x) == true);
             SlotA.Capture(targets, false);
             OnPropertyChanged("State");
@@ -739,7 +739,7 @@ namespace Snapshot
 
         public void CaptureMissingB()
         {
-            HashSet<IPropertyState> targets = GetSelectedProperties(false);
+            HashSet<CPropertyBase> targets = GetSelectedProperties(false);
             targets.RemoveWhere(x => SlotB.ContainsProperty(x) == true);
             SlotB.Capture(targets, false);
             OnPropertyChanged("State");
@@ -918,7 +918,7 @@ namespace Snapshot
                 foreach (CPropertyBase ps in s.AllProperties)
                 {
                     List<CMachineSnapshot> slots = _slots.Where(x => x.ContainsProperty(ps)).ToList();
-                    if (slots.Count() > 0 || ps.Checked)
+                    if (slots.Count() > 0 || ps.Checked == true)
                     {
                         saveProperties[ps] = slots;
                     }
@@ -930,7 +930,7 @@ namespace Snapshot
                     List<CMachineSnapshot> slots = item.Value;
                     w.Write(p.Name);
                     w.Write(p.Track ?? -1);
-                    w.Write(p.Checked);
+                    w.Write(p.Checked?? false);
                     w.Write((Int32)slots.Count());
                     foreach (CMachineSnapshot snapshot in slots)
                     {
@@ -1023,7 +1023,7 @@ namespace Snapshot
                         if (track < 0) track = null;
 
                         // Should be one and only one property matching name and track. Exception if not.
-                        IPropertyState ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
+                        CPropertyBase ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
 
                         ps.Checked = r.ReadBoolean(); //Property selected
 
@@ -1149,9 +1149,9 @@ namespace Snapshot
                 if (m.ManagedMachine != this)
                 {
                     ms = new CMachineState(this, m);
-                    foreach (IPropertyState s in ms.AllProperties)
+                    foreach (CPropertyBase s in ms.AllProperties)
                     {
-                        s.CheckChanged += CheckChanged;
+                        s.TreeStateChanged += CheckChanged;
                         s.Checked = SelectNewMachines;
                         AllProperties.Add(s);
                     }
@@ -1167,7 +1167,7 @@ namespace Snapshot
             }
         }
 
-        private void CheckChanged(object sender, StateChangedEventArgs e)
+        private void CheckChanged(object sender, TreeStateEventArgs e)
         {
             OnPropertyChanged("SelectionInfo");
         }
@@ -1252,7 +1252,7 @@ namespace Snapshot
 
         internal void CaptureMissing()
         {
-            HashSet<IPropertyState> targets = GetSelectedProperties(true);
+            HashSet<CPropertyBase> targets = GetSelectedProperties(true);
             targets.RemoveWhere(x => CurrentSlot.ContainsProperty(x) == true);
             CurrentSlot.Capture(targets, false);
             OnPropertyChanged("State");
@@ -1315,7 +1315,7 @@ namespace Snapshot
             string msg = string.Format("Discard {0} selected properties from all slots? Are you sure?", CurrentSlot.SelectedCount);
             if (Confirm("Confirm clear", msg, true))
             {
-                HashSet<IPropertyState> sel = GetSelectedProperties(true);
+                HashSet<CPropertyBase> sel = GetSelectedProperties(true);
                 foreach (CMachineSnapshot slot in Slots)
                 {
                     slot.Remove(sel);

@@ -12,7 +12,7 @@ using System.ComponentModel;
 
 namespace Snapshot
 {
-    public class StateChangedEventArgs : EventArgs
+    public class TreeStateEventArgs : EventArgs
     {
         public IPropertyState Property { get; set; }
         public bool? Checked { get; set; }
@@ -22,27 +22,31 @@ namespace Snapshot
         public bool Selected { get; set; }
     }
 
+    public class PropertyStateEventArgs : EventArgs
+    {
+        public IPropertyState Property { get; set; }
+        public bool GotValue { get; set; }
+        public int Size { get; set; }
+    }
+
     public interface INamed
     {
         string Name { get; }
         string DisplayName { get; }
     }
 
-    public interface ICheckable : INamed
+    public interface ITreeNode : INamed
     {
-        bool Checked { get; set; }
-        bool Checked_M { get; set; }
-        event EventHandler<StateChangedEventArgs> CheckChanged;
-        void OnCheckChanged(StateChangedEventArgs e);
-    }
-
-    public interface IExpandable
-    {
+        bool? Checked { get; set; }
+        bool? Checked_M { get; set; }
         bool Expanded { get; set; }
         bool Expanded_M { get; set; }
+
+        event EventHandler<TreeStateEventArgs> TreeStateChanged;
+        void OnTreeStateChanged();
     }
 
-    public interface IPropertyState : ICheckable, IExpandable, ISmoothable
+    public interface IPropertyState : ITreeNode, ISmoothable
     {
         int? Track { get; }
         int Size { get; }
@@ -51,19 +55,14 @@ namespace Snapshot
         CMachine Owner { get; }
         CMachineState Parent { get; }
 
-        event EventHandler StateChanged;
-        void OnStateChanged();
+        event EventHandler PropertyStateChanged;
+        void OnPropertyStateChanged();
     }
 
     public interface ISmoothable
     {
         int? SmoothingCount { get; set; }
         int? SmoothingUnits { get; set; }
-    }
-
-    public interface IGroup<T> : INamed, IExpandable
-    {
-        HashSet<T> Children { get; }
     }
 
     public class CPropertyBase : IPropertyState
@@ -73,10 +72,16 @@ namespace Snapshot
             _owner = owner;
             _parent = parent;
             _active = true;
+
             m_checked = false;
+            m_checked_M = false;
+            m_expanded = false;
+            m_expanded_M = false;
+
             m_smoothingCount = null;
             m_smoothingUnits = null;
             Track = null;
+            ChildProperties = new HashSet<CPropertyBase>();
         }
 
         private readonly CMachine _owner;
@@ -84,6 +89,8 @@ namespace Snapshot
 
         private readonly CMachineState _parent;
         public CMachineState Parent => _parent;
+
+        public HashSet<CPropertyBase> ChildProperties { get; private set; }
 
         virtual public int? Track { get; protected set; }
 
@@ -101,8 +108,8 @@ namespace Snapshot
 
         virtual public int Size => 0;
 
-        protected bool m_checked;
-        virtual public bool Checked
+        protected bool? m_checked;
+        virtual public bool? Checked
         {
             get => m_checked;
             set
@@ -110,12 +117,13 @@ namespace Snapshot
                 if(m_checked != value)
                 {
                     m_checked = value;
+                    OnTreeStateChanged();
                 }
             }
         }
 
-        protected bool m_checked_M;
-        virtual public bool Checked_M
+        protected bool? m_checked_M;
+        virtual public bool? Checked_M
         {
             get => m_checked_M;
             set
@@ -123,6 +131,7 @@ namespace Snapshot
                 if (m_checked_M != value)
                 {
                     m_checked_M = value;
+                    OnTreeStateChanged();
                 }
             }
         }
@@ -136,6 +145,7 @@ namespace Snapshot
                 if (m_expanded != value)
                 {
                     m_expanded = value;
+                    OnTreeStateChanged();
                 }
             }
         }
@@ -149,13 +159,16 @@ namespace Snapshot
                 if (m_expanded_M != value)
                 {
                     m_expanded_M = value;
+                    OnTreeStateChanged();
                 }
             }
         }
 
         virtual public string Name => throw new NotImplementedException();
 
-        virtual public string DisplayName => throw new NotImplementedException();
+        virtual public string DisplayName => Name;
+
+        virtual public string DisplayValue => throw new NotImplementedException();
 
         protected int? m_smoothingCount;
         virtual public int? SmoothingCount
@@ -171,17 +184,30 @@ namespace Snapshot
             set => m_smoothingUnits = value;
         }
 
-        public event EventHandler<StateChangedEventArgs> CheckChanged;
-        public event EventHandler StateChanged;
-
-        public void OnCheckChanged(StateChangedEventArgs e)
+        public event EventHandler<TreeStateEventArgs> TreeStateChanged;
+        public void OnTreeStateChanged()
         {
-            CheckChanged?.Invoke(this, e);
+            TreeStateEventArgs args = new TreeStateEventArgs
+            {
+                Property = this,
+                Checked = Checked,
+                Checked_M = Checked_M,
+                Expanded = Expanded,
+                Expanded_M = Expanded_M
+            };
+            TreeStateChanged?.Invoke(this, args);
         }
 
-        public void OnStateChanged()
+        public event EventHandler PropertyStateChanged;
+        public void OnPropertyStateChanged()
         {
-            StateChanged?.Invoke(this, EventArgs.Empty);
+            PropertyStateEventArgs args = new PropertyStateEventArgs
+            {
+                Property = this,
+                GotValue = GotValue,
+                Size = Size
+            };
+            PropertyStateChanged?.Invoke(this, args);
         }
     }
 
@@ -201,18 +227,6 @@ namespace Snapshot
         public override string DisplayName => Track == null ? Parameter.Name : Track.ToString();
 
         public override int Size => sizeof(int);
-
-        public override int? SmoothingCount
-        {
-            get => base.SmoothingCount;
-            set => base.SmoothingCount = value;
-        }
-
-        public override int? SmoothingUnits
-        {
-            get => base.SmoothingUnits;
-            set => base.SmoothingUnits = value;
-        }
     }
 
     public class CAttributeState : CPropertyBase
@@ -272,18 +286,17 @@ namespace Snapshot
             Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
                 _size = Machine.Data.Length;
-                OnStateChanged();
+                OnPropertyStateChanged();
             }));
         }
     }
 
-    public class CPropertyStateGroup : CPropertyBase, IGroup<IPropertyState>
+    public class CPropertyStateGroup : CPropertyBase
     {
         public CPropertyStateGroup(CMachine owner, CMachineState parent, string name)
             : base(owner, parent)
         {
             Name = name;
-            Children = new HashSet<IPropertyState>();
         }
 
         public override string Name { get; }
@@ -294,7 +307,7 @@ namespace Snapshot
             {
                 try
                 {
-                    IPropertyState v = Children.First(x => x.GotValue);
+                    IPropertyState v = ChildProperties.First(x => x.GotValue);
                     return true;
                 }
                 catch
@@ -310,7 +323,7 @@ namespace Snapshot
             set
             {
                 _active = value;
-               foreach(IPropertyState c in Children)
+               foreach(IPropertyState c in ChildProperties)
                 {
                     c.Active = value;
                 }
@@ -322,14 +335,14 @@ namespace Snapshot
             get
             {
                 // Return (all children have the same value) ? value : null;
-                int? val = Children.First().SmoothingCount;
-                int n = Children.Count(x => x.SmoothingCount == val);
-                return (n == Children.Count) ? val : null;
+                int? val = ChildProperties.First().SmoothingCount;
+                int n = ChildProperties.Count(x => x.SmoothingCount == val);
+                return (n == ChildProperties.Count) ? val : null;
             }
             set
             {
                 // Set all children to same value
-                foreach (IPropertyState p in Children)
+                foreach (IPropertyState p in ChildProperties)
                 {
                     p.SmoothingCount = value;
                 }
@@ -341,30 +354,27 @@ namespace Snapshot
             get
             {
                 // Return (all children have the same value) ? value : null;
-                int? val = Children.First().SmoothingUnits;
-                int n = Children.Count(x => x.SmoothingUnits == val);
-                return (n == Children.Count) ? val : null;
+                int? val = ChildProperties.First().SmoothingUnits;
+                int n = ChildProperties.Count(x => x.SmoothingUnits == val);
+                return (n == ChildProperties.Count) ? val : null;
             }
             set
             {
                 // Set all children to same value
-                foreach (IPropertyState p in Children)
+                foreach (IPropertyState p in ChildProperties)
                 {
                     p.SmoothingUnits = value;
                 }
             }
         }
-
-        public HashSet<IPropertyState> Children { get; }
     }
 
-    public class CTrackPropertyStateGroup : CPropertyBase, IGroup<CPropertyStateGroup>
+    public class CTrackPropertyStateGroup : CPropertyBase
     {
         public CTrackPropertyStateGroup(CMachine owner, CMachineState parent, string name)
             : base(owner, parent)
         {
             Name = name;
-            Children = new HashSet<CPropertyStateGroup>();
         }
 
         public override string Name { get; }
@@ -375,7 +385,7 @@ namespace Snapshot
             {
                 try
                 {
-                    IPropertyState v = Children.First(x => x.GotValue);
+                    _ = ChildProperties.First(x => x.GotValue);
                     return true;
                 }
                 catch
@@ -391,7 +401,7 @@ namespace Snapshot
             set
             {
                 _active = value;
-                foreach (CPropertyStateGroup c in Children)
+                foreach (CPropertyStateGroup c in ChildProperties)
                 {
                     c.Active = value;
                 }
@@ -403,14 +413,14 @@ namespace Snapshot
             get
             {
                 // Return (all children have the same value) ? value : null;
-                int? val = Children.First().SmoothingCount;
-                int n = Children.Count(x => x.SmoothingCount == val);
-                return (n == Children.Count) ? val : null;
+                int? val = ChildProperties.First().SmoothingCount;
+                int n = ChildProperties.Count(x => x.SmoothingCount == val);
+                return (n == ChildProperties.Count) ? val : null;
             }
             set
             {
                 // Set all children to same value
-                foreach (IPropertyState p in Children)
+                foreach (IPropertyState p in ChildProperties)
                 {
                     p.SmoothingCount = value;
                 }
@@ -422,33 +432,32 @@ namespace Snapshot
             get
             {
                 // Return (all children have the same value) ? value : null;
-                int? val = Children.First().SmoothingUnits;
-                int n = Children.Count(x => x.SmoothingUnits == val);
-                return (n == Children.Count) ? val : null;
+                int? val = ChildProperties.First().SmoothingUnits;
+                int n = ChildProperties.Count(x => x.SmoothingUnits == val);
+                return (n == ChildProperties.Count) ? val : null;
             }
             set
             {
                 // Set all children to same value
-                foreach (IPropertyState p in Children)
+                foreach (IPropertyState p in ChildProperties)
                 {
                     p.SmoothingUnits = value;
                 }
             }
         }
-
-        public HashSet<CPropertyStateGroup> Children { get; }
     }
 
-    public class CMachineState : ISmoothable, IExpandable
+    public class CMachineState : CPropertyBase
     {
-        public CMachineState(CMachine owner, IMachine m)
+        public CMachineState(CMachine owner, IMachine m) :
+            base(owner, null)
         {
             Machine = m;
             _trackCount = m.TrackCount;
             _owner = owner;
             _active = true;
 
-            _allProperties = new HashSet<IPropertyState>();
+            _allProperties = new HashSet<CPropertyBase>();
 
             if((Machine.DLL.Info.Flags & MachineInfoFlags.LOAD_DATA_RUNTIME) == MachineInfoFlags.LOAD_DATA_RUNTIME && Machine.Data != null)
             {
@@ -462,7 +471,7 @@ namespace Snapshot
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
                     CParameterState ps = new CParameterState(owner, this, p);
-                    GlobalStates.Children.Add(ps);
+                    GlobalStates.ChildProperties.Add(ps);
                     _allProperties.Add(ps);
                 }
             }
@@ -474,11 +483,11 @@ namespace Snapshot
                 if (p.Flags.HasFlag(ParameterFlags.State))
                 {
                     CPropertyStateGroup pg = new CPropertyStateGroup(owner, this, p.Name);
-                    TrackStates.Children.Add(pg);
+                    TrackStates.ChildProperties.Add(pg);
                     for(int i = 0; i < tracks.TrackCount; i++)
                     {
                         CParameterState ps = new CParameterState(owner, this, p, i);
-                        pg.Children.Add(ps);
+                        pg.ChildProperties.Add(ps);
                         _allProperties.Add(ps);
                     }
                 }
@@ -488,7 +497,7 @@ namespace Snapshot
             foreach (IAttribute a in Machine.Attributes)
             {
                 CAttributeState ats = new CAttributeState(owner, this, a);
-                AttributeStates.Children.Add(ats);
+                AttributeStates.ChildProperties.Add(ats);
                 _allProperties.Add(ats);
             }
 
@@ -532,10 +541,12 @@ namespace Snapshot
         public IMachine Machine { get; internal set; }
         readonly CMachine _owner;
 
+        public override string Name => Machine.Name;
+
         private int _trackCount;
         private int _highestTrackCount;
 
-        public bool GotValue
+        public override bool GotValue
         {
             get
             {
@@ -551,8 +562,7 @@ namespace Snapshot
             }
         }
 
-        private bool _active;
-        public bool Active
+        public override bool Active
         {
             get => _active;
             set
@@ -571,9 +581,9 @@ namespace Snapshot
             int delta = Machine.TrackCount - _trackCount;
             if (delta < 0) // Track removed
             {
-                foreach(CPropertyStateGroup g in TrackStates.Children) // for each track param
+                foreach(CPropertyStateGroup g in TrackStates.ChildProperties) // for each track param
                 {
-                    foreach(IPropertyState p in g.Children.Where(x => x.Track > newCount - 1))
+                    foreach(IPropertyState p in g.ChildProperties.Where(x => x.Track > newCount - 1))
                     {
                         p.Active = false;
                     }
@@ -584,9 +594,9 @@ namespace Snapshot
                 if(newCount <= _highestTrackCount) // Previously added track restored
                 {
                     
-                    foreach (CPropertyStateGroup g in TrackStates.Children) // for each track param9
+                    foreach (CPropertyStateGroup g in TrackStates.ChildProperties) // for each track param9
                     {
-                        foreach (IPropertyState p in g.Children.Where(x => x.Track > _trackCount - 1 && x.Track < newCount))
+                        foreach (IPropertyState p in g.ChildProperties.Where(x => x.Track > _trackCount - 1 && x.Track < newCount))
                         {
                             p.Active = true;
                         }
@@ -597,13 +607,13 @@ namespace Snapshot
                     while(delta > 0) // Not sure if this is necessary. Can multiple tracks be added at once?
                     {
                         int newIndex = newCount - delta;
-                        foreach (CPropertyStateGroup g in TrackStates.Children) // for each track param
+                        foreach (CPropertyStateGroup g in TrackStates.ChildProperties) // for each track param
                         {
-                            int gIndex = (g.Children.First() as CParameterState).Parameter.IndexInGroup;
+                            int gIndex = (g.ChildProperties.First() as CParameterState).Parameter.IndexInGroup;
                             IParameterGroup tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
 
                             CParameterState ps = new CParameterState(_owner, this, tracks.Parameters[gIndex], newIndex);
-                            g.Children.Add(ps);
+                            g.ChildProperties.Add(ps);
                             _allProperties.Add(ps);
                         }
                         delta--;
@@ -623,76 +633,50 @@ namespace Snapshot
             }
         }
 
-        public int? SmoothingCount
+        public override int? SmoothingCount
         {
             get // Return (all children have the same value) ? value : null;
             {
-                int? val = GlobalStates.Children.First().SmoothingCount;
+                int? val = GlobalStates.ChildProperties.First().SmoothingCount;
                 
-                int ng = GlobalStates.Children.Count(x => x.SmoothingCount == val);
-                int nt = TrackStates.Children.Count(x => x.SmoothingCount == val);
+                int ng = GlobalStates.ChildProperties.Count(x => x.SmoothingCount == val);
+                int nt = TrackStates.ChildProperties.Count(x => x.SmoothingCount == val);
 
-                return (ng == GlobalStates.Children.Count && nt == TrackStates.Children.Count) ? val : null;
+                return (ng == GlobalStates.ChildProperties.Count && nt == TrackStates.ChildProperties.Count) ? val : null;
             }
             set // Set all children to same value
             {
-                foreach (IPropertyState p in GlobalStates.Children)
+                foreach (IPropertyState p in GlobalStates.ChildProperties)
                 {
                     p.SmoothingCount = value;
                 }
-                foreach (IPropertyState p in TrackStates.Children)
+                foreach (IPropertyState p in TrackStates.ChildProperties)
                 {
                     p.SmoothingCount = value;
                 }
             }
         }
 
-        public int? SmoothingUnits
+        public override int? SmoothingUnits
         {
             get // Return (all children have the same value) ? value : null;
             {
-                int? val = GlobalStates.Children.First().SmoothingUnits;
+                int? val = GlobalStates.ChildProperties.First().SmoothingUnits;
 
-                int ng = GlobalStates.Children.Count(x => x.SmoothingUnits == val);
-                int nt = TrackStates.Children.Count(x => x.SmoothingUnits == val);
+                int ng = GlobalStates.ChildProperties.Count(x => x.SmoothingUnits == val);
+                int nt = TrackStates.ChildProperties.Count(x => x.SmoothingUnits == val);
 
-                return (ng == GlobalStates.Children.Count && nt == TrackStates.Children.Count) ? val : null;
+                return (ng == GlobalStates.ChildProperties.Count && nt == TrackStates.ChildProperties.Count) ? val : null;
             }
             set // Set all children to same value
             {
-                foreach (IPropertyState p in GlobalStates.Children)
+                foreach (IPropertyState p in GlobalStates.ChildProperties)
                 {
                     p.SmoothingUnits = value;
                 }
-                foreach (IPropertyState p in TrackStates.Children)
+                foreach (IPropertyState p in TrackStates.ChildProperties)
                 {
                     p.SmoothingUnits = value;
-                }
-            }
-        }
-
-        private bool m_expanded;
-        public bool Expanded
-        {
-            get => m_expanded;
-            set
-            {
-                if (m_expanded != value)
-                {
-                    m_expanded = value;
-                }
-            }
-        }
-
-        private bool m_expanded_M;
-        public bool Expanded_M
-        {
-            get => m_expanded_M;
-            set
-            {
-                if (m_expanded_M != value)
-                {
-                    m_expanded_M = value;
                 }
             }
         }
@@ -703,7 +687,8 @@ namespace Snapshot
         public CPropertyStateGroup GlobalStates { get; private set; }
         public CTrackPropertyStateGroup TrackStates { get; private set; }
         public CPropertyStateGroup AttributeStates { get; private set; }
-        private readonly HashSet<IPropertyState> _allProperties;
-        public HashSet<IPropertyState> AllProperties => _allProperties;
+
+        private readonly HashSet<CPropertyBase> _allProperties;
+        public HashSet<CPropertyBase> AllProperties => _allProperties;
     }
 }

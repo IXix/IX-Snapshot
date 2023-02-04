@@ -20,7 +20,7 @@ namespace Snapshot
             AttributeValues = new Dictionary<CAttributeState, int>();
             ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>();
             DataValues = new Dictionary<CDataState, byte[]>();
-            StoredProperties = new HashSet<IPropertyState>();
+            StoredProperties = new HashSet<CPropertyBase>();
         }
 
         public CMachineSnapshot(CMachineSnapshot src)
@@ -31,7 +31,7 @@ namespace Snapshot
             AttributeValues = new Dictionary<CAttributeState, int>(src.AttributeValues);
             ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>(src.ParameterValues);
             DataValues = new Dictionary<CDataState, byte[]>(src.DataValues);
-            StoredProperties = new HashSet<IPropertyState>(src.StoredProperties);
+            StoredProperties = new HashSet<CPropertyBase>(src.StoredProperties);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -44,7 +44,7 @@ namespace Snapshot
         internal Dictionary<CAttributeState, int /*value*/> AttributeValues;
         internal Dictionary<CParameterState, Tuple<int /*track*/, int /*value*/>> ParameterValues;
         internal Dictionary<CDataState, byte[] /*value*/> DataValues;
-        public HashSet<IPropertyState> StoredProperties { get; internal set; }
+        public HashSet<CPropertyBase> StoredProperties { get; internal set; }
 
         public int Index { get; private set; }
 
@@ -173,8 +173,8 @@ namespace Snapshot
         public int StoredCount => StoredProperties.Count;
 
         // How many stored properties are selected
-        public int SelectedCount => StoredProperties.Count(x => x.Checked);
-        public int SelectedCount_M => StoredProperties.Count(x => x.Checked_M);
+        public int SelectedCount => StoredProperties.Count(x => x.Checked == true);
+        public int SelectedCount_M => StoredProperties.Count(x => x.Checked_M == true);
 
         // How many properties are stored that aren't selected
         public int RedundantCount => StoredProperties.Count(x => x.Active && x.Checked == false);
@@ -224,9 +224,9 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void CopyFrom(HashSet<IPropertyState> properties, CMachineSnapshot src)
+        public void CopyFrom(HashSet<CPropertyBase> properties, CMachineSnapshot src)
         {
-            foreach (IPropertyState p in properties)
+            foreach (CPropertyBase p in properties)
             {
                 switch (p.GetType().Name)
                 {
@@ -286,7 +286,7 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Capture(IPropertyState p)
+        public void Capture(CPropertyBase p)
         {
             switch (p.GetType().Name)
             {
@@ -321,7 +321,7 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Capture(HashSet<IPropertyState> targets, bool clearExisting)
+        public void Capture(HashSet<CPropertyBase> targets, bool clearExisting)
         {
             if(clearExisting)
             {
@@ -364,7 +364,7 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Restore(HashSet<IPropertyState> properties)
+        public void Restore(HashSet<CPropertyBase> properties)
         {
             foreach (IPropertyState p in properties)
             {
@@ -454,7 +454,7 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Remove(IPropertyState p)
+        public void Remove(CPropertyBase p)
         {
             if (!StoredProperties.Contains(p)) return;
 
@@ -491,7 +491,7 @@ namespace Snapshot
         }
 
 
-        public void Remove(HashSet<IPropertyState> targets)
+        public void Remove(HashSet<CPropertyBase> targets)
         {
             foreach (IPropertyState p in targets)
             {
@@ -537,7 +537,7 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void ReadProperty(IPropertyState p, BinaryReader r)
+        public void ReadProperty(CPropertyBase p, BinaryReader r)
         {
             Type t = p.GetType();
             switch (t.FullName)

@@ -10,17 +10,12 @@ namespace Snapshot
         readonly CPropertyStateGroup _group;
 
         public CPropertyStateGroupVM(CPropertyStateGroup group, CTreeViewItemVM parentMachine, CSnapshotMachineVM ownerVM, int view)
-            : base(parentMachine, true, ownerVM, view)
+            : base(group, parentMachine, ownerVM, view)
         {
             _group = group;
-            _properties = group.Children;
+            _childProperties = group.ChildProperties;
 
             LoadChildren();
-        }
-
-        public override string Name
-        {
-            get { return _group.Name; }
         }
 
         public override bool GotValue
@@ -39,21 +34,11 @@ namespace Snapshot
             }
         }
 
-        public override int? SmoothingCount => _group.SmoothingCount;
-
-        public override int? SmoothingUnits => _group.SmoothingUnits;
-
-        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            NotifyStateChanged();
-        }
-
         protected override void LoadChildren()
         {
-            foreach (IPropertyState p in _group.Children)
+            foreach (CPropertyBase p in _group.ChildProperties)
             {
                 CPropertyStateVM s = new CPropertyStateVM(p, this, _ownerVM, _viewRef);
-                s.PropertyChanged += OnChildPropertyChanged;
                 Children.Add(s);
             }
         }

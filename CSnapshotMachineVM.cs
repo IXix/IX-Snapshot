@@ -246,33 +246,6 @@ namespace Snapshot
             }
         }
 
-        private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "IsExpandedM":
-                    break;
-
-                case "IsExpanded":
-                    break;
-
-                case "IsChecked":
-                    break;
-
-                case "IsCheckedM":
-                    break;
-
-                case "GotValue":
-                    break;
-
-                case "DisplayValue":
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
         internal string _filterText;
         internal string _filterTextM;
         internal int _showMode;
@@ -515,15 +488,12 @@ namespace Snapshot
         public void AddState(CMachineState state)
         {
             var s0 = new CMachineStateVM(state, this, 0);
-            s0.PropertyChanged += OnItemPropertyChanged;
             States.Add(s0);
 
             var s1 = new CMachineStateVM(state, this, 1);
-            s1.PropertyChanged += OnItemPropertyChanged;
             StatesA.Add(s1);
 
             var s2 = new CMachineStateVM(state, this, 2);
-            s2.PropertyChanged += OnItemPropertyChanged;
             StatesB.Add(s2);
         }
 

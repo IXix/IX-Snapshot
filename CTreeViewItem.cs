@@ -159,10 +159,10 @@ namespace Snapshot
         {
             if (_preventManualIndeterminate)
             {
-                if(_isChecked == null)
+                if(IsChecked == null)
                     IsChecked = false; // force this and any children to be unchecked.
 
-                if (_isCheckedM == null)
+                if (IsCheckedM == null)
                     IsCheckedM = false; // force this and any children to be unchecked.
             }
         }
@@ -172,7 +172,7 @@ namespace Snapshot
         /// associated with this object is checked, unchecked or undetermined.
         /// </summary>
         private bool reentrancyCheck = false;
-        public bool? IsChecked
+        public virtual bool? IsChecked
         {
             get { return _isChecked; }
             set
@@ -212,7 +212,7 @@ namespace Snapshot
         }
 
         private bool reentrancyCheckM = false;
-        public bool? IsCheckedM
+        public virtual bool? IsCheckedM
         {
             get { return _isCheckedM; }
             set
@@ -253,51 +253,54 @@ namespace Snapshot
 
         internal void UpdateTreeCheck(string tree = "")
         {
-            switch (tree)
+            if (Children.Count > 0)
             {
-                case "":
-                    {
-                        int c = Children.Count(x => x.IsChecked == true);
-                        int i = Children.Count(x => x.IsChecked == null);
+                switch (tree)
+                {
+                    case "":
+                        {
+                            int c = Children.Count(x => x.IsChecked == true);
+                            int i = Children.Count(x => x.IsChecked == null);
 
-                        if (c == 0 && i == 0)
-                        {
-                            IsChecked = false;
+                            if (c == 0 && i == 0)
+                            {
+                                IsChecked = false;
+                            }
+                            else if (c == Children.Count)
+                            {
+                                IsChecked = true;
+                            }
+                            else
+                            {
+                                IsChecked = null;
+                            }
                         }
-                        else if (c == Children.Count)
-                        {
-                            IsChecked = true;
-                        }
-                        else
-                        {
-                            IsChecked = null;
-                        }
-                    }
-                    break;
+                        break;
 
-                case "M":
-                    {
-                        int c = Children.Count(x => x.IsCheckedM == true);
-                        int i = Children.Count(x => x.IsCheckedM == null);
+                    case "M":
+                        {
+                            int c = Children.Count(x => x.IsCheckedM == true);
+                            int i = Children.Count(x => x.IsCheckedM == null);
 
-                        if (c == 0 && i == 0)
-                        {
-                            IsCheckedM = false;
+                            if (c == 0 && i == 0)
+                            {
+                                IsCheckedM = false;
+                            }
+                            else if (c == Children.Count)
+                            {
+                                IsCheckedM = true;
+                            }
+                            else
+                            {
+                                IsCheckedM = null;
+                            }
                         }
-                        else if (c == Children.Count)
-                        {
-                            IsCheckedM = true;
-                        }
-                        else
-                        {
-                            IsCheckedM = null;
-                        }
-                    }
-                    break;
+                        break;
+                }
             }
         }
 
-        protected void CheckChanged(object sender, StateChangedEventArgs e)
+        protected void CheckChanged(object sender, TreeStateEventArgs e)
         {
             IsChecked = e.Checked;
             IsCheckedM = e.Checked_M;
@@ -314,7 +317,6 @@ namespace Snapshot
 
         protected virtual void OnCheckChanged()
         {
-            throw new System.NotImplementedException();
         }
 
         public CTreeViewItemVM Parent

@@ -10,14 +10,18 @@ namespace Snapshot
     // TreeViewItemVM with extra stuff for dealing with machine properties
     public class CMachinePropertyItemVM : CTreeViewItemVM
     {
-        protected CMachinePropertyItemVM(CTreeViewItemVM parent, bool preventManualIndeterminate, CSnapshotMachineVM ownerVM, int view
+        public CMachinePropertyItemVM(CPropertyBase property, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM, int view
             )
-            : base(parent, preventManualIndeterminate)
+            : base(parent, true)
 
         {
+            _property = property;
             _ownerVM = ownerVM;
             _viewRef = view;
-            _properties = new HashSet<IPropertyState>();
+            _childProperties = new HashSet<CPropertyBase>();
+
+            _property.TreeStateChanged += OnTreeStateChanged;
+
 
             Init();
 
@@ -46,8 +50,17 @@ namespace Snapshot
 
         }
 
+        private void OnTreeStateChanged(object sender, TreeStateEventArgs e)
+        {
+            OnPropertyChanged("IsChecked");
+            OnPropertyChanged("IsCheckedM");
+            OnPropertyChanged("IsExpanded");
+            OnPropertyChanged("IsExpandedM");
+        }
+
         protected readonly CSnapshotMachineVM _ownerVM;
-        protected HashSet<IPropertyState> _properties;
+        protected CPropertyBase _property;
+        protected HashSet<CPropertyBase> _childProperties;
         protected int _viewRef;
 
         public SimpleCommand CmdCapture { get; private set; }
@@ -94,83 +107,111 @@ namespace Snapshot
 
         internal void Capture()
         {
-            ReferenceSlot().Capture(_properties, false);
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
+            ReferenceSlot().Capture(_childProperties, false);
         }
 
         internal void Restore()
         {
-            ReferenceSlot().Restore(_properties);
+            ReferenceSlot().Restore(_childProperties);
         }
 
         internal void ClearAll()
         {
             foreach(var slot in _ownerVM.Slots)
             {
-                slot.Remove(_properties);
+                slot.Remove(_childProperties);
             }
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
         }
 
         internal void Clear()
         {
-            ReferenceSlot().Remove(_properties);
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
+            ReferenceSlot().Remove(_childProperties);
         }
 
         internal void CopyAcross(CMachineSnapshot dest)
         {
-            dest.CopyFrom(_properties, ReferenceSlot());
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("DisplayValue");
+            dest.CopyFrom(_childProperties, ReferenceSlot());
         }
 
         public virtual string Name
         {
-            get => "";
+            get => _property.Name;
         }
 
         public virtual string DisplayName
         {
-            get => Name;
+            get => _property.DisplayName;
         }
 
         public virtual bool GotValue
         {
-            get => false;
+            get => _property.GotValue;
         }
 
         public virtual string DisplayValue
         {
-            get => "";
+            get => _property.DisplayValue;
         }
 
         public virtual int? SmoothingCount
         {
-            get => null;
+            get => _property.SmoothingCount;
         }
 
         public virtual int? SmoothingUnits
         {
-            get => null;
+            get => _property.SmoothingUnits;
         }
 
-        public HashSet<IPropertyState> Properties => _properties;
+        public HashSet<CPropertyBase> Properties => _childProperties;
 
-        protected event EventHandler<StateChangedEventArgs> StateChanged;
-        protected void NotifyStateChanged()
+        private bool reentrancyCheck = false;
+        public override bool? IsChecked
         {
-            StateChangedEventArgs e = new StateChangedEventArgs()
+            get { return _property.Checked; }
+            set
             {
-                Checked = IsChecked,
-                Checked_M = IsCheckedM,
-                Expanded = IsExpanded,
-                Expanded_M = IsExpandedM,
-            };
-            StateChanged?.Invoke(this, e);
+                if (value != _property.Checked)
+                {
+                    if (reentrancyCheck) return;
+
+                    reentrancyCheck = true;
+
+                    _property.Checked = value;
+
+                    if (value != null)
+                    {
+
+                        if (Children != null)
+                        {
+                            foreach (CTreeViewItemVM child in Children)
+                            {
+                                child.IsChecked = _property.Checked;
+                            }
+                        }
+                    }
+
+                    if (Parent != null)
+                    {
+                        Parent.UpdateTreeCheck();
+                    }
+
+                    OnPropertyChanged("IsChecked");
+
+                    OnCheckChanged();
+
+                    reentrancyCheck = false;
+                }
+            }
+        }
+
+        protected override void LoadChildren()
+        {
+            foreach (CPropertyBase p in _childProperties)
+            {
+                CMachinePropertyItemVM pvm = new CMachinePropertyItemVM(p, this, _ownerVM, _viewRef);
+                Children.Add(pvm);
+            }
         }
     }
 }

@@ -19,21 +19,16 @@ namespace Snapshot
         readonly CTrackPropertyStateGroup _group;
 
         public CTrackPropertyStateGroupVM(CTrackPropertyStateGroup group, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM, int view)
-            : base(parent, true, ownerVM, view)
+            : base(group, parent, ownerVM, view)
         {
             _group = group;
 
-            foreach(CPropertyStateGroup param in _group.Children)
+            foreach(CPropertyStateGroup param in _group.ChildProperties)
             {
-                _properties.Concat(param.Children);
+                _childProperties.Concat(param.ChildProperties);
             }
 
             LoadChildren();
-        }
-
-        public override string Name
-        {
-            get { return _group.Name; }
         }
 
         public override bool GotValue
@@ -52,15 +47,12 @@ namespace Snapshot
             }
         }
 
-        public override int? SmoothingCount => _group.SmoothingCount;
-
-        public override int? SmoothingUnits => _group.SmoothingUnits;
-
         protected override void LoadChildren()
         {
-            foreach (CPropertyStateGroup pg in _group.Children)
+            foreach (CPropertyStateGroup pg in _group.ChildProperties)
             {
-                Children.Add(new CPropertyStateGroupVM(pg, this, _ownerVM, _viewRef));
+                CPropertyStateGroupVM gvm = new CPropertyStateGroupVM(pg, this, _ownerVM, _viewRef);
+                Children.Add(gvm);
             }
         }
     }
