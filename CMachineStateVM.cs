@@ -62,10 +62,38 @@ namespace Snapshot
 
         internal CSnapshotMachineVM OwnerVM { get; set; }
 
-        private CMachinePropertyItemVM _dataVM;
-        private CPropertyStateGroupVM _attrVM;
-        private CPropertyStateGroupVM _globalsVM;
-        private CTrackPropertyStateGroupVM _tracksVM;
+        public CMachinePropertyItemVM DataState { get; private set; }
+        public CPropertyStateGroupVM AttributeStates { get; private set; }
+        public CPropertyStateGroupVM GlobalStates { get; private set; }
+        public CTrackPropertyStateGroupVM TrackStates { get; private set; }
+
+        public void RefreshState(bool refreshProperties)
+        {
+            if(AttributeStates != null)
+            {
+                AttributeStates.OnPropertyChanged("GotValue");
+            }
+
+            if (GlobalStates != null)
+            {
+                GlobalStates.OnPropertyChanged("GotValue");
+            }
+
+            if (TrackStates != null)
+            {
+                TrackStates.OnPropertyChanged("GotValue");
+            }
+
+            if(refreshProperties)
+            {
+                foreach(CPropertyBase p in Properties)
+                {
+                    p.OnPropertyStateChanged();
+                }
+            }
+
+            OnPropertyChanged("GotValue");
+        }
 
         public override bool GotValue
         {
@@ -87,26 +115,30 @@ namespace Snapshot
         {
             if (_state.DataState != null)
             {
-                _dataVM = new CMachinePropertyItemVM(_state.DataState, this, _ownerVM, _viewRef);
-                Children.Add(_dataVM);
+                Properties.Add(_state.DataState);
+                DataState = new CMachinePropertyItemVM(_state.DataState, this, _ownerVM, _viewRef);
+                Children.Add(DataState);
             }
 
             if (_state.AttributeStates.ChildProperties.Count > 0)
             {
-                _attrVM = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM, _viewRef);
-                Children.Add(_attrVM);
+                Properties.UnionWith(_state.AttributeStates.ChildProperties);
+                AttributeStates = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM, _viewRef);
+                Children.Add(AttributeStates);
             }
 
             if (_state.GlobalStates.ChildProperties.Count > 0)
             {
-                _globalsVM = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM, _viewRef);
-                Children.Add(_globalsVM);
+                Properties.UnionWith(_state.GlobalStates.ChildProperties);
+                GlobalStates = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM, _viewRef);
+                Children.Add(GlobalStates);
             }
 
             if (_state.TrackStates.ChildProperties.Count > 0)
             {
-                _tracksVM = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM, _viewRef);
-                Children.Add(_tracksVM);
+                Properties.UnionWith(_state.TrackStates.ChildProperties);
+                TrackStates = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM, _viewRef);
+                Children.Add(TrackStates);
             }
         }
 
@@ -115,12 +147,12 @@ namespace Snapshot
             try
             {
                 int newCount = _state.Machine.TrackCount;
-                int count = _tracksVM.Children[0].Children.Count;
+                int count = TrackStates.Children[0].Children.Count;
                 int delta = newCount - count;
 
                 if (delta < 0) // track(s?) removed
                 {
-                    foreach (CMachinePropertyItemVM param in _tracksVM.Children)
+                    foreach (CMachinePropertyItemVM param in TrackStates.Children)
                     {
                         CTreeViewItemVM vm = param.Children[newCount]; // newCount should be index of track to remove
                         param.RemoveChild(vm);
@@ -133,7 +165,7 @@ namespace Snapshot
                     foreach(CPropertyBase param in _state.TrackStates.ChildProperties)
                     {
                         CPropertyBase property = param.ChildProperties.First(x => x.Track == count); // Count should be index of new track
-                        CTreeViewItemVM paramVM = _tracksVM.Children[index];
+                        CTreeViewItemVM paramVM = TrackStates.Children[index];
                         paramVM.AddChild(new CMachinePropertyItemVM(property, paramVM, _ownerVM, _viewRef));
                         index++;
                     }

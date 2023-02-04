@@ -1,5 +1,5 @@
 2023.02.04
-	Working towards fixing the mess. Still very broken.
+	Most stuff working, more or less back to where we started.
 
 2023.02.03
 	Massive mess update.

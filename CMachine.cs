@@ -558,6 +558,7 @@ namespace Snapshot
             {
                 s.Checked = true;
             }
+            OnPropertyChanged("Selection");
         }
 
         public void SelectNone()
@@ -566,6 +567,7 @@ namespace Snapshot
             {
                 s.Checked = false;
             }
+            OnPropertyChanged("Selection");
         }
 
         public void SelectStored()
@@ -574,6 +576,7 @@ namespace Snapshot
             {
                 s.Checked = s.GotValue;
             }
+            OnPropertyChanged("Selection");
         }
 
         public void SelectInvert()
@@ -582,6 +585,7 @@ namespace Snapshot
             {
                 s.Checked = !s.Checked;
             }
+            OnPropertyChanged("Selection");
         }
 
         public void SelectAll_M()
@@ -590,6 +594,7 @@ namespace Snapshot
             {
                 s.Checked_M = true;
             }
+            OnPropertyChanged("SelectionM");
         }
 
         public void SelectNone_M()
@@ -598,6 +603,7 @@ namespace Snapshot
             {
                 s.Checked_M = false;
             }
+            OnPropertyChanged("SelectionM");
         }
 
         public void SelectInvert_M()
@@ -606,6 +612,7 @@ namespace Snapshot
             {
                 s.Checked_M = !s.Checked_M;
             }
+            OnPropertyChanged("SelectionM");
         }
 
         public void SelectStoredA()
@@ -614,6 +621,7 @@ namespace Snapshot
             {
                 s.Checked_M = SlotA.ContainsProperty(s);
             }
+            OnPropertyChanged("SelectionM");
         }
 
         public void SelectStoredB()
@@ -622,6 +630,7 @@ namespace Snapshot
             {
                 s.Checked_M = SlotB.ContainsProperty(s);
             }
+            OnPropertyChanged("SelectionM");
         }
 
         internal bool Confirm(string title, string msg, bool force=false)

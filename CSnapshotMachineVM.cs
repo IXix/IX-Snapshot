@@ -379,28 +379,61 @@ namespace Snapshot
         {
             switch (e.PropertyName)
             {
-                case "State":
-                    NotifyPropertyChanged("Slots");
-                    NotifyPropertyChanged("SlotName");
-                    NotifyPropertyChanged("Notes");
-                    NotifyPropertyChanged("SelectionInfo");
-                    NotifyPropertyChanged("CurrentSlot");
+                case "Selection":
+                    foreach(CMachineStateVM s in States)
+                    {
+                        if (s.AttributeStates != null)
+                        {
+                            s.AttributeStates.UpdateTreeCheck();
+                        }
+                        if (s.GlobalStates != null)
+                        {
+                            s.GlobalStates.UpdateTreeCheck();
+                        }
+                        if (s.TrackStates != null)
+                        {
+                            foreach(var g in s.TrackStates.Children)
+                            {
+                                g.UpdateTreeCheck();
+                            }
+                            s.TrackStates.UpdateTreeCheck();
+                        }
+                    }
+                    break;
+
+                case "SelectionM":
                     foreach (CMachineStateVM s in States)
                     {
-                        s.OnPropertyChanged("GotValue");
-                        s.OnPropertyChanged("DisplayValue");
+                        if (s.GlobalStates != null)
+                        {
+                            s.GlobalStates.UpdateTreeCheck("M");
+                        }
+                        if (s.TrackStates != null)
+                        {
+                            s.TrackStates.UpdateTreeCheck("M");
+                        }
+                    }
+                    break;
+
+                case "State":
+                    //NotifyPropertyChanged("Slots");
+                    //NotifyPropertyChanged("SlotName");
+                    //NotifyPropertyChanged("Notes");
+                    //NotifyPropertyChanged("SelectionInfo");
+                    //NotifyPropertyChanged("CurrentSlot");
+                    foreach (CMachineStateVM s in States)
+                    {
+                        s.RefreshState(true);
                     }
                     NotifyPropertyChanged("SlotA");
                     foreach (CMachineStateVM s in StatesA)
                     {
-                        s.OnPropertyChanged("GotValue");
-                        s.OnPropertyChanged("DisplayValue");
+                        s.RefreshState(true);
                     }
                     NotifyPropertyChanged("SlotB");
                     foreach (CMachineStateVM s in StatesB)
                     {
-                        s.OnPropertyChanged("GotValue");
-                        s.OnPropertyChanged("DisplayValue");
+                        s.RefreshState(true);
                     }
                     break;
 
@@ -415,8 +448,7 @@ namespace Snapshot
                     {
                         foreach (CMachineStateVM s in States)
                         {
-                            s.OnPropertyChanged("GotValue");
-                            s.OnPropertyChanged("DisplayValue");
+                            s.RefreshState(true);
                         }
                     }
                     break;
@@ -426,8 +458,7 @@ namespace Snapshot
                     NotifyPropertyChanged("CanCopy");
                     foreach (CMachineStateVM s in StatesA)
                     {
-                        s.OnPropertyChanged("GotValue");
-                        s.OnPropertyChanged("DisplayValue");
+                        s.RefreshState(true);
                     }
                     break;
 
@@ -436,8 +467,7 @@ namespace Snapshot
                     NotifyPropertyChanged("CanCopy");
                     foreach (CMachineStateVM s in StatesB)
                     {
-                        s.OnPropertyChanged("GotValue");
-                        s.OnPropertyChanged("DisplayValue");
+                        s.RefreshState(true);
                     }
                     break;
 

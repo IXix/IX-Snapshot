@@ -318,6 +318,8 @@ namespace Snapshot
 
             _ = StoredProperties.Add(p);
 
+            p.OnPropertyStateChanged();
+
             OnPropertyChanged("HasData");
         }
 
@@ -360,6 +362,11 @@ namespace Snapshot
             }
 
             StoredProperties.UnionWith(targets);
+
+            foreach(CPropertyBase p in targets)
+            {
+                p.OnPropertyStateChanged();
+            }
 
             OnPropertyChanged("HasData");
         }
@@ -443,14 +450,23 @@ namespace Snapshot
 
         public void Purge(bool main)
         {
+            HashSet<CPropertyBase> removers;
             if (main)
             {
-                Remove(StoredProperties.Where(x => x.Active == false || x.Checked == false).ToHashSet());
+                removers = StoredProperties.Where(x => x.Active == false || x.Checked == false).ToHashSet();
+                Remove(removers);
             }
             else
             {
-                Remove(StoredProperties.Where(x => x.Active == false || x.Checked_M == false).ToHashSet());
+                removers = StoredProperties.Where(x => x.Active == false || x.Checked_M == false).ToHashSet();
+                Remove(removers);
             }
+
+            foreach(CPropertyBase p in removers.Where(x => x.Active))
+            {
+                p.OnPropertyStateChanged();
+            }
+
             OnPropertyChanged("HasData");
         }
 
@@ -487,6 +503,7 @@ namespace Snapshot
 
             _ = StoredProperties.Remove(p);
 
+            p.OnPropertyStateChanged();
             OnPropertyChanged("HasData");
         }
 
@@ -525,15 +542,26 @@ namespace Snapshot
 
             StoredProperties = StoredProperties.Except(targets).ToHashSet();
 
+            foreach (CPropertyBase p in targets)
+            {
+                p.OnPropertyStateChanged();
+            }
             OnPropertyChanged("HasData");
         }
 
         internal void Clear()
         {
+            HashSet<CPropertyBase> removed = new HashSet<CPropertyBase>(StoredProperties);
+
             AttributeValues.Clear();
             ParameterValues.Clear();
             DataValues.Clear();
             StoredProperties.Clear();
+
+            foreach(CPropertyBase p in removed)
+            {
+                p.OnPropertyStateChanged();
+            }
             OnPropertyChanged("HasData");
         }
 

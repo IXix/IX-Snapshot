@@ -21,7 +21,7 @@ namespace Snapshot
             _childProperties = new HashSet<CPropertyBase>();
 
             _property.TreeStateChanged += OnTreeStateChanged;
-
+            _property.PropertyStateChanged += OnPropertyStateChanged;
 
             Init();
 
@@ -48,6 +48,14 @@ namespace Snapshot
                 },
             };
 
+        }
+
+        private void OnPropertyStateChanged(object sender, EventArgs e)
+        {
+            OnPropertyChanged("GotValue");
+            OnPropertyChanged("Size");
+            OnPropertyChanged("DisplayValue");
+            OnPropertyChanged("DisplayName");
         }
 
         private void OnTreeStateChanged(object sender, TreeStateEventArgs e)
@@ -165,7 +173,6 @@ namespace Snapshot
 
         public HashSet<CPropertyBase> Properties => _childProperties;
 
-        private bool reentrancyCheck = false;
         public override bool? IsChecked
         {
             get { return _property.Checked; }
@@ -201,6 +208,45 @@ namespace Snapshot
                     OnCheckChanged();
 
                     reentrancyCheck = false;
+                }
+            }
+        }
+
+        public override bool? IsCheckedM
+        {
+            get { return _property.Checked_M; }
+            set
+            {
+                if (value != _property.Checked_M)
+                {
+                    if (reentrancyCheckM) return;
+
+                    reentrancyCheckM = true;
+
+                    _property.Checked_M = value;
+
+                    if (value != null)
+                    {
+
+                        if (Children != null)
+                        {
+                            foreach (CTreeViewItemVM child in Children)
+                            {
+                                child.IsCheckedM = _property.Checked_M;
+                            }
+                        }
+                    }
+
+                    if (Parent != null)
+                    {
+                        Parent.UpdateTreeCheck("M");
+                    }
+
+                    OnPropertyChanged("IsCheckedM");
+
+                    OnCheckChanged();
+
+                    reentrancyCheckM = false;
                 }
             }
         }

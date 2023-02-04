@@ -18,6 +18,7 @@ namespace Snapshot
         public CPropertyStateVM(CPropertyBase property, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM, int view)
             : base(property, parent, ownerVM, view)
         {
+            Properties.Add(property);
         }
 
         public override bool GotValue

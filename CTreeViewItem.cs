@@ -171,7 +171,7 @@ namespace Snapshot
         /// Gets/sets whether the TreeViewItem 
         /// associated with this object is checked, unchecked or undetermined.
         /// </summary>
-        private bool reentrancyCheck = false;
+        protected bool reentrancyCheck = false;
         public virtual bool? IsChecked
         {
             get { return _isChecked; }
@@ -211,7 +211,7 @@ namespace Snapshot
             }
         }
 
-        private bool reentrancyCheckM = false;
+        protected bool reentrancyCheckM = false;
         public virtual bool? IsCheckedM
         {
             get { return _isCheckedM; }
