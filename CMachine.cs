@@ -518,15 +518,32 @@ namespace Snapshot
             attribChanges.Add(new CAttribChange(attr, value));
         }
 
-        internal void RegisterParamChange(IMachine machine, IParameter param, int track, int value, bool clearPending = false)
+        internal void RegisterParamChange(CParameterState ps, int track, int value, bool clearPending = false)
         {
+            IMachine machine = ps.Machine;
+            IParameter param = ps.Parameter;
+
+            // Work up the chain to find a non-null value for smoothing
+            CPropertyBase p = ps;
+            int? count = null;
+            int? units = null;
+            while(p != null)
+            {
+                units = units?? p.SmoothingUnits;
+                count = count?? p.SmoothingCount;
+                p = p.Parent;
+            }
+
+            // If still null, use machine level values
+            units = units ?? SmoothingUnits;
+            count = count ?? SmoothingCount;
 
             // Clear any pending changes for same param
             if (clearPending)
                 paramChanges.RemoveAll(x => x.Parameter == param && x.track == track);
 
             double spu = 0;
-            switch (SmoothingUnits)
+            switch (units)
             {
                 case 0: // Ticks
                     spu = host.MasterInfo.SamplesPerTick; break;
@@ -547,7 +564,7 @@ namespace Snapshot
                     spu = host.MasterInfo.SamplesPerSec * 60; break;
 
             }
-            int duration = (int)Math.Round(SmoothingCount * spu);
+            int duration = (int)Math.Round((double) count * spu);
 
             paramChanges.Add(new CParamChange(machine, param, track, value, duration));
         }

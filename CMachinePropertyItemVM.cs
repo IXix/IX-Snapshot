@@ -262,7 +262,7 @@ namespace Snapshot
                 }
 
                 // Expand all the way up to the root.
-                if (_property.Expanded && _property.Parent != null)
+                if (_property.Expanded && _property.ParentMachine != null)
                     Parent.IsExpanded = true;
             }
         }
@@ -279,7 +279,7 @@ namespace Snapshot
                 }
 
                 // Expand all the way up to the root.
-                if (_property.Expanded_M && _property.Parent != null)
+                if (_property.Expanded_M && _property.ParentMachine != null)
                     Parent.IsExpandedM = true;
             }
         }
