@@ -62,7 +62,7 @@
             <Setter Property="FontSize" Value="14" />
         </Style>
 
-        <Style x:Key="propertyMenuItemM" BasedOn="{StaticResource propertMenuItem}" TargetType="MenuItem">
+        <Style x:Key="propertyMenuItemM" BasedOn="{StaticResource propertyMenuItem}" TargetType="MenuItem">
             <!-- for things that don't belong in the main treeview context menu -->
             
             <Style.Triggers>
@@ -109,8 +109,8 @@
             <MenuItem Header="Clear" Command="{Binding CmdClear}" Style="{StaticResource propertyMenuItem}" />
             <Separator />
             <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" Style="{StaticResource propertyMenuItem}" />
-            <!--<Separator Style="{StaticResource separatorM}" />
-            <MenuItem Header="Copy to opposite" Command="{Binding CmdCopyAcross}" Style="{StaticResource propertyMenuItemM}" />-->
+            <Separator Style="{StaticResource separatorM}" />
+            <MenuItem Header="Copy to opposite" Command="{Binding CmdCopyAcross}" Style="{StaticResource propertyMenuItemM}" />
         </ContextMenu>
 
         <!-- ******* TreeViewItem Styles ******* -->
