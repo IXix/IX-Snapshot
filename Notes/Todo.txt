@@ -1,6 +1,7 @@
 Update docs
 	Changed order of buttons in main tab to match those in manager
 	Move info to a separate tab
+	Removed LOAD button from manager. Now use Ctrl+click "SetActive" to activate and restore simultaneously.
 	Ctrl+Alt+Leftclick on "Clear all" and "Clear selected" buttons in any tab clears properties from all slots. Will always prompt.
 	Added "Remove from all slots" to treeview item context menus. Will always promt.
 	Added notes for slots
@@ -10,10 +11,11 @@ Update docs
 
 Undo/redo would be useful
 
+Include MIDI mapping data on info tab
+
 Inertia for parameter changes
 	Expose shape to the UI (add machine param)
-	Expose per-propert units, count and shape to the UI
-	Implement override of machine level smoothing when param changes are scheduled.
+	Expose per-property units, count and shape to the UI
 	
 
 RestoreOnSlotChange works but can it be optimised?

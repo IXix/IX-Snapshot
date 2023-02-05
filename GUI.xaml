@@ -398,8 +398,13 @@
                             </Style>
                         </ComboBox.Style>
                     </ComboBox>
-                    <Button Grid.Column="1" x:Name="BtnActivateA" Command="{Binding CmdActivateA}" Content="ACT" />
-                    <Button Grid.Column="2" x:Name="BtnLoadA" Command="{Binding CmdLoadA}" Content="LOAD" />
+                    <Button Grid.Column="1" x:Name="BtnActivateA" ToolTip="Set left slot as current slot. Ctrl+Click to activate and restore.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding CmdActivateA}" Gesture="LeftClick" />
+                            <MouseBinding Command="{Binding CmdLoadA}" Gesture="Ctrl+LeftClick" />
+                        </Button.InputBindings>
+                        Set Active
+                    </Button>
                 </Grid>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
                     <Button x:Name="CopyBtoA" Command="{Binding CmdBtoA}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to left.">
@@ -435,8 +440,13 @@
                             </Style>
                         </ComboBox.Style>
                     </ComboBox>
-                    <Button Grid.Column="1" x:Name="BtnActivateB" Command="{Binding CmdActivateB}" Content="ACT" />
-                    <Button Grid.Column="2" x:Name="BtnLoadB" Command="{Binding CmdLoadB}" Content="LOAD" />
+                    <Button Grid.Column="1" x:Name="BtnActivateB" ToolTip="Set right slot as current slot. Ctrl+Click to activate and restore.">
+                        <Button.InputBindings>
+                            <MouseBinding Command="{Binding CmdActivateB}" Gesture="LeftClick" />
+                            <MouseBinding Command="{Binding CmdLoadB}" Gesture="Ctrl+LeftClick" />
+                        </Button.InputBindings>
+                        Set Active
+                    </Button>
                 </Grid>
                 
                 <!-- Treeview content templates defined in resources -->

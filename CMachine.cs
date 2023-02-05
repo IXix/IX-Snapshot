@@ -1068,6 +1068,10 @@ namespace Snapshot
                 }
             }
 
+            CurrentSlot.OnPropertyChanged("HasData");
+            SlotA.OnPropertyChanged("HasData");
+            SlotB.OnPropertyChanged("HasData");
+
             OnPropertyChanged("State");
         }
 

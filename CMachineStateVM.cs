@@ -146,6 +146,8 @@ namespace Snapshot
         {
             try
             {
+                if (TrackStates == null) return;
+
                 int newCount = _state.Machine.TrackCount;
                 int count = TrackStates.Children[0].Children.Count;
                 int delta = newCount - count;
@@ -171,7 +173,7 @@ namespace Snapshot
                     }
                 }
             }
-            catch
+            catch(System.NullReferenceException)
             {
 
             }

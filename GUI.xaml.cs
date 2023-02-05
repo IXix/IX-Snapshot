@@ -98,10 +98,12 @@ namespace Snapshot
                     return PropertyContainerTemplate;
 
                 case "CPropertyStateVM":
+                case "CMachinePropertyItemVM":
                     return PropertyStateTemplate;
 
                 default:
-                    throw new Exception("Unexpected case in SelectTemplate");
+                    return PropertyStateTemplate;
+                    //throw new Exception("Unexpected case in SelectTemplate");
             }
         }
     }

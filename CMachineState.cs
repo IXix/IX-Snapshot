@@ -172,7 +172,7 @@ namespace Snapshot
 
         virtual public string DisplayName => Name;
 
-        virtual public string DisplayValue => throw new NotImplementedException();
+        virtual public string DisplayValue => "";
 
         protected int? m_smoothingCount;
         virtual public int? SmoothingCount
