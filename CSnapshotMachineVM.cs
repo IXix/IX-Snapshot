@@ -200,6 +200,19 @@ namespace Snapshot
             };
         }
 
+        private void OnTreeChanged(object sender, TreeStateEventArgs e)
+        {
+            CMachineState ms = sender as CMachineState;
+            
+            //CMachineStateVM vm = States.First(x => x._state == ms);
+            CMachineStateVM vmA = StatesA.First(x => x._state == ms);
+            CMachineStateVM vmB = StatesB.First(x => x._state == ms);
+            
+            //vm.OnPropertyChanged("Expanded");
+            vmA.OnPropertyChanged("ExpandedM");
+            vmB.OnPropertyChanged("ExpandedM");
+        }
+
         private void OnSlotPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch(e.PropertyName)
@@ -404,33 +417,36 @@ namespace Snapshot
                 case "SelectionM":
                     foreach (CMachineStateVM s in States)
                     {
+                        if (s.AttributeStates != null)
+                        {
+                            s.AttributeStates.UpdateTreeCheck("M");
+                        }
                         if (s.GlobalStates != null)
                         {
                             s.GlobalStates.UpdateTreeCheck("M");
                         }
                         if (s.TrackStates != null)
                         {
+                            foreach (var g in s.TrackStates.Children)
+                            {
+                                g.UpdateTreeCheck("M");
+                            }
                             s.TrackStates.UpdateTreeCheck("M");
                         }
                     }
                     break;
 
                 case "State":
-                    //NotifyPropertyChanged("Slots");
-                    //NotifyPropertyChanged("SlotName");
-                    //NotifyPropertyChanged("Notes");
-                    //NotifyPropertyChanged("SelectionInfo");
-                    //NotifyPropertyChanged("CurrentSlot");
                     foreach (CMachineStateVM s in States)
                     {
                         s.RefreshState(true);
                     }
-                    NotifyPropertyChanged("SlotA");
+
                     foreach (CMachineStateVM s in StatesA)
                     {
                         s.RefreshState(true);
                     }
-                    NotifyPropertyChanged("SlotB");
+
                     foreach (CMachineStateVM s in StatesB)
                     {
                         s.RefreshState(true);
@@ -517,6 +533,8 @@ namespace Snapshot
 
         public void AddState(CMachineState state)
         {
+            state.TreeStateChanged += OnTreeChanged;
+
             var s0 = new CMachineStateVM(state, this, 0);
             States.Add(s0);
 
@@ -529,6 +547,8 @@ namespace Snapshot
 
         public void RemoveState(CMachineState state)
         {
+            state.TreeStateChanged -= OnTreeChanged;
+
             States.RemoveAt(States.FindIndex(x => x._state == state));
             StatesA.RemoveAt(States.FindIndex(x => x._state == state));
             StatesB.RemoveAt(States.FindIndex(x => x._state == state));

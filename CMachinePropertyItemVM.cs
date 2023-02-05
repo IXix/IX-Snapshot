@@ -50,6 +50,7 @@ namespace Snapshot
 
         }
 
+        // This signals the UI to update when the state changes from code eg. slot change, capture, restore
         private void OnPropertyStateChanged(object sender, EventArgs e)
         {
             OnPropertyChanged("GotValue");
@@ -58,6 +59,7 @@ namespace Snapshot
             OnPropertyChanged("DisplayName");
         }
 
+        // This signals the UI to update when the tree changes from code eg. the select buttons
         private void OnTreeStateChanged(object sender, TreeStateEventArgs e)
         {
             OnPropertyChanged("IsChecked");
@@ -205,8 +207,6 @@ namespace Snapshot
 
                     OnPropertyChanged("IsChecked");
 
-                    OnCheckChanged();
-
                     reentrancyCheck = false;
                 }
             }
@@ -244,10 +244,42 @@ namespace Snapshot
 
                     OnPropertyChanged("IsCheckedM");
 
-                    OnCheckChanged();
-
                     reentrancyCheckM = false;
                 }
+            }
+        }
+
+        public override bool IsExpanded // For main UI
+        {
+            get { return _property.Expanded; }
+            set
+            {
+                if (value != _property.Expanded)
+                {
+                    _property.Expanded = value;
+                    OnPropertyChanged("IsExpanded");
+                }
+
+                // Expand all the way up to the root.
+                if (_property.Expanded && _property.Parent != null)
+                    Parent.IsExpanded = true;
+            }
+        }
+
+        public override bool IsExpandedM // For main UI
+        {
+            get { return _property.Expanded_M; }
+            set
+            {
+                if (value != _property.Expanded_M)
+                {
+                    _property.Expanded_M = value;
+                    OnPropertyChanged("IsExpandedM");
+                }
+
+                // Expand all the way up to the root.
+                if (_property.Expanded_M && _property.Parent != null)
+                    Parent.IsExpandedM = true;
             }
         }
 

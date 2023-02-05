@@ -1160,7 +1160,6 @@ namespace Snapshot
                     ms = new CMachineState(this, m);
                     foreach (CPropertyBase s in ms.AllProperties)
                     {
-                        s.TreeStateChanged += CheckChanged;
                         s.Checked = SelectNewMachines;
                         AllProperties.Add(s);
                     }

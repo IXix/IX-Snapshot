@@ -62,7 +62,7 @@ namespace Snapshot
         /// Gets/sets whether the TreeViewItem 
         /// associated with this object is expanded.
         /// </summary>
-        public bool IsExpanded // For main UI
+        public virtual bool IsExpanded // For main UI
         {
             get { return _isExpanded; }
             set
@@ -79,7 +79,7 @@ namespace Snapshot
             }
         }
 
-        public bool IsExpandedM // For both manager panes
+        public virtual bool IsExpandedM // For both manager panes
         {
             get { return _isExpandedM; }
             set
@@ -204,8 +204,6 @@ namespace Snapshot
 
                     OnPropertyChanged("IsChecked");
 
-                    OnCheckChanged();
-
                     reentrancyCheck = false;
                 }
             }
@@ -243,8 +241,6 @@ namespace Snapshot
                     }
 
                     OnPropertyChanged("IsCheckedM");
-
-                    OnCheckChanged();
 
                     reentrancyCheckM = false;
                 }
@@ -313,10 +309,6 @@ namespace Snapshot
         protected virtual void LoadChildren()
         {
             throw new System.NotImplementedException();
-        }
-
-        protected virtual void OnCheckChanged()
-        {
         }
 
         public CTreeViewItemVM Parent
