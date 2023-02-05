@@ -118,6 +118,7 @@ namespace Snapshot
         internal void Capture()
         {
             ReferenceSlot().Capture(_childProperties, false);
+            _ownerVM.Owner.OnPropertyChanged("State");
         }
 
         internal void Restore()
