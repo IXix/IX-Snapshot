@@ -75,6 +75,9 @@
       <DependentUpon>CMappingDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="CPropertyStateVM.cs" />
+    <Compile Include="CPropertyDialog.xaml.cs">
+      <DependentUpon>CPropertyDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ScrollSynchronizer.cs" />
     <Compile Include="VirtualToggleButton.cs" />
   </ItemGroup>
@@ -87,6 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CMappingDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CPropertyDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

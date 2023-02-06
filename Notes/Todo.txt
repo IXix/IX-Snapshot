@@ -8,6 +8,8 @@ Update docs
 	Smoothing:
 		Global params Smoothing and Smoothing Units.
 		Warn about CPU with many params
+		Property context menu items
+		Property settings dialog
 
 Undo/redo would be useful
 
@@ -16,7 +18,15 @@ Include MIDI mapping data on info tab
 Inertia for parameter changes
 	Expose shape to the UI (add machine param)
 	Expose per-property units, count and shape to the UI
+	Property dialog
+		Set up methods for opening (context menu item and double-click on property)
+		Make images for different shape options
+		Make it all work
+		Tooltip everything
+		Style: Can we use some kind of shared stylesheet across all windows for consistency?
 	
+Find a way to include machine connections in snapshots.
+	Have a look at how wde does it in his mixer console
 
 RestoreOnSlotChange works but can it be optimised?
 

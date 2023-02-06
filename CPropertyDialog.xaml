@@ -1,0 +1,50 @@
+﻿<Window x:Name="PropertyDialog1" x:Class="Snapshot.CPropertyDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Snapshot"
+             mc:Ignorable="d" 
+             FontSize="14" WindowStyle="ToolWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" Title="Property Settings" Topmost="True">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Column="0" Grid.Row="0" Header="Value" Margin="2" Padding="1">
+            <StackPanel>
+                <TextBox Name="txtValue" Height="25" Width="100"  Grid.Row="0" Grid.Column="0" TextWrapping="NoWrap" Text="Value" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button x:Name="btnCapture" Grid.Column="0" Grid.Row="1" Content="Capture" Padding="2" HorizontalContentAlignment="Center" />
+                <Button x:Name="btnRestore" Grid.Column="0" Grid.Row="2" Content="Restore" Padding="2" />
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Grid.Column="1" Grid.Row="0" Header="Smoothing" Margin="2" Padding="1">
+            <StackPanel>
+                <TextBox Name="txtCount" Height="25" Width="100" TextWrapping="NoWrap" Text="Count" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <ComboBox Name="cbxUnits" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                    <ComboBoxItem Content="Ticks" IsSelected="True" />
+                    <ComboBoxItem Content="Beats" />
+                    <ComboBoxItem Content="Samples" />
+                    <ComboBoxItem Content="Milliseconds" />
+                    <ComboBoxItem Content="Seconds" />
+                    <ComboBoxItem Content="Minutes" />
+                </ComboBox>
+                <ComboBox Name="cbxShape" Width="100" Height="50" VerticalAlignment="Top">
+                    <ComboBoxItem IsSelected="True">
+                        <Rectangle x:Name="placeholder1" Width="75" Height="50" Fill="Azure" />
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <Rectangle x:Name="placeholder2" Width="75" Height="50" Fill="CadetBlue" />
+                    </ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+        </GroupBox>
+    </Grid>
+</Window>
