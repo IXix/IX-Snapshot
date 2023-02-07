@@ -527,16 +527,19 @@ namespace Snapshot
             CPropertyBase p = ps;
             int? count = null;
             int? units = null;
+            int? shape = null;
             while(p != null)
             {
                 units = units?? p.SmoothingUnits;
                 count = count?? p.SmoothingCount;
+                shape = shape ?? p.SmoothingShape;
                 p = p.Parent;
             }
 
             // If still null, use machine level values
             units = units ?? SmoothingUnits;
             count = count ?? SmoothingCount;
+            shape = shape ?? SmoothingShape;
 
             // Clear any pending changes for same param
             if (clearPending)
@@ -566,7 +569,7 @@ namespace Snapshot
             }
             int duration = (int)Math.Round((double) count * spu);
 
-            paramChanges.Add(new CParamChange(machine, param, track, value, duration));
+            paramChanges.Add(new CParamChange(machine, param, track, value, duration, (int) shape));
         }
 
         public void SelectAll()
@@ -1263,6 +1266,12 @@ namespace Snapshot
 
         [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 5, DefValue = 0, Description = "Time units for parameter smoothing", Name = "Smoothing units", ValueDescriptions = new String[] { "Ticks", "Beats", "Samples", "Milliseconds", "Seconds", "Minutes" })]
         public int SmoothingUnits
+        {
+            get; set;
+        }
+
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 6, DefValue = 0, Description = "Shape for parameter smoothing", Name = "Smoothing shape", ValueDescriptions = new String[] { "Linear", "b", "c", "d", "e", "f" })]
+        public int SmoothingShape
         {
             get; set;
         }

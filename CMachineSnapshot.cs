@@ -105,9 +105,32 @@ namespace Snapshot
             {
                 _ = StoredProperties.Add(p);
             }
+
+            p.OnPropertyStateChanged();
         }
 
-        public string GetPropertyDisplayValue(IPropertyState p)
+
+        public int? GetPropertyValue(IPropertyState p)
+        {
+            if (!ContainsProperty(p)) return null;
+
+            switch (p.GetType().Name)
+            {
+                case "CParameterState":
+                    return ParameterValues[p as CParameterState].Item2;
+
+                case "CAttributeState":
+                    return AttributeValues[p as CAttributeState];
+
+                case "CDataState":
+                    return null;
+
+                default:
+                    return null;
+            }
+        }
+
+        public string GetPropertyValueString(IPropertyState p)
         {
             if (!ContainsProperty(p)) return "";
 
@@ -137,7 +160,12 @@ namespace Snapshot
                     throw new Exception("Unknown property type.");
             }
 
-            return " (" + value + ")";
+            return value;
+        }
+
+        public string GetPropertyDisplayValue(IPropertyState p)
+        {
+            return " (" + GetPropertyValueString(p) + ")";
         }
 
         public int GetPropertySize(CPropertyBase p)

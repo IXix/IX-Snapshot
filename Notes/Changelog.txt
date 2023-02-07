@@ -1,5 +1,6 @@
-2023.02.06
-	Added 
+2023.02.07
+	Added machine param for smoothing shape
+	Added various things to get the Property dialog working
 
 2023.02.05
 	More fixes. Getting there.

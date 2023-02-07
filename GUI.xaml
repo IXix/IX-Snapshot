@@ -111,6 +111,8 @@
             <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" Style="{StaticResource propertyMenuItem}" />
             <Separator Style="{StaticResource separatorM}" />
             <MenuItem Header="Copy to opposite" Command="{Binding CmdCopyAcross}" Style="{StaticResource propertyMenuItemM}" />
+            <Separator Style="{StaticResource separatorM}" />
+            <MenuItem Header="Settings..." Command="{Binding CmdOpenSettings}" Style="{StaticResource propertyMenuItem}" />
         </ContextMenu>
 
         <!-- ******* TreeViewItem Styles ******* -->

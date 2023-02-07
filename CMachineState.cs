@@ -98,6 +98,12 @@ namespace Snapshot
 
         virtual public int? Track { get; protected set; }
 
+        virtual public int? CurrentValue
+        {
+            get => null;
+            set { return; } // Do nothing
+        }
+
         virtual public bool GotValue => _owner.CurrentSlot.ContainsProperty(this);
 
         protected bool _active;
@@ -188,6 +194,20 @@ namespace Snapshot
             set => m_smoothingUnits = value;
         }
 
+        protected int? m_smoothingShape;
+        virtual public int? SmoothingShape
+        {
+            get => m_smoothingShape;
+            set => m_smoothingShape = value;
+        }
+
+        virtual public string CurrentValueString => throw new NotImplementedException();
+
+        virtual public string GetValueDescription(int value)
+        {
+            return value.ToString();
+        }
+
         public event EventHandler<TreeStateEventArgs> TreeStateChanged;
         public void OnTreeStateChanged()
         {
@@ -236,6 +256,16 @@ namespace Snapshot
         public override string DisplayName => Track == null ? Parameter.Name : Track.ToString();
 
         public override int Size => sizeof(int);
+
+        public override int? CurrentValue => Parameter.GetValue(Track ?? 0);
+
+        public override string CurrentValueString => GetValueDescription(Parameter.GetValue(Track ?? 0));
+
+        public override string GetValueDescription(int value)
+        {
+            return Parameter.DescribeValue(value);
+        }
+
     }
 
     public class CAttributeState : CPropertyBase
@@ -253,6 +283,8 @@ namespace Snapshot
         public override string DisplayName => Attribute.Name;
 
         public override int Size => sizeof(int);
+
+        public override int? CurrentValue => Attribute.Value;
     }
 
     public class CDataState : CPropertyBase

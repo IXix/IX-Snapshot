@@ -20,9 +20,20 @@ namespace Snapshot
     /// </summary>
     public partial class CPropertyDialog : Window
     {
-        public CPropertyDialog()
+        public CPropertyDialog(CMachinePropertyItemVM itemVM)
         {
+            DataContext = itemVM;
+
             InitializeComponent();
+
+            // Position of the mouse relative to the window
+            this.Loaded += (s, e) =>
+            {
+                Point p = Mouse.GetPosition(this);
+                Title = "Properties: " + itemVM.Name;
+                Top += p.Y - Height / 2;
+                Left += p.X - Width / 2;
+            };
         }
     }
 }

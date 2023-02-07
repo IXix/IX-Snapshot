@@ -14,20 +14,22 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <GroupBox Grid.Column="0" Grid.Row="0" Header="Value" Margin="2" Padding="1">
             <StackPanel>
-                <TextBox Name="txtValue" Height="25" Width="100"  Grid.Row="0" Grid.Column="0" TextWrapping="NoWrap" Text="Value" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Button x:Name="btnCapture" Grid.Column="0" Grid.Row="1" Content="Capture" Padding="2" HorizontalContentAlignment="Center" />
-                <Button x:Name="btnRestore" Grid.Column="0" Grid.Row="2" Content="Restore" Padding="2" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Name="txtValue" Text="{Binding StoredValue, Mode=TwoWay}" Height="25" Width="100" TextWrapping="NoWrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                    <Button Name="btnLock" Margin="3, 0, 0, 0" Width="20" Height="20">L</Button>
+                </StackPanel>
+                <TextBox Name="txtDescription" Text="{Binding StoredValueDescription, Mode=OneWay}" Height="25" Width="125" TextWrapping="NoWrap" IsReadOnly="True" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button x:Name="btnCapture" Content="Capture" Command="{Binding CmdCapture}" Padding="2" HorizontalContentAlignment="Center" />
+                <Button x:Name="btnRestore" Content="Restore" Command="{Binding CmdResore}" Padding="2" />
             </StackPanel>
         </GroupBox>
 
         <GroupBox Grid.Column="1" Grid.Row="0" Header="Smoothing" Margin="2" Padding="1">
             <StackPanel>
-                <TextBox Name="txtCount" Height="25" Width="100" TextWrapping="NoWrap" Text="Count" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox Name="txtCount" Height="25" Width="125" TextWrapping="NoWrap" Text="{Binding SmoothingCount}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <ComboBox Name="cbxUnits" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                     <ComboBoxItem Content="Ticks" IsSelected="True" />
                     <ComboBoxItem Content="Beats" />
@@ -36,15 +38,19 @@
                     <ComboBoxItem Content="Seconds" />
                     <ComboBoxItem Content="Minutes" />
                 </ComboBox>
-                <ComboBox Name="cbxShape" Width="100" Height="50" VerticalAlignment="Top">
+                <ComboBox Name="cbxShape" Height="50" HorizontalContentAlignment="Center" VerticalAlignment="Top">
                     <ComboBoxItem IsSelected="True">
-                        <Rectangle x:Name="placeholder1" Width="75" Height="50" Fill="Azure" />
+                        <Rectangle x:Name="placeholder1" Width="90" Height="45" Fill="Azure" />
                     </ComboBoxItem>
                     <ComboBoxItem>
-                        <Rectangle x:Name="placeholder2" Width="75" Height="50" Fill="CadetBlue" />
+                        <Rectangle x:Name="placeholder2" Width="90" Height="45" Fill="CadetBlue" />
                     </ComboBoxItem>
                 </ComboBox>
             </StackPanel>
         </GroupBox>
+
+        <Button Name="btnOkay" Grid.Column="0" Grid.Row="1" IsDefault="True">OK</Button>
+        <Button Name="btnCancel" Grid.Column="1" Grid.Row="1" IsCancel="True">Cancel</Button>
+
     </Grid>
 </Window>

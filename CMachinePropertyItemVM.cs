@@ -4,16 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Snapshot
 {
     // TreeViewItemVM with extra stuff for dealing with machine properties
     public class CMachinePropertyItemVM : CTreeViewItemVM
     {
-        public CMachinePropertyItemVM(CPropertyBase property, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM, int view
-            )
+        public CMachinePropertyItemVM(CPropertyBase property, CTreeViewItemVM parent, CSnapshotMachineVM ownerVM, int view)
             : base(parent, true)
-
         {
             _property = property;
             _ownerVM = ownerVM;
@@ -47,7 +46,72 @@ namespace Snapshot
                     if (_ownerVM.Owner.Confirm("Confirm clear", msg, true)) ClearAll();
                 },
             };
+            CmdOpenSettings = new SimpleCommand
+            {
+                ExecuteDelegate = x => { DoSettingsDialog(); }
+            };
+        }
 
+        private void DoSettingsDialog()
+        {
+            CMachineSnapshot slot = ReferenceSlot();
+
+            // Store current settings
+            // FIXME: This is inadequate for items which represent multiple properties
+            int? prevCurrent = _property.CurrentValue;
+            int? prevStored = slot.GetPropertyValue(_property);
+            int? prevCount = _property.SmoothingCount;
+            int? prevUnits = _property.SmoothingUnits;
+            int? prevShape = _property.SmoothingShape;
+
+            var dlg = new CPropertyDialog(this);
+            bool? result = dlg.ShowDialog();
+
+            if(result == false) // Restore previous settings if dialog was cancelled
+            {
+                if (prevCurrent != null)
+                {
+                    _property.CurrentValue = prevCurrent;
+                }
+
+                if (prevStored != null)
+                {
+                    slot.SetPropertyValue(_property, (int)prevStored);
+                }
+                else
+                {
+                    slot.Remove(_property);
+                }
+
+                _property.SmoothingCount = prevCount;
+                _property.SmoothingUnits = prevUnits;
+                _property.SmoothingShape = prevShape;
+            }
+        }
+
+        public int? StoredValue
+        {
+            get
+            {
+                return ReferenceSlot().GetPropertyValue(_property);
+            }
+            set
+            {
+                if (value != null)
+                {
+                    ReferenceSlot().SetPropertyValue(_property, (int) value);
+                }
+            }
+        }
+
+        public string StoredValueDescription
+        {
+            get => ReferenceSlot().GetPropertyValueString(_property);
+        }
+
+        public string CurrentValueDescription
+        {
+            get => _property.CurrentValueString;
         }
 
         // This signals the UI to update when the state changes from code eg. slot change, capture, restore
@@ -78,6 +142,7 @@ namespace Snapshot
         public SimpleCommand CmdClear { get; private set; }
         public SimpleCommand CmdClearAll { get; private set; }
         public SimpleCommand CmdCopyAcross { get; private set; }
+        public SimpleCommand CmdOpenSettings { get; private set; }
 
         internal Func<CMachineSnapshot> ReferenceSlot;
 
@@ -167,11 +232,19 @@ namespace Snapshot
         public virtual int? SmoothingCount
         {
             get => _property.SmoothingCount;
+            set => _property.SmoothingCount = value;
         }
 
         public virtual int? SmoothingUnits
         {
             get => _property.SmoothingUnits;
+            set => _property.SmoothingUnits = value;
+        }
+
+        public virtual int? SmoothingShape
+        {
+            get => _property.SmoothingShape;
+            set => _property.SmoothingShape = value;
         }
 
         public HashSet<CPropertyBase> Properties => _childProperties;

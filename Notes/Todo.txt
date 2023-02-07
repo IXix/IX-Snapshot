@@ -6,12 +6,17 @@ Update docs
 	Added "Remove from all slots" to treeview item context menus. Will always promt.
 	Added notes for slots
 	Smoothing:
-		Global params Smoothing and Smoothing Units.
+		Global params Smoothing, Smoothing Units, Smoothing Shape.
 		Warn about CPU with many params
 		Property context menu items
 		Property settings dialog
 
+Property context menu Clear doesn't update the tree properly
+
 Undo/redo would be useful
+
+Remove samples as time option
+	Implies sample accuracy which is just not the case
 
 Include MIDI mapping data on info tab
 
