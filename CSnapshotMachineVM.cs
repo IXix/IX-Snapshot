@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows;
 
 namespace Snapshot
 {
@@ -505,6 +506,8 @@ namespace Snapshot
         #endregion
 
         public CMachine Owner { get; private set; }
+
+        internal Window Window { get; set; }
 
         public string SelectionInfo => Owner.Info;
 

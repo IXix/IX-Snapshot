@@ -26,7 +26,7 @@ namespace Snapshot
         public GUI()
         {
             InitializeComponent();
-            
+
             // Cheap and nasty way to keep the machine data info up to date.
             // Might have to come up with something better at some point.
             IsKeyboardFocusWithinChanged += (sender, e) =>
@@ -52,7 +52,6 @@ namespace Snapshot
                 {
                     Owner = machine.ManagedMachine as CMachine;
                     DataContext = Owner.VM;
-
                     InitControl();
                 }
             }
@@ -80,6 +79,11 @@ namespace Snapshot
         {
             TreeViewItem tvi = sender as TreeViewItem;
             tvi.IsSelected = true;
+        }
+
+        private void Main_Loaded(object sender, RoutedEventArgs e)
+        {
+            Owner.VM.Window = Window.GetWindow(this);
         }
     }
 

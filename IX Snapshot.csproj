@@ -100,9 +100,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Docs\IX Snapshot.html" />
+    <Resource Include="resource\locked.png" />
     <Content Include="Notes\Changelog.txt" />
     <Content Include="Notes\Todo.txt" />
     <Content Include="postbuild.files.txt" />
+    <Resource Include="resource\unlocked.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="postbuild.ps1" />

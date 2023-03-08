@@ -35,5 +35,15 @@ namespace Snapshot
                 Left += p.X - Width / 2;
             };
         }
+
+        private void btnOkay_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
+
+        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+        }
     }
 }

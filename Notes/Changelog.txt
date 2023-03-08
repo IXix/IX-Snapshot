@@ -1,3 +1,9 @@
+2023.03.08
+	Implemented/fixed various PropertyDialog things.
+		Double-click on property now launches the dialog
+	Removed 'samples' as a unit option (implies accuracy that isn't possible)
+	Added AllowSmoothing to ISmoothable
+
 2023.02.07
 	Added machine param for smoothing shape
 	Added various things to get the Property dialog working

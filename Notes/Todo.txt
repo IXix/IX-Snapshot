@@ -11,12 +11,22 @@ Update docs
 		Property context menu items
 		Property settings dialog
 
+Property Settings dialog:
+	If modal, blocks main Buzz UI. Should block only Snapshot UI. How to do this?
+	Capture should update the value textbox and value description
+	TODO:
+		Smoothing controls should show inherited values
+			Need to add 'inherited' combo item.
+			Might need an int? to int converter (null -> -1) for that.
+				Can a converter do the 'add one for display, sub one for set' thing?
+		Slider as well as text field for value?
+			Not appropriate for attributes. Maybe at some point dialog content could depend on property type?
+		Shape menu
+			Needs images
+
 Property context menu Clear doesn't update the tree properly
 
 Undo/redo would be useful
-
-Remove samples as time option
-	Implies sample accuracy which is just not the case
 
 Include MIDI mapping data on info tab
 

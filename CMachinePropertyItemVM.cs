@@ -54,35 +54,38 @@ namespace Snapshot
 
         private void DoSettingsDialog()
         {
+            if (_property is CDataState) return;
+
             CMachineSnapshot slot = ReferenceSlot();
 
-            // Store current settings
-            // FIXME: This is inadequate for items which represent multiple properties
-            int? prevCurrent = _property.CurrentValue;
-            int? prevStored = slot.GetPropertyValue(_property);
+            // Store things so we can revert if the user cancels the dialog
+            // Current smoothing settings...
             int? prevCount = _property.SmoothingCount;
             int? prevUnits = _property.SmoothingUnits;
             int? prevShape = _property.SmoothingShape;
 
+            // Stored values...
+            CMachineSnapshot prevStored = new CMachineSnapshot(_ownerVM.Owner, -1);
+            prevStored.CopyFrom(_childProperties, slot);
+
+            // Current values...
+            CMachineSnapshot prevLive = new CMachineSnapshot(_ownerVM.Owner, -1);
+            prevLive.Capture(_childProperties, false);
+
             var dlg = new CPropertyDialog(this);
+            dlg.Owner = _ownerVM.Window; // FIXME: This doesn't stop the dialog from blocking the Buzz UI
+
             bool? result = dlg.ShowDialog();
 
-            if(result == false) // Restore previous settings if dialog was cancelled
+            if(result == false) // Revert to previous state if dialog was cancelled
             {
-                if (prevCurrent != null)
-                {
-                    _property.CurrentValue = prevCurrent;
-                }
+                // Live values
+                prevLive.Restore();
 
-                if (prevStored != null)
-                {
-                    slot.SetPropertyValue(_property, (int)prevStored);
-                }
-                else
-                {
-                    slot.Remove(_property);
-                }
+                // Stored values
+                slot.CopyFrom(_childProperties, prevStored);
 
+                // Smoothing settings
                 _property.SmoothingCount = prevCount;
                 _property.SmoothingUnits = prevUnits;
                 _property.SmoothingShape = prevShape;
@@ -246,6 +249,8 @@ namespace Snapshot
             get => _property.SmoothingShape;
             set => _property.SmoothingShape = value;
         }
+
+        public bool AllowSmoothing => _property.AllowSmoothing;
 
         public HashSet<CPropertyBase> Properties => _childProperties;
 

@@ -554,16 +554,13 @@ namespace Snapshot
                 case 1: // Beats
                     spu = host.MasterInfo.SamplesPerTick * host.MasterInfo.TicksPerBeat; break;
 
-                case 2: // Samples
-                    spu = 1; break;
-
-                case 3: // Milliseconds
+                case 2: // Milliseconds
                     spu = host.MasterInfo.SamplesPerSec * 0.001; break;
 
-                case 4: // Seconds
+                case 3: // Seconds
                     spu = host.MasterInfo.SamplesPerSec; break;
 
-                case 5: // Minutes
+                case 4: // Minutes
                     spu = host.MasterInfo.SamplesPerSec * 60; break;
 
             }
@@ -1264,7 +1261,7 @@ namespace Snapshot
             get; set;
         }
 
-        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 5, DefValue = 0, Description = "Time units for parameter smoothing", Name = "Smoothing units", ValueDescriptions = new String[] { "Ticks", "Beats", "Samples", "Milliseconds", "Seconds", "Minutes" })]
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 4, DefValue = 0, Description = "Time units for parameter smoothing", Name = "Smoothing units", ValueDescriptions = new String[] { "Ticks", "Beats", "Milliseconds", "Seconds", "Minutes" })]
         public int SmoothingUnits
         {
             get; set;

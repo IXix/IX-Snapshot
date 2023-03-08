@@ -63,6 +63,7 @@ namespace Snapshot
     {
         int? SmoothingCount { get; set; }
         int? SmoothingUnits { get; set; }
+        bool AllowSmoothing { get; set; }
     }
 
     public class CPropertyBase : IPropertyState
@@ -81,6 +82,7 @@ namespace Snapshot
 
             m_smoothingCount = null;
             m_smoothingUnits = null;
+            m_smoothingAllow = true;
             Track = null;
             ChildProperties = new HashSet<CPropertyBase>();
         }
@@ -201,6 +203,13 @@ namespace Snapshot
             set => m_smoothingShape = value;
         }
 
+        protected bool m_smoothingAllow;
+        public bool AllowSmoothing
+        {
+            get => m_smoothingAllow;
+            set => m_smoothingAllow = value;
+        }
+
         virtual public string CurrentValueString => throw new NotImplementedException();
 
         virtual public string GetValueDescription(int value)
@@ -274,6 +283,7 @@ namespace Snapshot
             : base(owner, parent, parentMachine)
         {
             Attribute = attr;
+            AllowSmoothing = false;
         }
 
         public IAttribute Attribute { get; private set; }
@@ -295,6 +305,7 @@ namespace Snapshot
             Machine = machine;
             _size = 0;
             UpdateSize();
+            AllowSmoothing = false;
         }
 
         public IMachine Machine { get; private set; }
@@ -459,6 +470,7 @@ namespace Snapshot
             }
 
             AttributeStates = new CPropertyStateGroup(owner, this, this, "Attributes");
+            AttributeStates.AllowSmoothing = false;
             foreach (IAttribute a in Machine.Attributes)
             {
                 CAttributeState ats = new CAttributeState(owner, AttributeStates, this, a);

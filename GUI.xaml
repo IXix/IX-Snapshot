@@ -6,7 +6,7 @@
              mc:Ignorable="d" 
              xmlns:local="clr-namespace:Snapshot" d:DataContext="{d:DesignInstance Type=local:CSnapshotMachineVM}"
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
-             d:DesignHeight="500" d:DesignWidth="500" Height="500">
+             d:DesignHeight="500" d:DesignWidth="500" Height="500" Loaded="Main_Loaded">
     <UserControl.Resources>
 
         <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
@@ -170,6 +170,9 @@
         <!-- Things that contain properties or other containers of properties -->
         <HierarchicalDataTemplate x:Key="property_container_template" ItemsSource="{Binding Children}">
             <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
+                <StackPanel.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdOpenSettings}" />
+                </StackPanel.InputBindings>
                 <CheckBox IsThreeState="True" Focusable="False" Click="OnThreeStateClick" Style="{StaticResource tvis_checkbox}" VerticalAlignment="Center" Margin="0,0,5,0" />
                 <ContentPresenter>
                     <ContentPresenter.Content>
@@ -182,6 +185,9 @@
         <!-- Actual properties -->
         <DataTemplate x:Key="property_template" DataType="{x:Type local:CPropertyStateVM}">
             <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
+                <StackPanel.InputBindings>
+                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdOpenSettings}" />
+                </StackPanel.InputBindings>
                 <CheckBox Focusable="False" Style="{StaticResource tvis_checkbox}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
                 <ContentPresenter>
                     <ContentPresenter.Content>
