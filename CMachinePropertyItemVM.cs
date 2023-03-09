@@ -67,6 +67,7 @@ namespace Snapshot
         private void PropertyDlg_Cancelled(object sender, System.Windows.RoutedEventArgs e)
         {
             _ownerVM.RestoreTempState(this);
+            OnPropertyChanged("DisplayValue");
         }
 
         public int? StoredValue

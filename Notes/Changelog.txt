@@ -2,6 +2,7 @@
 	Changed PropertyDialog to modeless and implemented faux-modal behaviour
 		Modal dialog blocked entire Buzz UI rather than just Snapshot.
 		Moved temp store/restore property state stuff into CSnapshotMachineVM
+		Fixed Cancel not triggering update of property DisplayValue in treeview
 
 2023.03.08
 	Implemented/fixed various PropertyDialog things.
