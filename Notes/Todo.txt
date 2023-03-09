@@ -12,7 +12,6 @@ Update docs
 		Property settings dialog
 
 Property Settings dialog:
-	If modal, blocks main Buzz UI. Should block only Snapshot UI. How to do this?
 	Capture should update the value textbox and value description
 	TODO:
 		Smoothing controls should show inherited values
@@ -23,22 +22,14 @@ Property Settings dialog:
 			Not appropriate for attributes. Maybe at some point dialog content could depend on property type?
 		Shape menu
 			Needs images
+		Tooltips
+		Style: Can we use some kind of shared stylesheet across all windows for consistency?
 
 Property context menu Clear doesn't update the tree properly
 
 Undo/redo would be useful
 
 Include MIDI mapping data on info tab
-
-Inertia for parameter changes
-	Expose shape to the UI (add machine param)
-	Expose per-property units, count and shape to the UI
-	Property dialog
-		Set up methods for opening (context menu item and double-click on property)
-		Make images for different shape options
-		Make it all work
-		Tooltip everything
-		Style: Can we use some kind of shared stylesheet across all windows for consistency?
 	
 Find a way to include machine connections in snapshots.
 	Have a look at how wde does it in his mixer console

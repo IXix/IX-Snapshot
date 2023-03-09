@@ -557,6 +557,56 @@ namespace Snapshot
             StatesB.RemoveAt(States.FindIndex(x => x._state == state));
         }
 
+        // Temporary stuff for save/restore state when item properties dialog is used
+        internal CMachineSnapshot tmpSlot;
+        internal CMachineSnapshot tmpStored;
+        internal CMachineSnapshot tmpLive;
+        internal int? tmpCount;
+        internal int? tmpUnits;
+        internal int? tmpShape;
+
+        // Store relevant states when properties dialog is opened
+        internal void StoreTempState(CMachinePropertyItemVM ivm)
+        {
+            tmpSlot = ivm.ReferenceSlot();
+
+            // Current smoothing settings...
+            tmpCount = ivm._property.SmoothingCount;
+            tmpUnits = ivm._property.SmoothingUnits;
+            tmpShape = ivm._property.SmoothingShape;
+
+            // Stored values...
+            tmpStored = new CMachineSnapshot(Owner, -1);
+            tmpStored.CopyFrom(ivm._childProperties, tmpSlot);
+
+            // Current values...
+            tmpLive = new CMachineSnapshot(Owner, -1);
+            tmpLive.Capture(ivm._childProperties, false);
+        }
+
+        // Restore stuff when properties dialog is cancelled
+        internal void RestoreTempState(CMachinePropertyItemVM ivm)
+        {
+            // Live values
+            tmpLive.Restore();
+
+            // Stored values
+            tmpSlot.CopyFrom(ivm._childProperties, tmpStored);
+
+            // Smoothing settings
+            ivm._property.SmoothingCount = tmpCount;
+            ivm._property.SmoothingUnits = tmpUnits;
+            ivm._property.SmoothingShape = tmpShape;
+
+            // Clear temp storage
+            tmpSlot = null;
+            tmpStored = null;
+            tmpLive = null;
+            tmpCount = null;
+            tmpUnits = null;
+            tmpShape = null;
+        }
+
         public ObservableCollection<CMachineStateVM> States { get; }
         public ObservableCollection<CMachineStateVM> StatesA { get; }
         public ObservableCollection<CMachineStateVM> StatesB { get; }

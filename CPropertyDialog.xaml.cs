@@ -20,30 +20,44 @@ namespace Snapshot
     /// </summary>
     public partial class CPropertyDialog : Window
     {
-        public CPropertyDialog(CMachinePropertyItemVM itemVM)
+        public CPropertyDialog(CMachinePropertyItemVM vm)
         {
-            DataContext = itemVM;
+            DataContext = vm;
 
             InitializeComponent();
+
+            Owner = vm._ownerVM.Window;
 
             // Position of the mouse relative to the window
             this.Loaded += (s, e) =>
             {
                 Point p = Mouse.GetPosition(this);
-                Title = "Properties: " + itemVM.Name;
+                Title = "Properties: " + vm.Name;
                 Top += p.Y - Height / 2;
                 Left += p.X - Width / 2;
             };
         }
 
+        private void PropertyDialog1_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            // Crappy faux-modal behaviour
+            Owner.IsEnabled = true;
+        }
+
+        private void PropertyDialog1_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Crappy faux-modal behaviour
+            Owner.IsEnabled = false;
+        }
+
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = true;
+            Close();
         }
 
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            Close();
         }
     }
 }

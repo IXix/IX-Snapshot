@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Snapshot"
              mc:Ignorable="d" 
-             FontSize="14" WindowStyle="ToolWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" Title="Property Settings" Topmost="True">
+             FontSize="14" WindowStyle="ToolWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" Title="Property Settings" Topmost="True" Closing="PropertyDialog1_Closing" Loaded="PropertyDialog1_Loaded">
     <Window.Resources>
         <Image Source="resource/locked.png" x:Key="imgLocked" />
         <Image Source="resource/unlocked.png"  x:Key="imgUnlocked" />
@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <GroupBox Grid.Column="0" Grid.Row="0" Header="Value" Margin="2" Padding="1">
+        <GroupBox Grid.Column="0" Grid.Row="0" Header="Stored Value" Margin="2" Padding="1">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBox Name="txtValue" Text="{Binding StoredValue, Mode=TwoWay}" Height="25" Width="100" TextWrapping="NoWrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=btnLock}" />
@@ -65,7 +65,7 @@
         </GroupBox>
 
         <Button Name="btnOkay" Grid.Column="0" Grid.Row="1" IsDefault="True" Click="btnOkay_Click" >OK</Button>
-        <Button Name="btnCancel" Grid.Column="1" Grid.Row="1" IsCancel="True" Click="btnCancel_Click">Cancel</Button>
+        <Button Name="btnCancel" Grid.Column="1" Grid.Row="1" IsCancel="True" Click="btnCancel_Click" >Cancel</Button>
 
     </Grid>
 </Window>

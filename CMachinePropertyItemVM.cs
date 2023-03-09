@@ -56,40 +56,17 @@ namespace Snapshot
         {
             if (_property is CDataState) return;
 
-            CMachineSnapshot slot = ReferenceSlot();
+            _ownerVM.StoreTempState(this);
 
-            // Store things so we can revert if the user cancels the dialog
-            // Current smoothing settings...
-            int? prevCount = _property.SmoothingCount;
-            int? prevUnits = _property.SmoothingUnits;
-            int? prevShape = _property.SmoothingShape;
+            CPropertyDialog dlg = new CPropertyDialog(this);
+            dlg.btnCancel.Click += PropertyDlg_Cancelled;
+            dlg.Show();
+        }
 
-            // Stored values...
-            CMachineSnapshot prevStored = new CMachineSnapshot(_ownerVM.Owner, -1);
-            prevStored.CopyFrom(_childProperties, slot);
-
-            // Current values...
-            CMachineSnapshot prevLive = new CMachineSnapshot(_ownerVM.Owner, -1);
-            prevLive.Capture(_childProperties, false);
-
-            var dlg = new CPropertyDialog(this);
-            dlg.Owner = _ownerVM.Window; // FIXME: This doesn't stop the dialog from blocking the Buzz UI
-
-            bool? result = dlg.ShowDialog();
-
-            if(result == false) // Revert to previous state if dialog was cancelled
-            {
-                // Live values
-                prevLive.Restore();
-
-                // Stored values
-                slot.CopyFrom(_childProperties, prevStored);
-
-                // Smoothing settings
-                _property.SmoothingCount = prevCount;
-                _property.SmoothingUnits = prevUnits;
-                _property.SmoothingShape = prevShape;
-            }
+        // Put things back if the user cancels
+        private void PropertyDlg_Cancelled(object sender, System.Windows.RoutedEventArgs e)
+        {
+            _ownerVM.RestoreTempState(this);
         }
 
         public int? StoredValue
@@ -135,9 +112,9 @@ namespace Snapshot
             OnPropertyChanged("IsExpandedM");
         }
 
-        protected readonly CSnapshotMachineVM _ownerVM;
-        protected CPropertyBase _property;
-        protected HashSet<CPropertyBase> _childProperties;
+        internal readonly CSnapshotMachineVM _ownerVM;
+        internal CPropertyBase _property;
+        internal HashSet<CPropertyBase> _childProperties;
         protected int _viewRef;
 
         public SimpleCommand CmdCapture { get; private set; }
