@@ -8,45 +8,12 @@
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
              d:DesignHeight="500" d:DesignWidth="500" Height="500" Loaded="Main_Loaded">
     <UserControl.Resources>
-
-        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
-        <!-- General styles-->
-        <Style TargetType="Grid">
-            <Setter Property="Margin" Value="1" />
-        </Style>
-        
-        <Style TargetType="StackPanel">
-            <Setter Property="Margin" Value="1" />
-        </Style>
-        
-        <Style TargetType="Separator">
-            <Setter Property="Margin" Value="1,5" />
-        </Style>
-        
-        <Style TargetType="Button">
-            <Setter Property="FontFamily" Value="Segoe UI" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Margin" Value="2,1" />
-            <Setter Property="Padding" Value="1" />
-        </Style>
-        
-        <Style TargetType="CheckBox">
-            <Setter Property="FontFamily" Value="Segoe UI" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="Margin" Value="3,1" />
-            <Setter Property="Padding" Value="1" />
-        </Style>
-        
-        <Style TargetType="TextBlock">
-            <Setter Property="FontFamily" Value="Segoe UI" />
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Margin" Value="3,1" />
-        </Style>
-
-        <Style TargetType="ComboBox" x:Key="comboBase">
-            <Setter Property="Margin" Value="1,1"/>
-        </Style>
-
+        <ResourceDictionary>
+            
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
         <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
         <!-- Named styles -->
         
@@ -206,6 +173,7 @@
             PropertyStateTemplate="{StaticResource property_template}" />
         
         <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+        </ResourceDictionary>
     </UserControl.Resources>
 
     <TabControl>
@@ -313,7 +281,7 @@
                         <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}" ToolTip="Automatically restore current slot content when song is loaded." />
                         <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}" ToolTip="Automatically restore current slot content when playback stops." />
                         <Separator />
-                        <Button x:Name="btnCapture" ToolTip="Capture selected properties.">
+                        <Button x:Name="btnCapture" ToolTip="{StaticResource str_ttCaptureSelected}">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdCapture}" MouseAction="LeftClick" />
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="Capture" Gesture="RightClick" />
@@ -321,7 +289,7 @@
                             </Button.InputBindings>
                             Capture selected
                         </Button>
-                        <Button x:Name="btnCaptureMissing" ToolTip="Capture selected properties that are not already stored.">
+                        <Button x:Name="btnCaptureMissing" ToolTip="{StaticResource str_ttCaptureMissing}">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdCaptureMissing}" MouseAction="LeftClick" />
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick" />
@@ -330,7 +298,7 @@
                             Capture missing
                         </Button>
                         <Separator />
-                        <Button x:Name="btnPurge" ToolTip="Discard stored properties that are not selected or belong to missing machines.">
+                        <Button x:Name="btnPurge" ToolTip="{StaticResource str_ttPurge}">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdPurge}" MouseAction="LeftClick" />
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="Purge" Gesture="RightClick" />
@@ -338,7 +306,7 @@
                             </Button.InputBindings>
                             Purge
                         </Button>
-                        <Button x:Name="btnClear" ToolTip="Discard all stored properties from this slot.">
+                        <Button x:Name="btnClear" ToolTip="{StaticResource str_ttClear}">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
                                 <MouseBinding Command="{Binding CmdClearAll}" Gesture="Ctrl+Alt+LeftClick" />
@@ -347,7 +315,7 @@
                             </Button.InputBindings>
                             Clear all
                         </Button>
-                        <Button x:Name="btnClearSelected" ToolTip="Discard selected stored properties from this slot.">
+                        <Button x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdClearSelected}" MouseAction="LeftClick" />
                                 <MouseBinding Command="{Binding CmdClearSelectedAll}" Gesture="Ctrl+Alt+LeftClick" />
@@ -357,7 +325,7 @@
                             Clear selected
                         </Button>
                         <Separator />
-                        <Button x:Name="btnRestore" ToolTip="Restore all stored properties.">
+                        <Button x:Name="btnRestore" ToolTip="{StaticResource str_ttRestore}">
                             <Button.InputBindings>
                                 <MouseBinding Command="{Binding CmdRestore}" MouseAction="LeftClick" />
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="Restore" Gesture="RightClick" />
@@ -498,33 +466,33 @@
                 </Grid>
                 
                 <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="0">
-                    <Button x:Name="btnCaptureA" ToolTip="Capture selected properties.">
+                    <Button x:Name="btnCaptureA" ToolTip="{StaticResource str_ttCaptureSelected}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdCaptureA}" MouseAction="LeftClick" />
                         </Button.InputBindings>
                         Capture selected
                     </Button>
-                    <Button x:Name="btnCaptureMissingA" ToolTip="Capture selected properties that don't have values.">
+                    <Button x:Name="btnCaptureMissingA" ToolTip="{StaticResource str_ttCaptureMissing}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdCaptureMissingA}" MouseAction="LeftClick" />
                         </Button.InputBindings>
                         Capture missing
                     </Button>
                     <Separator />
-                    <Button x:Name="btnPurgeA" ToolTip="Discard properties that are not selected or belong to missing machines.">
+                    <Button x:Name="btnPurgeA" ToolTip="{StaticResource str_ttPurge}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdPurgeA}" MouseAction="LeftClick" />
                         </Button.InputBindings>
                         Purge
                     </Button>
-                    <Button x:Name="btnClearSelectedA" ToolTip="Clear selected properties.">
+                    <Button x:Name="btnClearSelectedA" ToolTip="{StaticResource str_ttClearSelected}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdClearSelectedA}" MouseAction="LeftClick" />
                             <MouseBinding Command="{Binding CmdClearSelectedAll}" Gesture="Ctrl+Alt+LeftClick" />
                         </Button.InputBindings>
                         Clear selected
                     </Button>
-                    <Button x:Name="btnClearA" ToolTip="Clear all properties.">
+                    <Button x:Name="btnClearA" ToolTip="{StaticResource str_ttClear}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdClearA}" MouseAction="LeftClick" />
                             <MouseBinding Command="{Binding CmdClearAll}" Gesture="Ctrl+Alt+LeftClick" />
@@ -532,7 +500,7 @@
                         Clear all
                     </Button>
                     <Separator />
-                    <Button x:Name="btnRestoreA" ToolTip="Apply stored values.">
+                    <Button x:Name="btnRestoreA" ToolTip="{StaticResource str_ttRestore}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdRestoreA}" MouseAction="LeftClick" />
                         </Button.InputBindings>
@@ -541,33 +509,33 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="2">
-                    <Button x:Name="btnCaptureB" ToolTip="Capture selected properties.">
+                    <Button x:Name="btnCaptureB" ToolTip="{StaticResource str_ttCaptureSelected}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdCaptureB}" MouseAction="LeftClick" />
                         </Button.InputBindings>
                         Capture selected
                     </Button>
-                    <Button x:Name="btnCaptureMissingB" ToolTip="Capture selected properties that don't have values.">
+                    <Button x:Name="btnCaptureMissingB" ToolTip="{StaticResource str_ttCaptureMissing}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdCaptureMissingB}" MouseAction="LeftClick" />
                         </Button.InputBindings>
                         Capture missing
                     </Button>
                     <Separator />
-                    <Button x:Name="btnPurgeB" ToolTip="Discard properties that are not selected or belong to missing machines.">
+                    <Button x:Name="btnPurgeB" ToolTip="{StaticResource str_ttPurge}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdPurgeB}" MouseAction="LeftClick" />
                         </Button.InputBindings>
                         Purge
                     </Button>
-                    <Button x:Name="btnClearSelectedB" ToolTip="Clear selected properties.">
+                    <Button x:Name="btnClearSelectedB" ToolTip="{StaticResource str_ttClearSelected}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdClearSelectedB}" MouseAction="LeftClick" />
                             <MouseBinding Command="{Binding CmdClearSelectedAll}" Gesture="Ctrl+Alt+LeftClick" />
                         </Button.InputBindings>
                         Clear selected
                     </Button>
-                    <Button x:Name="btnClearB" ToolTip="Clear all properties.">
+                    <Button x:Name="btnClearB" ToolTip="{StaticResource str_ttClear}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdClearB}" MouseAction="LeftClick" />
                             <MouseBinding Command="{Binding CmdClearAll}" Gesture="Ctrl+Alt+LeftClick" />
@@ -575,7 +543,7 @@
                         Clear all
                     </Button>
                     <Separator />
-                    <Button x:Name="btnRestoreB" ToolTip="Apply stored values.">
+                    <Button x:Name="btnRestoreB" ToolTip="{StaticResource str_ttRestore}">
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdRestoreB}" MouseAction="LeftClick" />
                         </Button.InputBindings>

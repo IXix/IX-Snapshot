@@ -7,8 +7,15 @@
              mc:Ignorable="d" 
              FontSize="14" WindowStyle="ToolWindow" ResizeMode="NoResize" SizeToContent="WidthAndHeight" ShowInTaskbar="False" Title="Property Settings" Topmost="True" Closing="PropertyDialog1_Closing" Loaded="PropertyDialog1_Loaded">
     <Window.Resources>
-        <Image Source="resource/locked.png" x:Key="imgLocked" />
-        <Image Source="resource/unlocked.png"  x:Key="imgUnlocked" />
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <Image Source="resource/locked.png" x:Key="imgLocked" />
+            <Image Source="resource/unlocked.png"  x:Key="imgUnlocked" />
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -37,9 +44,9 @@
                     </ToggleButton>
                 </StackPanel>
                 <TextBox Name="txtDescription" Text="{Binding StoredValueDescription, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Width="125" TextWrapping="NoWrap" IsReadOnly="True" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Button x:Name="btnCapture" Content="Capture" Command="{Binding CmdCapture}" Padding="2" HorizontalContentAlignment="Center" />
-                <Button x:Name="btnRestore" Content="Restore" Command="{Binding CmdRestore}" Padding="2" />
-                <Button x:Name="btnClear" Content="Clear" Command="{Binding CmdClear}" Padding="2" />
+                <Button x:Name="btnCapture" Content="Capture" Command="{Binding CmdCapture}" ToolTip="{StaticResource str_ttCaptureSingle}" />
+                <Button x:Name="btnRestore" Content="Restore" Command="{Binding CmdRestore}" ToolTip="{StaticResource str_ttRestoreSingle}" />
+                <Button x:Name="btnClear" Content="Clear" Command="{Binding CmdClear}" ToolTip="{StaticResource str_ttClearSingle}" />
             </StackPanel>
         </GroupBox>
 

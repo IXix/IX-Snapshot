@@ -16,9 +16,13 @@
             mc:Ignorable="d" Margin="5" WindowStyle="ToolWindow" Topmost="True"
         >
     <Window.Resources>
-        <Style TargetType="TextBlock">
-            <Setter Property="Margin" Value="0,3" />
-        </Style>
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
     </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -72,9 +76,9 @@
                     </Style>
                 </ComboBox.Style>
             </ComboBox>
-            <Button Name="btnLearn" Width="200" Margin="0,5" Click="btnLearn_Click" Height="30">
+            <Button Name="btnLearn" Width="200" Click="btnLearn_Click" Height="30">
                 <Button.Style>
-                    <Style TargetType="{x:Type Button}">
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource sButtonDefault}">
                         <Setter Property="FontWeight" Value="Normal" />
                         <Setter Property="Foreground" Value="Black" />
                         <Style.Triggers>
@@ -88,9 +92,9 @@
                 Learn
             </Button>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
-            <Button Name="btnOkay" IsDefault="True" Width="100" Click="btnOkay_Click">OK</Button>
-            <Button Name="btnCancel" IsCancel="True" Width="100" Click="btnCancel_Click" Margin="0">Cancel</Button>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" >
+            <Button Name="btnOkay" IsDefault="True" Width="100" Height="30" Click="btnOkay_Click">OK</Button>
+            <Button Name="btnCancel" IsCancel="True" Width="100" Click="btnCancel_Click" >Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

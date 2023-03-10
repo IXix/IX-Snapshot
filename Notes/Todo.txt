@@ -11,6 +11,8 @@ Update docs
 		Property context menu items
 		Property settings dialog
 
+BUG: (In 1.2 release) MIDI Mapping specific slots is broken, something about ambiguous result when searching for the methods
+
 Property Settings dialog:
 	TODO:
 		Smoothing controls should show inherited values
@@ -22,11 +24,9 @@ Property Settings dialog:
 		Shape menu
 			Needs images
 		Tooltips
-		Style: Can we use some kind of shared stylesheet across all windows for consistency?
-
-Property context menu Clear doesn't update the tree properly
 
 Undo/redo would be useful
+	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.
 
 Include MIDI mapping data on info tab
 	
