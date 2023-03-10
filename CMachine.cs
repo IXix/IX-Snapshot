@@ -524,6 +524,8 @@ namespace Snapshot
             IParameter param = ps.Parameter;
 
             // Work up the chain to find a non-null value for smoothing
+            // ALthough CPropertyBase exposes properties for these, it's slightly more efficient to do this instead
+            // Using the properties would cost three times as many loops.
             CPropertyBase p = ps;
             int? count = null;
             int? units = null;

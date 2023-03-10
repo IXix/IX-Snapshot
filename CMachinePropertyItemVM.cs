@@ -191,6 +191,8 @@ namespace Snapshot
             dest.CopyFrom(_childProperties, ReferenceSlot());
         }
 
+        public CMachine Owner => _property.Owner;
+
         public virtual string Name
         {
             get => _property.Name;
@@ -211,21 +213,72 @@ namespace Snapshot
             get => _property.DisplayValue;
         }
 
+        public bool SmoothingCountInherited => _property.SmoothingCount == null;
         public virtual int? SmoothingCount
         {
-            get => _property.SmoothingCount;
+            get
+            {
+                int? count = null
+                    ;
+                // Work up the chain to find a non-null value for smoothing
+                CPropertyBase p = _property;
+                while (p != null)
+                {
+                    count = count ?? p.SmoothingCount;
+                    p = p.Parent;
+                }
+
+                // If still null, use machine level values
+                count = count ?? Owner.SmoothingCount;
+
+                return count;
+            }
             set => _property.SmoothingCount = value;
         }
 
+        public bool SmoothingUnitsInherited => _property.SmoothingUnits == null;
         public virtual int? SmoothingUnits
         {
-            get => _property.SmoothingUnits;
+            get
+            {
+                int? units = null
+                    ;
+                // Work up the chain to find a non-null value for smoothing
+                CPropertyBase p = _property;
+                while (p != null)
+                {
+                    units = units ?? p.SmoothingUnits;
+                    p = p.Parent;
+                }
+
+                // If still null, use machine level values
+                units = units ?? Owner.SmoothingUnits;
+
+                return units;
+            }
             set => _property.SmoothingUnits = value;
         }
 
+        public bool SmoothingShapeInherited => _property.SmoothingShape == null;
         public virtual int? SmoothingShape
         {
-            get => _property.SmoothingShape;
+            get
+            {
+                int? shape = null
+    ;
+                // Work up the chain to find a non-null value for smoothing
+                CPropertyBase p = _property;
+                while (p != null)
+                {
+                    shape = shape ?? p.SmoothingShape;
+                    p = p.Parent;
+                }
+
+                // If still null, use machine level values
+                shape = shape ?? Owner.SmoothingShape;
+
+                return shape;
+            }
             set => _property.SmoothingShape = value;
         }
 
