@@ -22,7 +22,7 @@
         <GroupBox Grid.Column="0" Grid.Row="0" Header="Stored Value" Margin="2" Padding="1">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="txtValue" Text="{Binding StoredValue, Mode=TwoWay}" Height="25" Width="100" TextWrapping="NoWrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=btnLock}" />
+                    <TextBox Name="txtValue" Text="{Binding StoredValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Width="100" TextWrapping="NoWrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=btnLock}" />
                     <ToggleButton Name="btnLock" Margin="3, 0, 0, 0" Width="20" Height="20">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
@@ -36,9 +36,10 @@
                         </ToggleButton.Style>
                     </ToggleButton>
                 </StackPanel>
-                <TextBox Name="txtDescription" Text="{Binding StoredValueDescription, Mode=OneWay}" Height="25" Width="125" TextWrapping="NoWrap" IsReadOnly="True" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <TextBox Name="txtDescription" Text="{Binding StoredValueDescription, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Width="125" TextWrapping="NoWrap" IsReadOnly="True" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
                 <Button x:Name="btnCapture" Content="Capture" Command="{Binding CmdCapture}" Padding="2" HorizontalContentAlignment="Center" />
                 <Button x:Name="btnRestore" Content="Restore" Command="{Binding CmdRestore}" Padding="2" />
+                <Button x:Name="btnClear" Content="Clear" Command="{Binding CmdClear}" Padding="2" />
             </StackPanel>
         </GroupBox>
 
@@ -52,14 +53,20 @@
                     <ComboBoxItem Content="Seconds" />
                     <ComboBoxItem Content="Minutes" />
                 </ComboBox>
-                <ComboBox Name="cbxShape" Height="50" HorizontalContentAlignment="Center" VerticalAlignment="Top" SelectedIndex="{Binding SmoothingShape, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <ComboBoxItem Width="90" Height="45">Linear</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="45">A</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="45">B</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="45">C</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="45">D</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="45">E</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="45">F</ComboBoxItem>
+                <ComboBox
+                    Name="cbxShape" Height="72"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    VerticalAlignment="Top"
+                    SelectedIndex="{Binding SmoothingShape, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    >
+                    <ComboBoxItem Width="90" Height="60">Linear</ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">A</ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">B</ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">C</ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">D</ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">E</ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">F</ComboBoxItem>
                 </ComboBox>
             </StackPanel>
         </GroupBox>

@@ -12,7 +12,6 @@ Update docs
 		Property settings dialog
 
 Property Settings dialog:
-	Capture should update the value textbox and value description
 	TODO:
 		Smoothing controls should show inherited values
 			Need to add 'inherited' combo item.

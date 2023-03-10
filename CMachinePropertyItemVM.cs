@@ -59,15 +59,14 @@ namespace Snapshot
             _ownerVM.StoreTempState(this);
 
             CPropertyDialog dlg = new CPropertyDialog(this);
-            dlg.btnCancel.Click += PropertyDlg_Cancelled;
+            dlg.btnCancel.Click += OnPropertyDlg_Cancelled;
             dlg.Show();
         }
 
         // Put things back if the user cancels
-        private void PropertyDlg_Cancelled(object sender, System.Windows.RoutedEventArgs e)
+        private void OnPropertyDlg_Cancelled(object sender, System.Windows.RoutedEventArgs e)
         {
             _ownerVM.RestoreTempState(this);
-            OnPropertyChanged("DisplayValue");
         }
 
         public int? StoredValue
@@ -102,6 +101,8 @@ namespace Snapshot
             OnPropertyChanged("Size");
             OnPropertyChanged("DisplayValue");
             OnPropertyChanged("DisplayName");
+            OnPropertyChanged("StoredValue");
+            OnPropertyChanged("StoredValueDescription");
         }
 
         // This signals the UI to update when the tree changes from code eg. the select buttons

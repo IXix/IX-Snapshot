@@ -226,8 +226,7 @@ namespace Snapshot
                         NotifyPropertyChanged("States");
                         foreach (CMachineStateVM s in States)
                         {
-                            s.OnPropertyChanged("GotValue");
-                            s.OnPropertyChanged("DisplayValue");
+                            s.RefreshState(true);
                         }
                     }
 
@@ -236,8 +235,7 @@ namespace Snapshot
                         NotifyPropertyChanged("StatesA");
                         foreach (CMachineStateVM s in StatesA)
                         {
-                            s.OnPropertyChanged("GotValue");
-                            s.OnPropertyChanged("DisplayValue");
+                            s.RefreshState(true);
                         }
                     }
 
@@ -247,8 +245,7 @@ namespace Snapshot
                         NotifyPropertyChanged("StatesB");
                         foreach (CMachineStateVM s in StatesB)
                         {
-                            s.OnPropertyChanged("GotValue");
-                            s.OnPropertyChanged("DisplayValue");
+                            s.RefreshState(true);
                         }
                     }
 
@@ -605,6 +602,8 @@ namespace Snapshot
             tmpCount = null;
             tmpUnits = null;
             tmpShape = null;
+
+            NotifyPropertyChanged("State");
         }
 
         public ObservableCollection<CMachineStateVM> States { get; }

@@ -1,3 +1,7 @@
+2023.03.10
+	Added Clear button to property dialog
+	Improved refresh of tree after capture/clear etc.
+
 2023.03.09
 	Changed PropertyDialog to modeless and implemented faux-modal behaviour
 		Modal dialog blocked entire Buzz UI rather than just Snapshot.
