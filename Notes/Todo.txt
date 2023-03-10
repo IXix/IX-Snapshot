@@ -24,8 +24,8 @@ BUG: (In 1.2 release) MIDI Mapping specific slots is broken
 
 Property Settings dialog:
 	TODO:
-		Need to indicate whether smoothing values are inherited or not
-			Bind to new SmoothingCountInherited etc. properties to alter controls appearance in some way
+		Icons for smoothing value clear buttons
+			Have them switch from greyed X to red X based on 
 		Slider as well as text field for value?
 			Not appropriate for attributes. Maybe at some point dialog content could depend on property type?
 		Shape menu

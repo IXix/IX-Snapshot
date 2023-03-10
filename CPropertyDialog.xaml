@@ -15,6 +15,34 @@
             
             <Image Source="resource/locked.png" x:Key="imgLocked" />
             <Image Source="resource/unlocked.png"  x:Key="imgUnlocked" />
+
+            <Style TargetType="Button" x:Key="sBtnClearCount" BasedOn="{StaticResource sButtonDefault}">
+                <Setter Property="Foreground" Value="Red" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SmoothingCountInherited, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                        <Setter Property="Foreground" Value="Gray" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="Button" x:Key="sBtnClearUnits" BasedOn="{StaticResource sButtonDefault}">
+                <Setter Property="Foreground" Value="Red" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SmoothingUnitsInherited, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                        <Setter Property="Foreground" Value="Gray" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="Button" x:Key="sBtnClearShape" BasedOn="{StaticResource sButtonDefault}">
+                <Setter Property="Foreground" Value="Red" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SmoothingShapeInherited, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                        <Setter Property="Foreground" Value="Gray" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -51,17 +79,30 @@
         </GroupBox>
 
         <GroupBox Grid.Column="1" Grid.Row="0" Header="Smoothing" Margin="2" Padding="1">
-            <StackPanel IsEnabled="{Binding AllowSmoothing}">
-                <TextBox Name="txtCount" Height="25" Width="125" TextWrapping="NoWrap" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <ComboBox Name="cbxUnits" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="{Binding SmoothingUnits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+            <Grid IsEnabled="{Binding AllowSmoothing}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBox Name="txtCount" Grid.Row="0" Grid.Column="0" Height="25" Width="125" TextWrapping="NoWrap" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button x:Name="btnClearCount" Grid.Row="0" Grid.Column="1" Command="{Binding CmdClearCount}" Style="{StaticResource sBtnClearCount}">X</Button>
+                
+                <ComboBox Name="cbxUnits" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="{Binding SmoothingUnits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
                     <ComboBoxItem Content="Ticks" />
                     <ComboBoxItem Content="Beats" />
                     <ComboBoxItem Content="Milliseconds" />
                     <ComboBoxItem Content="Seconds" />
                     <ComboBoxItem Content="Minutes" />
                 </ComboBox>
+                <Button x:Name="btnClearUnits" Grid.Row="1" Grid.Column="1" Command="{Binding CmdClearUnits}" Style="{StaticResource sBtnClearUnits}">X</Button>
                 <ComboBox
                     Name="cbxShape" Height="72"
+                    Grid.Row="2" Grid.Column="0"
                     HorizontalContentAlignment="Center"
                     VerticalContentAlignment="Center"
                     VerticalAlignment="Top"
@@ -89,7 +130,8 @@
                         <Image Source="resource/Shape07.png"/>
                     </ComboBoxItem>
                 </ComboBox>
-            </StackPanel>
+                <Button x:Name="btnClearShape" Grid.Row="2" Grid.Column="1" Command="{Binding CmdClearShape}" Style="{StaticResource sBtnClearShape}">X</Button>
+            </Grid>
         </GroupBox>
 
         <Button Name="btnOkay" Grid.Column="0" Grid.Row="1" IsDefault="True" Click="btnOkay_Click" >OK</Button>

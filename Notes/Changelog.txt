@@ -3,6 +3,7 @@
 	Improved refresh of tree after capture/clear etc.
 	Added images for smoothing shapes
 	Property Dialog now shows inherited values for smoothing settings
+	Added buttons to reset smoothing values to null
 
 2023.03.09
 	Changed PropertyDialog to modeless and implemented faux-modal behaviour

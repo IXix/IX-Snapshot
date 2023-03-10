@@ -50,6 +50,22 @@ namespace Snapshot
             {
                 ExecuteDelegate = x => { DoSettingsDialog(); }
             };
+
+            CmdClearCount = new SimpleCommand
+            {
+                ExecuteDelegate = x => { SmoothingCount = null; },
+                CanExecuteDelegate = x => { return _property.SmoothingCount != null; }
+            };
+            CmdClearUnits = new SimpleCommand
+            {
+                ExecuteDelegate = x => { SmoothingUnits = null; },
+                CanExecuteDelegate = x => { return _property.SmoothingUnits != null; }
+            };
+            CmdClearShape = new SimpleCommand
+            {
+                ExecuteDelegate = x => { SmoothingShape = null; },
+                CanExecuteDelegate = x => { return _property.SmoothingShape != null; }
+            };
         }
 
         private void DoSettingsDialog()
@@ -125,6 +141,10 @@ namespace Snapshot
         public SimpleCommand CmdClearAll { get; private set; }
         public SimpleCommand CmdCopyAcross { get; private set; }
         public SimpleCommand CmdOpenSettings { get; private set; }
+
+        public SimpleCommand CmdClearCount { get; private set; }
+        public SimpleCommand CmdClearUnits { get; private set; }
+        public SimpleCommand CmdClearShape { get; private set; }
 
         internal Func<CMachineSnapshot> ReferenceSlot;
 
@@ -233,7 +253,12 @@ namespace Snapshot
 
                 return count;
             }
-            set => _property.SmoothingCount = value;
+            set
+            {
+                _property.SmoothingCount = value;
+                OnPropertyChanged("SmoothingCount");
+                OnPropertyChanged("SmoothingCountInherited");
+            }
         }
 
         public bool SmoothingUnitsInherited => _property.SmoothingUnits == null;
@@ -256,7 +281,12 @@ namespace Snapshot
 
                 return units;
             }
-            set => _property.SmoothingUnits = value;
+            set
+            {
+                _property.SmoothingUnits = value;
+                OnPropertyChanged("SmoothingUnits");
+                OnPropertyChanged("SmoothingUnitsInherited");
+            }
         }
 
         public bool SmoothingShapeInherited => _property.SmoothingShape == null;
@@ -279,7 +309,12 @@ namespace Snapshot
 
                 return shape;
             }
-            set => _property.SmoothingShape = value;
+            set
+            {
+                _property.SmoothingShape = value;
+                OnPropertyChanged("SmoothingShape");
+                OnPropertyChanged("SmoothingShapeInherited");
+            }
         }
 
         public bool AllowSmoothing => _property.AllowSmoothing;
