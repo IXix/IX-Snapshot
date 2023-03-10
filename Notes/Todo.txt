@@ -11,7 +11,16 @@ Update docs
 		Property context menu items
 		Property settings dialog
 
-BUG: (In 1.2 release) MIDI Mapping specific slots is broken, something about ambiguous result when searching for the methods
+BUG: (In 1.2 release) MIDI Mapping specific slots is broken
+	Two problems:
+		1. The method lookups are looking for uniquely named methods like "Capture"
+			but we overloaded most of them so "Capture" matches more than one method.
+		2. The mapping uses an Action to fire the method but Action requires a method with no params ie. Capture()
+			but we adjusted most of them to pass in a set of properties and possibly other options
+	Potential fix:
+		Create zero param overloads of the necessary methods that somehow call the parameterised versions
+			Would need to get the selection from the machine to pass into the method
+			Would also need to ensure the method lookup explicitly wants a method with zero params for Action compatibility
 
 Property Settings dialog:
 	TODO:

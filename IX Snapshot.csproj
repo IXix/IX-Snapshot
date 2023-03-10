@@ -104,6 +104,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Docs\IX Snapshot.html" />
+    <Resource Include="resource\Shape01.png" />
+    <Resource Include="resource\Shape02.png" />
+    <Resource Include="resource\Shape03.png" />
+    <Resource Include="resource\Shape04.png" />
+    <Resource Include="resource\Shape05.png" />
+    <Resource Include="resource\Shape06.png" />
+    <Resource Include="resource\Shape07.png" />
     <Resource Include="resource\locked.png" />
     <Content Include="Notes\Changelog.txt" />
     <Content Include="Notes\Todo.txt" />

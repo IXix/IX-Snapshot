@@ -67,13 +67,27 @@
                     VerticalAlignment="Top"
                     SelectedIndex="{Binding SmoothingShape, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     >
-                    <ComboBoxItem Width="90" Height="60">Linear</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="60">A</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="60">B</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="60">C</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="60">D</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="60">E</ComboBoxItem>
-                    <ComboBoxItem Width="90" Height="60">F</ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">
+                        <Image Source="resource/Shape01.png"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">
+                        <Image Source="resource/Shape02.png"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">
+                        <Image Source="resource/Shape03.png"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">
+                        <Image Source="resource/Shape04.png"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">
+                        <Image Source="resource/Shape05.png"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">
+                        <Image Source="resource/Shape06.png"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem Width="90" Height="60">
+                        <Image Source="resource/Shape07.png"/>
+                    </ComboBoxItem>
                 </ComboBox>
             </StackPanel>
         </GroupBox>
