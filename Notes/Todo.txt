@@ -23,13 +23,14 @@ BUG: (In 1.2 release) MIDI Mapping specific slots is broken
 			Would also need to ensure the method lookup explicitly wants a method with zero params for Action compatibility
 
 Property Settings dialog:
+	Input validation
+		value box needs to enforce parmaeter range
+			if user enters a bad value, it's rejected by the setter but the box continues to display the bad value
 	TODO:
 		Icons for smoothing value clear buttons
 			Have them switch from greyed X to red X based on 
 		Slider as well as text field for value?
 			Not appropriate for attributes. Maybe at some point dialog content could depend on property type?
-		Shape menu
-			Needs images
 		Tooltips
 
 Undo/redo would be useful
@@ -47,12 +48,7 @@ Icons
 Store snapshots on disk
 	Probably xml although not sure how the machine data will work with that.
 
-Manager interface
-	Editing values would be nice.
-		Would have to make sure input was properly validated for the selected property
-		Machine data values would have to be non-editable
-
-	Morphing?
+Morphing?
 
 Mapping dialog
 	Would be nice if we could swap the content to display note names or controller names depending on which was selected

@@ -57,8 +57,8 @@
         <GroupBox Grid.Column="0" Grid.Row="0" Header="Stored Value" Margin="2" Padding="1">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="txtValue" Text="{Binding StoredValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Width="100" TextWrapping="NoWrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=btnLock}" />
-                    <ToggleButton Name="btnLock" Margin="3, 0, 0, 0" Width="20" Height="20">
+                    <TextBox Name="txtValue" Text="{Binding StoredValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Width="100" TextWrapping="NoWrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=btnLock}" ToolTip="Currently stored value. Unlock to edit." PreviewTextInput="PreviewTextInputValue" LostFocus="txtValue_LostFocus" />
+                    <ToggleButton Name="btnLock" Margin="3, 0, 0, 0" Width="20" Height="20" ToolTip="Unlock to allow manual editing.">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
                                 <Setter Property="Content" Value="{DynamicResource imgLocked}" />
@@ -89,17 +89,17 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBox Name="txtCount" Grid.Row="0" Grid.Column="0" Height="25" Width="125" TextWrapping="NoWrap" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Button x:Name="btnClearCount" Grid.Row="0" Grid.Column="1" Command="{Binding CmdClearCount}" Style="{StaticResource sBtnClearCount}">X</Button>
+                <TextBox Name="txtCount" Grid.Row="0" Grid.Column="0" Height="25" Width="125" TextWrapping="NoWrap" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputValue" ToolTip="Smoothing count." LostFocus="txtCount_LostFocus" />
+                <Button x:Name="btnClearCount" Grid.Row="0" Grid.Column="1" Command="{Binding CmdClearCount}" Style="{StaticResource sBtnClearCount}" ToolTip="Revert to inherited value.">X</Button>
                 
-                <ComboBox Name="cbxUnits" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="{Binding SmoothingUnits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" >
+                <ComboBox Name="cbxUnits" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="{Binding SmoothingUnits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Smoothing units." >
                     <ComboBoxItem Content="Ticks" />
                     <ComboBoxItem Content="Beats" />
                     <ComboBoxItem Content="Milliseconds" />
                     <ComboBoxItem Content="Seconds" />
                     <ComboBoxItem Content="Minutes" />
                 </ComboBox>
-                <Button x:Name="btnClearUnits" Grid.Row="1" Grid.Column="1" Command="{Binding CmdClearUnits}" Style="{StaticResource sBtnClearUnits}">X</Button>
+                <Button x:Name="btnClearUnits" Grid.Row="1" Grid.Column="1" Command="{Binding CmdClearUnits}" Style="{StaticResource sBtnClearUnits}" ToolTip="Revert to inherited value.">X</Button>
                 <ComboBox
                     Name="cbxShape" Height="72"
                     Grid.Row="2" Grid.Column="0"
@@ -107,6 +107,7 @@
                     VerticalContentAlignment="Center"
                     VerticalAlignment="Top"
                     SelectedIndex="{Binding SmoothingShape, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTip="Smoothing shape."
                     >
                     <ComboBoxItem Width="90" Height="60">
                         <Image Source="resource/Shape01.png"/>
@@ -130,7 +131,7 @@
                         <Image Source="resource/Shape07.png"/>
                     </ComboBoxItem>
                 </ComboBox>
-                <Button x:Name="btnClearShape" Grid.Row="2" Grid.Column="1" Command="{Binding CmdClearShape}" Style="{StaticResource sBtnClearShape}">X</Button>
+                <Button x:Name="btnClearShape" Grid.Row="2" Grid.Column="1" Command="{Binding CmdClearShape}" Style="{StaticResource sBtnClearShape}" ToolTip="Revert to inherited value.">X</Button>
             </Grid>
         </GroupBox>
 

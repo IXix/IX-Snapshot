@@ -74,22 +74,58 @@ namespace Snapshot
             return StoredProperties.Count(x => x.ParentMachine == s) > 0;
         }
 
-        public void SetPropertyValue(CPropertyBase p, int value)
+        public void SetPropertyValue(CPropertyBase p, int? value)
         {
+            // null == clear
+            if (value == null)
+            {
+                if (StoredProperties.Contains(p))
+                {
+                    CAttributeState ak = p as CAttributeState;
+                    if (ak != null)
+                    {
+                        AttributeValues.Remove(ak);
+                    }
+
+                    CParameterState pk = p as CParameterState;
+                    if (pk != null)
+                    {
+                        ParameterValues.Remove(pk);
+                    }
+
+                    _ = StoredProperties.Remove(p);
+
+                    p.OnPropertyStateChanged();
+                    OnPropertyChanged("HasData");
+                }
+
+                return;
+            }
+
             switch (p.GetType().Name)
             {
                 case "CAttributeState":
                     {
                         CAttributeState key = p as CAttributeState;
-                        AttributeValues[key] = value;
+                        if (!(value < key.Attribute.MinValue || value > key.Attribute.MaxValue))
+                        {
+                            AttributeValues[key] = (int) value;
+                        }
+                        else
+                            return; // Avoid adding the property if the value is invalid
                     }
                     break;
 
                 case "CParameterState":
                     {
                         CParameterState key = p as CParameterState;
-                        int track = p.Track ?? -1;
-                        ParameterValues[key] = new Tuple<int, int>(track, value) ;
+                        if (!(value < key.Parameter.MinValue || value > key.Parameter.MaxValue))
+                        {
+                            int track = p.Track ?? -1;
+                            ParameterValues[key] = new Tuple<int, int>(track, (int) value);
+                        }
+                        else
+                            return; // Avoid adding the property if the value is invalid
                     }
                     break;
 
@@ -107,6 +143,7 @@ namespace Snapshot
             }
 
             p.OnPropertyStateChanged();
+            OnPropertyChanged("HasData");
         }
 
 

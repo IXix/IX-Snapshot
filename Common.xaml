@@ -44,6 +44,13 @@
         <Setter Property="Margin" Value="1,1"/>
     </Style>
 
+    <Style TargetType="TextBox" x:Key="sTextBoxDefault">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="3,1" />
+    </Style>
+    <Style TargetType="TextBox" BasedOn="{StaticResource sTextBoxDefault}" />
+
     <!-- Tooltips for common controls-->
     <system:String x:Key="str_ttCaptureSelected">Capture selected properties.</system:String>
     <system:String x:Key="str_ttCaptureMissing">Capture selected properties that don't have values.</system:String>

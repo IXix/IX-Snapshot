@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -58,6 +59,36 @@ namespace Snapshot
         private void btnCancel_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private static readonly Regex _regex = new Regex("[0-9]+");
+        private static bool IsTextAllowed(string text)
+        {
+            return _regex.IsMatch(text);
+        }
+
+        private void PreviewTextInputValue(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !IsTextAllowed(e.Text);
+        }
+
+        private void txtValue_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Empty == null == clear
+            if(txtValue.Text == "")
+            {
+                CMachinePropertyItemVM vm = DataContext as CMachinePropertyItemVM;
+                vm.StoredValue = null;
+            }
+        }
+
+        private void txtCount_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Empty == null == clear
+            if (txtValue.Text == "")
+            {
+                txtCount.Text = null;
+            }
         }
     }
 }

@@ -22,6 +22,8 @@ namespace Snapshot
             _property.TreeStateChanged += OnTreeStateChanged;
             _property.PropertyStateChanged += OnPropertyStateChanged;
 
+            dlg = null;
+
             Init();
 
             CmdCapture = new SimpleCommand
@@ -68,13 +70,15 @@ namespace Snapshot
             };
         }
 
+        CPropertyDialog dlg;
+
         private void DoSettingsDialog()
         {
             if (_property is CDataState) return;
 
             _ownerVM.StoreTempState(this);
 
-            CPropertyDialog dlg = new CPropertyDialog(this);
+            dlg = new CPropertyDialog(this);
             dlg.btnCancel.Click += OnPropertyDlg_Cancelled;
             dlg.Show();
         }
@@ -85,6 +89,51 @@ namespace Snapshot
             _ownerVM.RestoreTempState(this);
         }
 
+        internal string Validate(string txt)
+        {
+            if (txt == "")
+                return txt; // Empty string == null
+
+            int v;
+            int min;
+            int max;
+
+            bool isParsable = Int32.TryParse(txt, out v);
+            if (isParsable)
+            {
+                switch(_property.GetType().Name)
+                {
+                    case "CAttributeState":
+                        {
+                            CAttributeState a = _property as CAttributeState;
+                            min = a.Attribute.MinValue;
+                            max = a.Attribute.MaxValue;
+                        }
+                        break;
+
+                    case "CParameterState":
+                        {
+                            CParameterState p = _property as CParameterState;
+                            min = p.Parameter.MinValue;
+                            max = p.Parameter.MaxValue;
+                        }
+                        break;
+
+                    default:
+                        return "";
+                }
+            }
+            else
+            {
+                return "";
+            }
+
+            v = Math.Min(Math.Max(v, min), max);
+            txt = v.ToString();
+
+            return txt;
+        }
+
         public int? StoredValue
         {
             get
@@ -93,10 +142,8 @@ namespace Snapshot
             }
             set
             {
-                if (value != null)
-                {
-                    ReferenceSlot().SetPropertyValue(_property, (int) value);
-                }
+                ReferenceSlot().SetPropertyValue(_property, value);
+                OnPropertyChanged("ValueIsValid");
             }
         }
 
