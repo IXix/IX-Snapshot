@@ -302,6 +302,10 @@ namespace Snapshot
             }
             set
             {
+                if(value != null)
+                {
+                    value = Math.Min(Math.Max((int)value, 0), int.MaxValue);
+                }
                 _property.SmoothingCount = value;
                 OnPropertyChanged("SmoothingCount");
                 OnPropertyChanged("SmoothingCountInherited");

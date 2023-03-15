@@ -107,25 +107,18 @@ namespace Snapshot
                 case "CAttributeState":
                     {
                         CAttributeState key = p as CAttributeState;
-                        if (!(value < key.Attribute.MinValue || value > key.Attribute.MaxValue))
-                        {
-                            AttributeValues[key] = (int) value;
-                        }
-                        else
-                            return; // Avoid adding the property if the value is invalid
+ 
+                        value = Math.Min(Math.Max((int) value, key.Attribute.MinValue), key.Attribute.MaxValue);
+                        AttributeValues[key] = (int) value;
                     }
                     break;
 
                 case "CParameterState":
                     {
                         CParameterState key = p as CParameterState;
-                        if (!(value < key.Parameter.MinValue || value > key.Parameter.MaxValue))
-                        {
-                            int track = p.Track ?? -1;
-                            ParameterValues[key] = new Tuple<int, int>(track, (int) value);
-                        }
-                        else
-                            return; // Avoid adding the property if the value is invalid
+                        int track = p.Track ?? -1;
+                        value = Math.Min(Math.Max((int)value, key.Parameter.MinValue), key.Parameter.MaxValue);
+                        ParameterValues[key] = new Tuple<int, int>(track, (int) value);
                     }
                     break;
 

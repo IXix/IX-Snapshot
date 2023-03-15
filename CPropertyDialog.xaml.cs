@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -71,24 +72,28 @@ namespace Snapshot
         {
             e.Handled = !IsTextAllowed(e.Text);
         }
+    }
 
-        private void txtValue_LostFocus(object sender, RoutedEventArgs e)
+    public class StringToXIntConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Empty == null == clear
-            if(txtValue.Text == "")
+            if(value == null)
             {
-                CMachinePropertyItemVM vm = DataContext as CMachinePropertyItemVM;
-                vm.StoredValue = null;
+                return "";
             }
+
+            return value.ToString();
         }
 
-        private void txtCount_LostFocus(object sender, RoutedEventArgs e)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Empty == null == clear
-            if (txtValue.Text == "")
+            if((string)value == "")
             {
-                txtCount.Text = null;
+                return null;
             }
+
+            return Int32.Parse(value.ToString());
         }
     }
 }

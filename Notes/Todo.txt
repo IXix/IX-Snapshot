@@ -23,9 +23,6 @@ BUG: (In 1.2 release) MIDI Mapping specific slots is broken
 			Would also need to ensure the method lookup explicitly wants a method with zero params for Action compatibility
 
 Property Settings dialog:
-	Input validation
-		value box needs to enforce parmaeter range
-			if user enters a bad value, it's rejected by the setter but the box continues to display the bad value
 	TODO:
 		Icons for smoothing value clear buttons
 			Have them switch from greyed X to red X based on 
