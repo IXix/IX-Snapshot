@@ -280,6 +280,8 @@ namespace Snapshot
             get => _property.DisplayValue;
         }
 
+        public int MaxDigits => _property.MaxDigits;
+
         public bool SmoothingCountInherited => _property.SmoothingCount == null;
         public virtual int InheritedSmoothingCount
         {

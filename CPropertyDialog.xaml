@@ -59,7 +59,15 @@
         <GroupBox Grid.Column="0" Grid.Row="0" Header="Stored Value" Margin="2" Padding="1">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Name="txtValue" Text="{Binding StoredValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="25" Width="100" TextWrapping="NoWrap" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsEnabled="{Binding IsChecked, ElementName=btnLock}" ToolTip="Currently stored value. Unlock to edit." PreviewTextInput="PreviewTextInputValue" />
+                    <TextBox Name="txtValue"
+                             Text="{Binding StoredValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_str_xint}}"
+                             Height="25" Width="100"
+                             HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                             IsEnabled="{Binding IsChecked, ElementName=btnLock}"
+                             ToolTip="Currently stored value. Unlock to edit."
+                             PreviewTextInput="PreviewTextInputValue"
+                             MaxLength="{Binding MaxDigits}"
+                             />
                     <ToggleButton Name="btnLock"  Width="20" Height="20" ToolTip="Unlock to allow manual editing.">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
@@ -91,7 +99,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBox Name="txtCount" Grid.Row="0" Grid.Column="0" Height="25" Width="125" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_str_xint}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputValue" ToolTip="Smoothing count." />
+                <TextBox Name="txtCount" Grid.Row="0" Grid.Column="0" Height="25" Width="125" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_str_xint}}" MaxLength="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputValue" ToolTip="Smoothing count." />
                 <TextBox
                     IsHitTestVisible="False"
                     Text="{Binding InheritedSmoothingCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"

@@ -28,7 +28,6 @@ Property Settings dialog:
 			Have them switch from greyed X to red X based on 
 		Slider as well as text field for value?
 			Not appropriate for attributes. Maybe at some point dialog content could depend on property type?
-		Tooltips
 
 Undo/redo would be useful
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.

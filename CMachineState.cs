@@ -75,6 +75,8 @@ namespace Snapshot
             _parentMachine = parentMachine;
             _active = true;
 
+            m_maxDigits = 0;
+
             m_checked = false;
             m_checked_M = false;
             m_expanded = false;
@@ -212,6 +214,9 @@ namespace Snapshot
 
         virtual public string CurrentValueString => throw new NotImplementedException();
 
+        protected int m_maxDigits;
+        public int MaxDigits => m_maxDigits;
+
         virtual public string GetValueDescription(int value)
         {
             return value.ToString();
@@ -252,6 +257,8 @@ namespace Snapshot
             Machine = parentMachine.Machine;
             Parameter = param;
             Track = track;
+
+            m_maxDigits = param.MaxValue.ToString().Length;
         }
 
         //public CPropertyBase Parent;
@@ -284,6 +291,8 @@ namespace Snapshot
         {
             Attribute = attr;
             AllowSmoothing = false;
+
+            m_maxDigits = attr.MaxValue.ToString().Length;
         }
 
         public IAttribute Attribute { get; private set; }

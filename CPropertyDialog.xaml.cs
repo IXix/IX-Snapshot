@@ -93,7 +93,14 @@ namespace Snapshot
                 return null;
             }
 
-            return Int32.Parse(value.ToString());
+            try
+            {
+                return Int32.Parse(value.ToString());
+            }
+            catch (OverflowException)
+            {
+                return Int32.MaxValue;
+            }
         }
     }
 }

@@ -1257,7 +1257,7 @@ namespace Snapshot
             }
         }
 
-        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 1000, DefValue = 0, Description = "Smoothing time when updating parameters", Name = "Smoothing")]
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = Int16.MaxValue, DefValue = 0, Description = "Smoothing time when updating parameters", Name = "Smoothing")]
         public int SmoothingCount
         {
             get; set;

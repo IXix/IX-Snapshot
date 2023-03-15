@@ -3,6 +3,11 @@
 	Used the 'filter text' trick to display inherited smoothing count rather
 		Showing it in the txtValue box didn't work properly
 			Deleting the inherited value text left the box blank
+	Prevented typing too many digits in the value/smoothing boxes
+	Changed max value for machine smoothing param to Int16.Max
+		No point limiting it. Can just type a number.
+	Restored "" == Clear behavior to txtValue box, using same string to int? converter as txtCount
+		Not sure when it stopped working or indeed how it worked at all.
 
 2023.03.14
 	CMachineSnapshot.SetPropertyValue() now only allows valid values and removes property if value is null
