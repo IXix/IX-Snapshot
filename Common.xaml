@@ -37,7 +37,7 @@
     <Style TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Margin" Value="3,1" />
+        <Setter Property="Margin" Value="2,1" />
     </Style>
 
     <Style TargetType="ComboBox" x:Key="comboBase">
@@ -47,7 +47,7 @@
     <Style TargetType="TextBox" x:Key="sTextBoxDefault">
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Margin" Value="3,1" />
+        <Setter Property="Margin" Value="2,1" />
     </Style>
     <Style TargetType="TextBox" BasedOn="{StaticResource sTextBoxDefault}" />
 

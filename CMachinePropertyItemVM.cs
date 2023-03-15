@@ -281,12 +281,12 @@ namespace Snapshot
         }
 
         public bool SmoothingCountInherited => _property.SmoothingCount == null;
-        public virtual int? SmoothingCount
+        public virtual int InheritedSmoothingCount
         {
             get
             {
-                int? count = null
-                    ;
+                int? count = null;
+
                 // Work up the chain to find a non-null value for smoothing
                 CPropertyBase p = _property;
                 while (p != null)
@@ -298,8 +298,12 @@ namespace Snapshot
                 // If still null, use machine level values
                 count = count ?? Owner.SmoothingCount;
 
-                return count;
+                return (int) count;
             }
+        }
+        public virtual int? SmoothingCount
+        {
+            get => _property.SmoothingCount;
             set
             {
                 if(value != null)
@@ -308,6 +312,7 @@ namespace Snapshot
                 }
                 _property.SmoothingCount = value;
                 OnPropertyChanged("SmoothingCount");
+                OnPropertyChanged("InheritedSmoothingCount");
                 OnPropertyChanged("SmoothingCountInherited");
             }
         }
@@ -317,8 +322,8 @@ namespace Snapshot
         {
             get
             {
-                int? units = null
-                    ;
+                int? units = null;
+
                 // Work up the chain to find a non-null value for smoothing
                 CPropertyBase p = _property;
                 while (p != null)
@@ -345,8 +350,8 @@ namespace Snapshot
         {
             get
             {
-                int? shape = null
-    ;
+                int? shape = null;
+
                 // Work up the chain to find a non-null value for smoothing
                 CPropertyBase p = _property;
                 while (p != null)

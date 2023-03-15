@@ -91,7 +91,46 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBox Name="txtCount" Grid.Row="0" Grid.Column="0" Height="25" Width="125" TextWrapping="NoWrap" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_str_xint}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputValue" ToolTip="Smoothing count." />
+                <TextBox Name="txtCount" Grid.Row="0" Grid.Column="0" Height="25" Width="125" Text="{Binding SmoothingCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource Convert_str_xint}}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" PreviewTextInput="PreviewTextInputValue" ToolTip="Smoothing count." />
+                <TextBox
+                    IsHitTestVisible="False"
+                    Text="{Binding InheritedSmoothingCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Background="{x:Null}"
+                    BorderBrush="{x:Null}"
+                    >
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Foreground" Value="Gray"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=txtCount}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <!--<TextBlock IsHitTestVisible="False" 
+                           Grid.Row="0" Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Text="{Binding InheritedSmoothingCount, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                           Width="{Binding ElementName=txtCount, Path=ActualWidth}"
+                           >
+                    <TextBlock.Style>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Foreground" Value="Gray"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, ElementName=txtCount}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>-->
                 <Button x:Name="btnClearCount" Grid.Row="0" Grid.Column="1" Command="{Binding CmdClearCount}" Style="{StaticResource sBtnClearCount}" ToolTip="Revert to inherited value.">X</Button>
                 
                 <ComboBox Name="cbxUnits" Grid.Row="1" Grid.Column="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectedIndex="{Binding SmoothingUnits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Smoothing units." >
