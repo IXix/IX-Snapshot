@@ -195,7 +195,12 @@ namespace Snapshot
 
         public string GetPropertyDisplayValue(IPropertyState p)
         {
-            return " (" + GetPropertyValueString(p) + ")";
+            string s = GetPropertyValueString(p);
+
+            if(s != "")
+                s = " (" + s +")";
+
+            return s;
         }
 
         public int GetPropertySize(CPropertyBase p)

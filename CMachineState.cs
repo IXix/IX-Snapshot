@@ -346,8 +346,15 @@ namespace Snapshot
         {
             Application.Current.Dispatcher.BeginInvoke((Action)(() =>
             {
-                _size = Machine.Data.Length;
-                OnPropertyStateChanged();
+                try
+                {
+                    _size = Machine.Data.Length;
+                    OnPropertyStateChanged();
+                }
+                catch(AccessViolationException) // Had one of these when closing Buzz while GUI was open.
+                {
+                    return;
+                }
             }));
         }
     }

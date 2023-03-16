@@ -2,6 +2,11 @@
 	Fixed broken MIDI mapping of specific slot actions
 		Added zero argument overloads to various CMachineSnapshot methods (for compatibility with Action())
 		Modified method lookup in mapping code to require zero argument methods.
+	Implemented CanExecute for various commands
+		Doesn't seeem to work the main UI buttons though, presumably because of the multiple mousebindings.
+		Maybe we can style them differently to indicate whether they're active?
+	Assorted small tweaks
+	Shape descriptions
 
 2023.03.15
 	Improved input validation.

@@ -53,32 +53,33 @@ namespace Snapshot
             phase = t; // linear by default
 
             switch (shape)
-            // shapes from https://www.desmos.com/calculator/k45ggnkiot
+            // Approximations of Reaper fade shapes by ErBird from (heated!) discussion at https://forums.cockos.com/showpost.php?p=2522735&postcount=32
+            // Desmos link https://forums.cockos.com/showpost.php?p=2522735&postcount=32
             {
                 //case 0: // Reaper 1 == linear
 
                 case 1:
-                    phase = t * (2 - t); // Reaper 2
+                    phase = t * (2 - t); // Reaper 2 - Cosine
                     break;
 
                 case 2:
-                    phase = t * t; // Reaper 3
+                    phase = t * t; // Reaper 3 - Phase shifted cosine
                     break;
 
                 case 3:
-                    phase = 1 - Math.Pow(1 - t, 4); // Reaper 4
+                    phase = 1 - Math.Pow(1 - t, 4); // Reaper 4 - Quartic
                     break;
 
                 case 4:
-                    phase = Math.Pow(t, 4); // Reaper 5
+                    phase = Math.Pow(t, 4); // Reaper 5 - Inverted quartic
                     break;
 
                 case 5:
-                    phase = (t * t) - (3 - t * 2); // Reaper 6
+                    phase = (t * t) - (3 - t * 2); // Reaper 6 - Cosine s-curve
                     break;
 
-                case 6: // Reaper 7
-                    if(phase <= 0.5)
+                case 6:  // Reaper 7 - Quartic s-curve
+                    if (phase <= 0.5)
                     {
                         phase = 8 * Math.Pow(t, 4);
                     }

@@ -173,6 +173,16 @@
             PropertyStateTemplate="{StaticResource property_template}" />
         
         <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+
+            <Style TargetType="Button" x:Key="sBtnClearFilter" BasedOn="{StaticResource sButtonDefault}">
+                <Setter Property="Foreground" Value="Red" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding FilterText , UpdateSourceTrigger=PropertyChanged}" Value="">
+                        <Setter Property="Foreground" Value="Gray" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -216,7 +226,7 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <Button x:Name="btnFilterClear" Grid.Column="1" Command="{Binding CmdFilterClear}" Width="30" Content="X" Foreground="Red" FontWeight="Bold" FontSize="12"/>
+                            <Button x:Name="btnFilterClear" Grid.Column="1" Command="{Binding CmdFilterClear}" Style="{StaticResource sBtnClearFilter}" Width="30" Content="X" FontWeight="Bold" FontSize="12"/>
                             <ComboBox Name="cbxShow" Grid.Column="2" SelectedIndex="{Binding ShowMode, Mode=OneWayToSource}" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
                                 <ComboBoxItem Tag="Empty" Content="Show Empty" />
                                 <ComboBoxItem Tag="Stored" Content="Show Stored" />

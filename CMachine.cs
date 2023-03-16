@@ -272,18 +272,23 @@ namespace Snapshot
 
         // How many properties are selected
         public int SelCount => AllProperties.Count(x => x.Checked == true && x.Active);
+        public int SelCountM => AllProperties.Count(x => x.Checked_M == true && x.Active);
 
         // How many properties have been captured
         public int StoredCount => CurrentSlot.StoredCount;
 
         // How many properties are stored that aren't selected
         public int RedundantCount => CurrentSlot.RedundantCount;
+        public int RedundantCountA => SlotA.RedundantCount;
+        public int RedundantCountB => SlotB.RedundantCount;
 
         // How many properties are stored but are inactive (machine deleted)
         public int DeletedCount => CurrentSlot.DeletedCount;
 
         // How many selected properties have not been captured
         public int MissingCount => AllProperties.Where(x => x.Checked == true && x.Active).Except(CurrentSlot.StoredProperties).Count();
+        public int MissingCountA => AllProperties.Where(x => x.Checked_M == true && x.Active).Except(SlotA.StoredProperties).Count();
+        public int MissingCountB => AllProperties.Where(x => x.Checked_M == true && x.Active).Except(SlotB.StoredProperties).Count();
 
         public string Name
         {
@@ -564,6 +569,9 @@ namespace Snapshot
 
                 case 4: // Minutes
                     spu = host.MasterInfo.SamplesPerSec * 60; break;
+
+                default:
+                    throw new Exception("Unexpected case for time units.");
 
             }
             int duration = (int)Math.Round((double) count * spu);
@@ -1269,7 +1277,7 @@ namespace Snapshot
             get; set;
         }
 
-        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 6, DefValue = 0, Description = "Shape for parameter smoothing", Name = "Smoothing shape", ValueDescriptions = new String[] { "Linear", "b", "c", "d", "e", "f" })]
+        [ParameterDecl(IsStateless = false, MinValue = 0, MaxValue = 6, DefValue = 0, Description = "Shape for parameter smoothing", Name = "Smoothing shape", ValueDescriptions = new String[] { "Linear", "Cos", "I.Cos", "Quartic", "I.Quartic", "Cos S", "Cos Q" })]
         public int SmoothingShape
         {
             get; set;

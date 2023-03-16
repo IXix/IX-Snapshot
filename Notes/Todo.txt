@@ -17,8 +17,8 @@ Update docs
 
 UI
 	Buttons for actions which work on slected properties should be disabled when nothing is selected
-
-Smoothing shape param descriptions
+		Doesn't work, probably because of the multiple mousebindings
+		Maybe style the text to indicate nothing will happen when there's no selection?
 
 MIDI Mapping:
 	Actions which work on selected properties

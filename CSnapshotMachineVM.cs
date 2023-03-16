@@ -16,6 +16,7 @@ namespace Snapshot
             Owner = owner;
             
             _showMode = _showModeM = 2; // All
+            _filterText = _filterTextM = "";
 
             States = new ObservableCollection<CMachineStateVM>();
             StatesA = new ObservableCollection<CMachineStateVM>();
@@ -34,169 +35,203 @@ namespace Snapshot
 
             CmdCapture = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => Owner.SelCount > 0,
                 ExecuteDelegate = x => Owner.Capture()
             };
             CmdCaptureMissing = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => Owner.MissingCount > 0,
                 ExecuteDelegate = x => Owner.CaptureMissing()
             };
             CmdRestore = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => CurrentSlot.HasData,
                 ExecuteDelegate = x => Owner.Restore()
             };
             CmdClear = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => CurrentSlot.HasData,
                 ExecuteDelegate = x => Owner.Clear()
             };
             CmdClearAll = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => Owner.TotalSize > 0,
                 ExecuteDelegate = x => Owner.ClearAll()
             };
             CmdClearSelected = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => Owner.SelCount > 0,
                 ExecuteDelegate = x => Owner.ClearSelected()
             };
             CmdClearSelectedAll = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => Owner.SelCount > 0 && Owner.TotalSize > 0,
                 ExecuteDelegate = x => Owner.ClearSelectedAll()
             };
             CmdPurge = new SimpleCommand
             {
-                CanExecuteDelegate = x => true,
+                CanExecuteDelegate = x => Owner.RedundantCount > 0,
                 ExecuteDelegate = x => Owner.Purge()
             };
+
             CmdMap = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.MapCommand(x.ToString(), false)
             };
             CmdMapSpecific = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.MapCommand(x.ToString(), true)
             };
+
             CmdSelectAll = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.SelectAll()
             };
             CmdSelectNone = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCount > 0,
                 ExecuteDelegate = x => Owner.SelectNone()
             };
             CmdSelectStored = new SimpleCommand
             {
+                CanExecuteDelegate = x => CurrentSlot.HasData,
                 ExecuteDelegate = x => Owner.SelectStored()
             };
             CmdSelectInvert = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCount > 0,
                 ExecuteDelegate = x => Owner.SelectInvert()
             };
+
             CmdFilterClear = new SimpleCommand
             {
+                CanExecuteDelegate = x => FilterText != "",
                 ExecuteDelegate = x => FilterClear()
             };
 
             CmdSelectAll_M = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => Owner.SelectAll_M()
             };
             CmdSelectNone_M = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCountM > 0,
                 ExecuteDelegate = x => Owner.SelectNone_M()
             };
             CmdSelectInvert_M = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCountM > 0,
                 ExecuteDelegate = x => Owner.SelectInvert_M()
             };
             CmdSelectStoredA = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotA.HasData,
                 ExecuteDelegate = x => Owner.SelectStoredA()
             };
             CmdSelectStoredB = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotB.HasData,
                 ExecuteDelegate = x => Owner.SelectStoredB()
             };
             CmdAtoB = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotA != SlotB && SlotA.HasData,
                 ExecuteDelegate = x => Owner.CopyAtoB()
             };
             CmdBtoA = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotB != SlotA && SlotB.HasData,
                 ExecuteDelegate = x => Owner.CopyBtoA()
             };
             CmdFilterClearM = new SimpleCommand
             {
+                CanExecuteDelegate = x => FilterTextM != "",
                 ExecuteDelegate = x => FilterClearM()
             };
 
             CmdCaptureA = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCountM > 0,
                 ExecuteDelegate = x => Owner.CaptureA()
             };
             CmdCaptureMissingA = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.MissingCountA > 0,
                 ExecuteDelegate = x => Owner.CaptureMissingA()
             };
             CmdPurgeA = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.RedundantCountA > 0,
                 ExecuteDelegate = x => Owner.PurgeA()
             };
             CmdClearSelectedA = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCountM > 0,
                 ExecuteDelegate = x => Owner.ClearSelectedA()
             };
             CmdClearA = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotA.HasData,
                 ExecuteDelegate = x => Owner.ClearA()
             };
             CmdRestoreA = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotA.HasData,
                 ExecuteDelegate = x => Owner.RestoreA()
             };
             CmdActivateA = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => { Slot = SlotA.Index; }
             };
             CmdLoadA = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => { Slot = SlotA.Index; Owner.ForceRestore(); }
             };
 
             CmdCaptureB = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCountM > 0,
                 ExecuteDelegate = x => Owner.CaptureB()
             };
             CmdCaptureMissingB = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.MissingCountB > 0,
                 ExecuteDelegate = x => Owner.CaptureMissingB()
             };
             CmdPurgeB = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.RedundantCountB > 0,
                 ExecuteDelegate = x => Owner.PurgeB()
             };
             CmdClearSelectedB = new SimpleCommand
             {
+                CanExecuteDelegate = x => Owner.SelCountM > 0,
                 ExecuteDelegate = x => Owner.ClearSelectedB()
             };
             CmdClearB = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotB.HasData,
                 ExecuteDelegate = x => Owner.ClearB()
             };
             CmdRestoreB = new SimpleCommand
             {
+                CanExecuteDelegate = x => SlotB.HasData,
                 ExecuteDelegate = x => Owner.RestoreB()
             };
             CmdActivateB = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => { Slot = SlotB.Index; },
             };
             CmdLoadB = new SimpleCommand
             {
+                CanExecuteDelegate = x => true,
                 ExecuteDelegate = x => { Slot = SlotB.Index; Owner.ForceRestore(); },
             };
         }
@@ -241,7 +276,6 @@ namespace Snapshot
 
                     if ((sender as CMachineSnapshot) == SlotB)
                     {
-                        NotifyPropertyChanged("StatesB");
                         NotifyPropertyChanged("StatesB");
                         foreach (CMachineStateVM s in StatesB)
                         {
