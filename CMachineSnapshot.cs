@@ -344,6 +344,11 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
+        public void Capture()
+        {
+            Capture(m_owner.GetSelectedProperties(true), true);
+        }
+
         public void Capture(CPropertyBase p)
         {
             switch (p.GetType().Name)
@@ -429,6 +434,13 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
+        public void CaptureMissing()
+        {
+            HashSet<CPropertyBase> targets = m_owner.GetSelectedProperties(true);
+            targets.RemoveWhere(x => ContainsProperty(x) == true);
+            Capture(targets, true);
+        }
+
         public void Restore(HashSet<CPropertyBase> properties)
         {
             foreach (IPropertyState p in properties)
@@ -504,6 +516,11 @@ namespace Snapshot
                 }),
                 DispatcherPriority.Send
                 );
+        }
+
+        public void Purge()
+        {
+            Purge(true);
         }
 
         public void Purge(bool main)
@@ -607,7 +624,7 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        internal void Clear()
+        public void Clear()
         {
             HashSet<CPropertyBase> removed = new HashSet<CPropertyBase>(StoredProperties);
 
@@ -621,6 +638,11 @@ namespace Snapshot
                 p.OnPropertyStateChanged();
             }
             OnPropertyChanged("HasData");
+        }
+
+        public void ClearSelected()
+        {
+            Remove(m_owner.GetSelectedProperties(true));
         }
 
         public void ReadProperty(CPropertyBase p, BinaryReader r)

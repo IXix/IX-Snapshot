@@ -817,7 +817,7 @@ namespace Snapshot
             if (specific)
             {
                 targetType = CurrentSlot.GetType();
-                method = targetType.GetMethod(command, BindingFlags.Public | BindingFlags.Instance);
+                method = targetType.GetMethod(command, new Type[] { });
                 target = CurrentSlot;
                 owner = CurrentSlot.Name;
             }
@@ -1022,7 +1022,7 @@ namespace Snapshot
                 else // snapshot action
                 {
                     targetType = typeof(CMachineSnapshot);
-                    method = targetType.GetMethod(action, BindingFlags.Public | BindingFlags.Instance);
+                    method = targetType.GetMethod(action, new Type[] { });
                     target = _slots[slot];
                 }
 

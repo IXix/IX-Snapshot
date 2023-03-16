@@ -1,3 +1,7 @@
+BUGS:
+	Main Slot combo doesn't follow slot param change
+	Also capture non-active slot then switching to that slot via the param, combo doesn't show the slot name in bold
+
 Update docs
 	Changed order of buttons in main tab to match those in manager
 	Move info to a separate tab
@@ -11,25 +15,22 @@ Update docs
 		Property context menu items
 		Property settings dialog
 
-BUG: (In 1.2 release) MIDI Mapping specific slots is broken
-	Two problems:
-		1. The method lookups are looking for uniquely named methods like "Capture"
-			but we overloaded most of them so "Capture" matches more than one method.
-		2. The mapping uses an Action to fire the method but Action requires a method with no params ie. Capture()
-			but we adjusted most of them to pass in a set of properties and possibly other options
-	Potential fix:
-		Create zero param overloads of the necessary methods that somehow call the parameterised versions
-			Would need to get the selection from the machine to pass into the method
-			Would also need to ensure the method lookup explicitly wants a method with zero params for Action compatibility
+UI
+	Buttons for actions which work on slected properties should be disabled when nothing is selected
 
-Property Settings dialog:
-	TODO:
-		Icons for smoothing value clear buttons
-			Have them switch from greyed X to red X based on 
-		Slider as well as text field for value?
-			Not appropriate for attributes. Maybe at some point dialog content could depend on property type?
+Smoothing shape param descriptions
 
-Undo/redo would be useful
+MIDI Mapping:
+	Actions which work on selected properties
+		Add option to remember current selection at time of mapping or use whatever is selected when the action is triggered
+			Add a HashSet<CPropertyBase> to the CMachineSnapshot to remember the selection
+		Some way to update the selection memeory too.
+	Warn when MIDI message is already mapped to something else
+		Might want to have one MIDI message do multiple actions but some would cause conflict eg. Capture and Clear on same slot
+	Option to clear/keep existing values when capturing
+		Might want same in main UI
+
+Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.
 
 Include MIDI mapping data on info tab
@@ -40,11 +41,20 @@ Find a way to include machine connections in snapshots.
 RestoreOnSlotChange works but can it be optimised?
 
 Icons
+	Property dialog smoothing clear buttons and filter text clear buttons can use same icon
+	Manager copy buttons
+	Selection manipulation buttons
+	Action buttons?
+		Buttons are big enough to have text plus icon. Icons might help avoid incorrect button presses.
 
 Store snapshots on disk
 	Probably xml although not sure how the machine data will work with that.
 
-Morphing?
+Morphing
+	Ideally in the manager tab. Don't want to have to set up more treeviews.
+	Need to think of a way to morph a third slot between the A and B slot values.
+		Perhaps target the active slot? That would make sense as you could test the morphed values.
+		Suggests a requirement for "Apply on morph" option in UI
 
 Mapping dialog
 	Would be nice if we could swap the content to display note names or controller names depending on which was selected

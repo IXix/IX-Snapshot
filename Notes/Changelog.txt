@@ -1,3 +1,8 @@
+2023.03.16
+	Fixed broken MIDI mapping of specific slot actions
+		Added zero argument overloads to various CMachineSnapshot methods (for compatibility with Action())
+		Modified method lookup in mapping code to require zero argument methods.
+
 2023.03.15
 	Improved input validation.
 	Used the 'filter text' trick to display inherited smoothing count rather
