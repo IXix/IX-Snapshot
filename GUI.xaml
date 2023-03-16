@@ -297,6 +297,16 @@
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="Capture" Gesture="RightClick" />
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Capture" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <Setter Property="Foreground" Value="Gray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             Capture selected
                         </Button>
                         <Button x:Name="btnCaptureMissing" ToolTip="{StaticResource str_ttCaptureMissing}">
@@ -305,6 +315,16 @@
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick" />
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="CaptureMissing" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CanCaptureMissing, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <Setter Property="Foreground" Value="Gray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             Capture missing
                         </Button>
                         <Separator />
@@ -314,6 +334,16 @@
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="Purge" Gesture="RightClick" />
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Purge" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CanPurge, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <Setter Property="Foreground" Value="Gray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             Purge
                         </Button>
                         <Button x:Name="btnClear" ToolTip="{StaticResource str_ttClear}">
@@ -323,6 +353,16 @@
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" Gesture="RightClick" />
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <Setter Property="Foreground" Value="Gray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             Clear all
                         </Button>
                         <Button x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
@@ -332,6 +372,16 @@
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" Gesture="RightClick" />
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <Setter Property="Foreground" Value="Gray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             Clear selected
                         </Button>
                         <Separator />
@@ -341,6 +391,16 @@
                                 <MouseBinding Command="{Binding CmdMap}" CommandParameter="Restore" Gesture="RightClick" />
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Restore" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <Setter Property="Foreground" Value="Gray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
                             Restore all
                         </Button>
                     </StackPanel>

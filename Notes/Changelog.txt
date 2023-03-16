@@ -8,6 +8,8 @@
 	Assorted small tweaks
 	Shape descriptions
 	Fixed slot combo issues
+	Styled main action buttons to indicate whether they'll do anything if you click them
+		Normal command CanExecute doesn't apply, presumably because there are multiple commands bound to different gestures.
 
 2023.03.15
 	Improved input validation.

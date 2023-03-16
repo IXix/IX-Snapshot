@@ -1083,6 +1083,7 @@ namespace Snapshot
             SlotB.OnPropertyChanged("HasData");
 
             OnPropertyChanged("State");
+            OnPropertyChanged("Selection");
         }
 
         // Called after song load or template drop

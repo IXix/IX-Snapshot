@@ -425,6 +425,10 @@ namespace Snapshot
             switch (e.PropertyName)
             {
                 case "Selection":
+                    NotifyPropertyChanged("GotSelection");
+                    NotifyPropertyChanged("CanCaptureMissing");
+                    NotifyPropertyChanged("CanPurge");
+                    NotifyPropertyChanged("SelectionInfo");
                     foreach(CMachineStateVM s in States)
                     {
                         if (s.AttributeStates != null)
@@ -837,6 +841,12 @@ namespace Snapshot
             get => Owner.RestoreOnStop;
             set => Owner.RestoreOnStop = value;
         }
+
+        public bool GotSelection => Owner.SelCount > 0;
+
+        public bool CanCaptureMissing => Owner.MissingCount > 0;
+
+        public bool CanPurge => Owner.RedundantCount > 0;
 
         #endregion Properties
     }

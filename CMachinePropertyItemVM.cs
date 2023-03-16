@@ -410,6 +410,7 @@ namespace Snapshot
                     }
 
                     OnPropertyChanged("IsChecked");
+                    Owner.OnPropertyChanged("Selection");
 
                     reentrancyCheck = false;
                 }

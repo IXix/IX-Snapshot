@@ -11,11 +11,6 @@ Update docs
 		Property context menu items
 		Property settings dialog
 
-UI
-	Buttons for actions which work on slected properties should be disabled when nothing is selected
-		Doesn't work, probably because of the multiple mousebindings
-		Maybe style the text to indicate nothing will happen when there's no selection?
-
 MIDI Mapping:
 	Actions which work on selected properties
 		Add option to remember current selection at time of mapping or use whatever is selected when the action is triggered
