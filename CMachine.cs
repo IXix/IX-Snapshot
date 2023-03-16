@@ -1404,6 +1404,7 @@ namespace Snapshot
                 }
             }
 
+            OnPropertyChanged("Slot");
             OnPropertyChanged("State");
             OnPropertyChanged("CurrentSlot");
         }

@@ -1,7 +1,3 @@
-BUGS:
-	Main Slot combo doesn't follow slot param change
-	Also capture non-active slot then switching to that slot via the param, combo doesn't show the slot name in bold
-
 Update docs
 	Changed order of buttons in main tab to match those in manager
 	Move info to a separate tab
@@ -23,11 +19,47 @@ UI
 MIDI Mapping:
 	Actions which work on selected properties
 		Add option to remember current selection at time of mapping or use whatever is selected when the action is triggered
-			Add a HashSet<CPropertyBase> to the CMachineSnapshot to remember the selection
+			Not as simple as first thought. Needs significant rewrite of the mapping system.
+				Dictionary<Action, UInt32> _midiMapping; // _midiMapping[Method] = code
+				...would have to become...
+				Dictionary<UInt32, Dictionary<Action, HashSet<CPropertyBase>> _midiMapping; // _midiMapping[code][Method] = GetSelection();
+				...which is a bit hideous plus we want to choose whether to keep/clear existing values when capturing so...
+					class CMidiAction
+					{
+						CMachineSnapshot m_targetSlot;
+						Action m_action;
+						Hashset<CPropertyBase> m_selection;
+						bool m_clearExisting;
+
+						void Trigger()
+						{
+							m_targetSlot.tempSelection = m_selection;			<- Yuk
+							m_targetSlot.tempClearExisting = m_clearExisting;   <- Yuk
+							m_action();
+						};
+					};
+					Dictionary<UInt32, CMidiAction> _midiMapping;
+					
+				...which would be...
+					_midiMapping[code] = new CMidiAction(Action, GetSelection, clearExisting)
+				...and to fire...
+					CMidiAction a = _midiMapping[code].Trigger();
+
+				To get rid of the yuk in Trigger() we'd need to work out how to have an Action with arguments.
+					I think an Action is basically a simple delegate so perhaps it wouldn't be difficult
+					But the various commands have different numbers of arguments
+						we'd need to change the method lookup signature depending on the command string
+						That might mean we'd need multiple variants of CMidiAction with different delegates
+							eg. MidiCaptureAction, MidiRestoreAction, MidiPurgeAction etc.
+
+				All this will also impact the loading of existing songs as the mappings need to be restored
+					Also bear in mind that when trying to implement a warning if MIDI event is already mapped, the Action
+					that was added to MidiMap when loading did not match the Action produced by the lookup. May not matter in new imp.
+
 		Some way to update the selection memeory too.
+
 	Warn when MIDI message is already mapped to something else
 		Might want to have one MIDI message do multiple actions but some would cause conflict eg. Capture and Clear on same slot
-	Option to clear/keep existing values when capturing
 		Might want same in main UI
 
 Undo/redo

@@ -469,6 +469,7 @@ namespace Snapshot
                     break;
 
                 case "State":
+                    CurrentSlot.OnPropertyChanged("HasData");
                     foreach (CMachineStateVM s in States)
                     {
                         s.RefreshState(true);
@@ -494,6 +495,7 @@ namespace Snapshot
 
                 case "CurrentSlot":
                     {
+                        NotifyPropertyChanged("CurrentSlot");
                         foreach (CMachineStateVM s in States)
                         {
                             s.RefreshState(true);
