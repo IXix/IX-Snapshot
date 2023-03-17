@@ -67,13 +67,6 @@ Find a way to include machine connections in snapshots.
 
 RestoreOnSlotChange works but can it be optimised?
 
-Icons
-	Property dialog smoothing clear buttons and filter text clear buttons can use same icon
-	Manager copy buttons
-	Selection manipulation buttons
-	Action buttons?
-		Buttons are big enough to have text plus icon. Icons might help avoid incorrect button presses.
-
 Store snapshots on disk
 	Probably xml although not sure how the machine data will work with that.
 

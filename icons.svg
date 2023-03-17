@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="icons.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:snap-global="true"
+     inkscape:zoom="2.6233334"
+     inkscape:cx="150"
+     inkscape:cy="358.51333"
+     inkscape:current-layer="layer1"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-paths="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-grids="false"
+     showborder="false"
+     inkscape:snap-center="true"
+     inkscape:object-paths="false"
+     inkscape:snap-intersection-paths="true"
+     inkscape:snap-smooth-nodes="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid9"
+       spacingx="26.458333"
+       spacingy="26.458333"
+       empspacing="1" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="icon_select_all"
+       inkscape:label="Select All"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_select_all.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title7879">Select All</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect7755"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <rect
+         style="fill:#000000;stroke-width:0.21;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect33"
+         width="18.520834"
+         height="18.520834"
+         x="3.968749"
+         y="3.968749"
+         rx="2.9633336"
+         ry="2.9633336" />
+      <rect
+         style="fill:#ffffff;stroke-width:0.168;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect115"
+         width="14.816669"
+         height="14.816669"
+         x="5.8208318"
+         y="5.8208318"
+         rx="1.4816668"
+         ry="1.4816668" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.85208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 7.7250416,14.696678 11.661532,18.299567 18.733868,8.1581031 18.600427,8.2915433"
+         id="path368" />
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:11.2889px;line-height:15.232px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:0px;word-spacing:0px;fill:#00ff00;stroke:#000000;stroke-width:0.264583"
+         x="1.3820605"
+         y="9.5363865"
+         id="text3517"><tspan
+           sodipodi:role="line"
+           id="tspan3515"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Futura XBlk BT';-inkscape-font-specification:'Futura XBlk BT Bold';fill:#00ff00;stroke:#000000;stroke-width:0.264583"
+           x="1.3820605"
+           y="9.5363865">A</tspan></text>
+    </g>
+    <g
+       id="icon_select_none"
+       inkscape:label="Select None"
+       transform="translate(26.458334)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_select_none.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title7881">Select None</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect7883"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <rect
+         style="fill:#000000;stroke-width:0.21;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect7885"
+         width="18.520834"
+         height="18.520834"
+         x="3.968749"
+         y="3.968749"
+         rx="2.9633336"
+         ry="2.9633336" />
+      <rect
+         style="fill:#ffffff;stroke-width:0.168;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect7887"
+         width="14.816669"
+         height="14.816669"
+         x="5.8208318"
+         y="5.8208318"
+         rx="1.4816668"
+         ry="1.4816668" />
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:11.2889px;line-height:15.232px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:0px;word-spacing:0px;fill:#00ff00;stroke:#000000;stroke-width:0.264583"
+         x="1.3820605"
+         y="9.5363865"
+         id="text7893"><tspan
+           sodipodi:role="line"
+           id="tspan7891"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Futura XBlk BT';-inkscape-font-specification:'Futura XBlk BT Bold';fill:#ff0000;stroke:#000000;stroke-width:0.264583"
+           x="1.3820605"
+           y="9.5363865">N</tspan></text>
+    </g>
+    <g
+       id="icon_select_stored"
+       inkscape:label="Select Stored"
+       transform="translate(52.916666)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_select_stored.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title9521">Select Stored</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect9523"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <rect
+         style="fill:#000000;stroke-width:0.21;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect9525"
+         width="18.520834"
+         height="18.520834"
+         x="3.968749"
+         y="3.968749"
+         rx="2.9633336"
+         ry="2.9633336" />
+      <rect
+         style="fill:#ffffff;stroke-width:0.168;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect9527"
+         width="14.816669"
+         height="14.816669"
+         x="5.8208318"
+         y="5.8208318"
+         rx="1.4816668"
+         ry="1.4816668" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.85208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 7.7250416,14.696678 11.661532,18.299567 18.733868,8.1581031 18.600427,8.2915433"
+         id="path9529" />
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:11.2889px;line-height:15.232px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:0px;word-spacing:0px;fill:#ffff00;stroke:#000000;stroke-width:0.264583"
+         x="1.3820605"
+         y="9.5363865"
+         id="text9533"><tspan
+           sodipodi:role="line"
+           id="tspan9531"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Futura XBlk BT';-inkscape-font-specification:'Futura XBlk BT Bold';fill:#ffff00;stroke:#000000;stroke-width:0.264583"
+           x="1.3820605"
+           y="9.5363865">S</tspan></text>
+    </g>
+    <g
+       id="icon_select_invert"
+       inkscape:label="Select Invert"
+       transform="translate(79.375)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\icon_select_invert.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title17811">Select Invert</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect17813"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <g
+         id="g18581"
+         transform="matrix(0.57142855,0,0,0.57142855,1.7008905,1.7008843)">
+        <rect
+           style="fill:#000000;stroke-width:0.21;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+           id="rect17815"
+           width="18.520834"
+           height="18.520834"
+           x="3.968749"
+           y="3.968749"
+           rx="2.9633336"
+           ry="2.9633336" />
+        <rect
+           style="fill:#ffffff;stroke-width:0.168;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+           id="rect17817"
+           width="14.816669"
+           height="14.816669"
+           x="5.8208318"
+           y="5.8208318"
+           rx="1.4816668"
+           ry="1.4816668" />
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:11.2889px;line-height:15.232px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:0px;word-spacing:0px;fill:#00ffff;stroke:#000000;stroke-width:0.264583;fill-opacity:1"
+         x="1.3820605"
+         y="9.5363865"
+         id="text17823"><tspan
+           sodipodi:role="line"
+           id="tspan17821"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Futura XBlk BT';-inkscape-font-specification:'Futura XBlk BT Bold';fill:#00ffff;stroke:#000000;stroke-width:0.264583;fill-opacity:1"
+           x="1.3820605"
+           y="9.5363865">I</tspan></text>
+      <g
+         id="g18779"
+         transform="matrix(0.57142855,0,0,0.57142855,9.6383902,9.638381)">
+        <rect
+           style="fill:#000000;stroke-width:0.21;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+           id="rect18773"
+           width="18.520834"
+           height="18.520834"
+           x="3.968749"
+           y="3.968749"
+           rx="2.9633336"
+           ry="2.9633336" />
+        <rect
+           style="fill:#ffffff;stroke-width:0.168;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+           id="rect18775"
+           width="14.816669"
+           height="14.816669"
+           x="5.8208318"
+           y="5.8208318"
+           rx="1.4816668"
+           ry="1.4816668" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:1.85208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="M 7.7250416,14.696678 11.661532,18.299567 18.733868,8.1581031 18.600427,8.2915433"
+           id="path18777" />
+      </g>
+      <g
+         id="layer1-0"
+         style="fill:#000000"
+         inkscape:label="Vrstva 1"
+         transform="matrix(0,-0.02713637,-0.02713898,0,28.403817,19.986325)">
+        <path
+           id="path2985"
+           d="M 109.91,36.812 C 47.362,51.251 0.62,107 0,173.782 h 48.406 c 0.56121,-39.834 26.012,-73.619 61.5,-86.562 V 36.814 Z"
+           style="fill:#000000"
+           inkscape:connector-curvature="0"
+           transform="matrix(0,1.1221,-1.1221,0,541.51,266.67)" />
+        <path
+           id="path3770"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc"
+           style="fill:#000000"
+           d="m 401.86,384.46 68.34,77.194 71.312,-77.315" />
+      </g>
+      <g
+         id="g19374"
+         style="fill:#000000"
+         inkscape:label="Vrstva 1"
+         transform="matrix(0,0.02713637,0.02713898,0,-1.9454885,6.4719856)">
+        <path
+           id="path19370"
+           d="M 109.91,36.812 C 47.362,51.251 0.62,107 0,173.782 h 48.406 c 0.56121,-39.834 26.012,-73.619 61.5,-86.562 V 36.814 Z"
+           style="fill:#000000"
+           inkscape:connector-curvature="0"
+           transform="matrix(0,1.1221,-1.1221,0,541.51,266.67)" />
+        <path
+           id="path19372"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc"
+           style="fill:#000000"
+           d="m 401.86,384.46 68.34,77.194 71.312,-77.315" />
+      </g>
+    </g>
+    <g
+       id="icon_select_left"
+       inkscape:label="Select Left"
+       transform="translate(105.83333)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_select_left.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title19648">Select Left</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect19650"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <rect
+         style="fill:#000000;stroke-width:0.21;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect19652"
+         width="18.520834"
+         height="18.520834"
+         x="3.968749"
+         y="3.968749"
+         rx="2.9633336"
+         ry="2.9633336" />
+      <rect
+         style="fill:#ffffff;stroke-width:0.168;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect19654"
+         width="14.816669"
+         height="14.816669"
+         x="5.8208318"
+         y="5.8208318"
+         rx="1.4816668"
+         ry="1.4816668" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.85208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 7.7250416,14.696678 11.661532,18.299567 18.733868,8.1581031 18.600427,8.2915433"
+         id="path19656" />
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:11.2889px;line-height:15.232px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:0px;word-spacing:0px;fill:#ffff00;stroke:#000000;stroke-width:0.264583"
+         x="1.3820605"
+         y="9.5363865"
+         id="text19660"><tspan
+           sodipodi:role="line"
+           id="tspan19658"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Futura XBlk BT';-inkscape-font-specification:'Futura XBlk BT Bold';fill:#ffff00;stroke:#000000;stroke-width:0.264583"
+           x="1.3820605"
+           y="9.5363865">L</tspan></text>
+    </g>
+    <g
+       id="icon_select_right"
+       inkscape:label="Select Right"
+       transform="translate(132.29166)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_select_right.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title20800">Select Right</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect20802"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <rect
+         style="fill:#000000;stroke-width:0.21;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect20804"
+         width="18.520834"
+         height="18.520834"
+         x="3.968749"
+         y="3.968749"
+         rx="2.9633336"
+         ry="2.9633336" />
+      <rect
+         style="fill:#ffffff;stroke-width:0.168;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke fill markers"
+         id="rect20806"
+         width="14.816669"
+         height="14.816669"
+         x="5.8208318"
+         y="5.8208318"
+         rx="1.4816668"
+         ry="1.4816668" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:1.85208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 7.7250416,14.696678 11.661532,18.299567 18.733868,8.1581031 18.600427,8.2915433"
+         id="path20808" />
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:11.2889px;line-height:15.232px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';letter-spacing:0px;word-spacing:0px;fill:#ffff00;stroke:#000000;stroke-width:0.264583"
+         x="1.3820605"
+         y="9.5363865"
+         id="text20812"><tspan
+           sodipodi:role="line"
+           id="tspan20810"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Futura XBlk BT';-inkscape-font-specification:'Futura XBlk BT Bold';fill:#ffff00;stroke:#000000;stroke-width:0.264583"
+           x="1.3820605"
+           y="9.5363865">R</tspan></text>
+    </g>
+    <g
+       id="icon_cancel"
+       inkscape:label="Cancel"
+       transform="translate(9.3823256e-7,52.916666)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_cancel.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title21362">Cancel</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect21364"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28.4259px;line-height:25.5699px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#ff0000;stroke:#000000;stroke-width:0.444155"
+         x="13.243046"
+         y="23.590456"
+         id="text21374"><tspan
+           sodipodi:role="line"
+           id="tspan21372"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28.4259px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ff0000;stroke:#000000;stroke-width:0.444155"
+           x="13.243046"
+           y="23.590456">X</tspan></text>
+    </g>
+    <g
+       id="icon_copy_to_left"
+       inkscape:label="Copy to Left"
+       transform="translate(52.916666,52.916666)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_copy_to_left.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title23462">Copy to Left</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect23464"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <g
+         id="g30057"
+         transform="translate(-0.45654675,1.5973804e-5)">
+        <path
+           id="rect29503"
+           style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:1.81933;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
+           d="M 10.948995,4.9170194 2.6039762,13.229164 10.948995,21.541308 15.5093,21.541327 7.1642909,13.229164 15.5093,4.916982 Z"
+           sodipodi:nodetypes="ccccccc" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#rect29503"
+           id="use30017"
+           transform="translate(8.3448774)"
+           width="100%"
+           height="100%" />
+      </g>
+    </g>
+    <g
+       id="icon_copy_to_right"
+       inkscape:label="Copy to Right"
+       transform="matrix(-1,0,0,1,105.83333,52.916666)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_copy_to_right.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title30212">Copy to Right</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect30214"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <g
+         id="g30220"
+         transform="translate(-0.45654675,1.5973804e-5)">
+        <path
+           id="path30216"
+           style="fill:#ffff00;fill-opacity:1;stroke:#000000;stroke-width:1.81933;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
+           d="M 10.948995,4.9170194 2.6039762,13.229164 10.948995,21.541308 15.5093,21.541327 7.1642909,13.229164 15.5093,4.916982 Z"
+           sodipodi:nodetypes="ccccccc" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#path30216"
+           id="use30218"
+           transform="translate(8.3448774)"
+           width="100%"
+           height="100%" />
+      </g>
+    </g>
+    <g
+       id="icon_set_active"
+       inkscape:label="Set Active"
+       transform="translate(132.29166,52.916667)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_set_active.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title30224">Set Active</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect30226"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28.4259px;line-height:25.5699px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;letter-spacing:0px;word-spacing:0px;fill:#00ff00;stroke:#000000;stroke-width:0.444155"
+         x="13.243046"
+         y="23.590456"
+         id="text30230"><tspan
+           sodipodi:role="line"
+           id="tspan30228"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:28.4259px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#00ff00;stroke:#000000;stroke-width:0.444155"
+           x="13.243046"
+           y="23.590456">A</tspan></text>
+    </g>
+    <g
+       id="icon_lock"
+       inkscape:label="Lock"
+       transform="translate(0,105.83333)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_lock.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title31035">Lock</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect31037"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <rect
+         style="fill:#333333;fill-opacity:1;stroke:none;stroke-width:1.9182;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
+         id="rect31126"
+         width="10.34858"
+         height="9.1771374"
+         x="8.0548744"
+         y="11.784295" />
+      <path
+         id="path2860"
+         style="fill:#ececec;stroke-width:0.140855"
+         d="m 13.191739,14.19642 c -0.56522,0 -1.020856,0.455639 -1.020856,1.020861 0,0.411899 0.240256,0.768993 0.591025,0.931316 v 2.54763 h 0.971614 v -2.61031 c 0.289203,-0.180844 0.483568,-0.502403 0.483568,-0.868626 0,-0.565221 -0.460115,-1.020855 -1.025336,-1.020855 z" />
+      <path
+         id="rect33758"
+         style="fill:#333333;fill-opacity:1;stroke:none;stroke-width:2.38125;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;paint-order:markers stroke fill"
+         d="m 13.229166,5.3609929 c -2.308621,0 -4.1671871,1.8585656 -4.1671871,4.1671874 V 11.308072 H 10.252604 V 9.5281803 c 0,-1.6490156 1.327547,-2.9765624 2.976562,-2.9765624 1.649016,0 2.976563,1.3275468 2.976563,2.9765624 v 1.7798917 h 0.595312 0.595313 V 9.5281803 c 0,-2.3086218 -1.858566,-4.1671874 -4.167188,-4.1671874 z"
+         sodipodi:nodetypes="ssccssscccss"
+         inkscape:transform-center-x="3.5718748"
+         inkscape:transform-center-y="-2.9735393" />
+    </g>
+    <g
+       id="icon_unlock"
+       inkscape:label="Unlock"
+       transform="translate(26.458332,105.83333)"
+       inkscape:export-filename="C:\Users\IX\Documents\Visual Studio 2019\Projects\IX Snapshot\resource\icon_unlock.png"
+       inkscape:export-xdpi="72"
+       inkscape:export-ydpi="72">
+      <title
+         id="title32400">Unlock</title>
+      <rect
+         style="fill:none;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke fill markers"
+         id="rect32402"
+         width="26.458332"
+         height="26.458332"
+         x="0"
+         y="0"
+         rx="2.1166666"
+         ry="2.1166666" />
+      <g
+         id="g34438"
+         transform="translate(-4.2795268,5.4186127)">
+        <use
+           x="0"
+           y="0"
+           xlink:href="#rect31126"
+           id="use34317"
+           width="100%"
+           height="100%"
+           transform="translate(4.2795278,-5.3506596)" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#path2860"
+           id="use34319"
+           width="100%"
+           height="100%"
+           transform="translate(4.2795278,-5.3506596)" />
+        <use
+           x="0"
+           y="0"
+           xlink:href="#rect33758"
+           inkscape:transform-center-x="-3.9687502"
+           inkscape:transform-center-y="-3.3039327"
+           id="use34321"
+           width="100%"
+           height="100%"
+           transform="matrix(-1,0,0,1,37.879296,-5.3506596)" />
+      </g>
+    </g>
+  </g>
+</svg>

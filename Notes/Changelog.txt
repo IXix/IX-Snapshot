@@ -1,3 +1,7 @@
+2023.03.17
+	Added icons for the various buttons
+	Added class AutoDisableImage (https://renebergelt.de/blog/2019/10/automatically-grayscale-images-on-disabled-wpf-buttons/)
+
 2023.03.16
 	Fixed broken MIDI mapping of specific slot actions
 		Added zero argument overloads to various CMachineSnapshot methods (for compatibility with Action())

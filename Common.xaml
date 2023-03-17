@@ -22,6 +22,7 @@
         <Setter Property="Margin" Value="2,1" />
         <Setter Property="Padding" Value="1" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <!-- Named style won't be applied globally but can't base another style on an unnamed style,
     so base the unnamed global style on a named base. -->
@@ -38,6 +39,12 @@
         <Setter Property="FontFamily" Value="Segoe UI" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Margin" Value="2,1" />
+    </Style>
+
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="Segoe UI" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="1" />
     </Style>
 
     <Style TargetType="ComboBox" x:Key="comboBase">

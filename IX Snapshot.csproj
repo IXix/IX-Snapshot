@@ -57,6 +57,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoDisableImage.cs" />
     <Compile Include="CAttribChange.cs" />
     <Compile Include="CMachinePropertyItemVM.cs" />
     <Compile Include="CMachineSnapshot.cs" />
@@ -104,6 +105,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Docs\IX Snapshot.html" />
+    <Resource Include="resource\icon_cancel.png" />
+    <Resource Include="resource\icon_copy_to_left.png" />
+    <Resource Include="resource\icon_copy_to_right.png" />
+    <Resource Include="resource\icon_lock.png" />
+    <Resource Include="resource\icon_select_all.png" />
+    <Resource Include="resource\icon_select_invert.png" />
+    <Resource Include="resource\icon_select_left.png" />
+    <Resource Include="resource\icon_select_none.png" />
+    <Resource Include="resource\icon_select_right.png" />
+    <Resource Include="resource\icon_select_stored.png" />
+    <Resource Include="resource\icon_set_active.png" />
+    <Resource Include="resource\icon_unlock.png" />
     <Resource Include="resource\Shape01.png" />
     <Resource Include="resource\Shape02.png" />
     <Resource Include="resource\Shape03.png" />
@@ -111,11 +124,9 @@
     <Resource Include="resource\Shape05.png" />
     <Resource Include="resource\Shape06.png" />
     <Resource Include="resource\Shape07.png" />
-    <Resource Include="resource\locked.png" />
     <Content Include="Notes\Changelog.txt" />
     <Content Include="Notes\Todo.txt" />
     <Content Include="postbuild.files.txt" />
-    <Resource Include="resource\unlocked.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="postbuild.ps1" />

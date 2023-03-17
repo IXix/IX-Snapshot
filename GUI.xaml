@@ -13,8 +13,20 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Common.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            
-        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+
+            <Image Source="resource/icon_cancel.png" x:Key="icon_cancel" />
+            <Image Source="resource/icon_copy_to_left.png" x:Key="icon_copy_to_left"/>
+            <Image Source="resource/icon_copy_to_right.png" x:Key="icon_copy_to_right"/>
+            <Image Source="resource/icon_select_all.png" x:Key="icon_select_all"/>
+            <Image Source="resource/icon_select_invert.png" x:Key="icon_select_invert"/>
+            <Image Source="resource/icon_select_left.png" x:Key="icon_select_left"/>
+            <Image Source="resource/icon_select_none.png" x:Key="icon_select_none"/>
+            <Image Source="resource/icon_select_right.png" x:Key="icon_select_right"/>
+            <Image Source="resource/icon_select_stored.png" x:Key="icon_select_stored"/>
+            <Image Source="resource/icon_set_active.png" x:Key="icon_set_active"/>
+
+
+            <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
         <!-- Named styles -->
         
         <!-- Prevent treeview context menu items using the IsChecked state of the underlying property. -->
@@ -191,7 +203,7 @@
             <Grid x:Name="MainGrid" MinHeight="200">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                     <Grid>
@@ -226,7 +238,9 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
-                            <Button x:Name="btnFilterClear" Grid.Column="1" Command="{Binding CmdFilterClear}" Style="{StaticResource sBtnClearFilter}" Width="30" Content="X" FontWeight="Bold" FontSize="12"/>
+                            <Button x:Name="btnFilterClear" Grid.Column="1" Command="{Binding CmdFilterClear}" Style="{StaticResource sBtnClearFilter}" >
+                                <local:AutoDisableImage Source="resource/icon_cancel.png" Stretch="UniformToFill" Width="18"/>
+                            </Button>
                             <ComboBox Name="cbxShow" Grid.Column="2" SelectedIndex="{Binding ShowMode, Mode=OneWayToSource}" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
                                 <ComboBoxItem Tag="Empty" Content="Show Empty" />
                                 <ComboBoxItem Tag="Stored" Content="Show Stored" />
@@ -234,10 +248,38 @@
                             </ComboBox>
                         </Grid>
                         <StackPanel Grid.Row="2" Orientation="Horizontal">
-                            <Button x:Name="btnSelectAll" Command="{Binding CmdSelectAll}" MinWidth="30" ToolTip="Select all properties.">All</Button>
-                            <Button x:Name="btnSelectNone" Command="{Binding CmdSelectNone}" MinWidth="30" ToolTip="Deselect all properties.">None</Button>
-                            <Button x:Name="btnSelectStored" Command="{Binding CmdSelectStored}" MinWidth="30" ToolTip="Select only stored properties.">Stored</Button>
-                            <Button x:Name="btnSelectInvert" Command="{Binding CmdSelectInvert}" MinWidth="30" ToolTip="Invert the selection.">Invert</Button>
+                            <Button x:Name="btnSelectAll" Command="{Binding CmdSelectAll}" ToolTip="Select all properties." >
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AutoDisableImage Source="resource/icon_select_all.png" Stretch="UniformToFill" Height="23"/>
+                                        <!--<Label>All</Label>-->
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="btnSelectNone" Command="{Binding CmdSelectNone}" ToolTip="Deselect all properties.">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AutoDisableImage Source="resource/icon_select_none.png" Stretch="UniformToFill" Height="23"/>
+                                        <!--<Label>None</Label>-->
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="btnSelectStored" Command="{Binding CmdSelectStored}" ToolTip="Select only stored properties.">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AutoDisableImage Source="resource/icon_select_stored.png" Stretch="UniformToFill" Height="23"/>
+                                        <!--<Label>Stored</Label>-->
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                            <Button x:Name="btnSelectInvert" Command="{Binding CmdSelectInvert}" ToolTip="Invert the selection.">
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <local:AutoDisableImage Source="resource/icon_select_invert.png" Stretch="UniformToFill" Height="23"/>
+                                        <!--<Label>Invert</Label>-->
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -449,23 +491,33 @@
                             <MouseBinding Command="{Binding CmdActivateA}" Gesture="LeftClick" />
                             <MouseBinding Command="{Binding CmdLoadA}" Gesture="Ctrl+LeftClick" />
                         </Button.InputBindings>
-                        Set Active
+                        <local:AutoDisableImage Source="resource/icon_set_active.png" Stretch="UniformToFill" Height="18" />
                     </Button>
                 </Grid>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
                     <Button x:Name="CopyBtoA" Command="{Binding CmdBtoA}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to left.">
-                        <TextBlock Text="&lt;&lt;" />
+                        <local:AutoDisableImage Source="resource/icon_copy_to_left.png" Stretch="UniformToFill"  Width="23" />
                     </Button>
                     <Button x:Name="CopyAtoB" Command="{Binding CmdAtoB}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to right.">
-                        <TextBlock Text="&gt;&gt;" />
+                        <local:AutoDisableImage Source="resource/icon_copy_to_right.png" Stretch="UniformToFill" Width="23" />
                     </Button>
                     <Separator />
-                    <Button x:Name="btnSelectAll_M" Command="{Binding CmdSelectAll_M}" MinWidth="30" ToolTip="Select all properties.">A</Button>
-                    <Button x:Name="btnSelectNone_M" Command="{Binding CmdSelectNone_M}" MinWidth="30" ToolTip="Deselect all properties.">N</Button>
-                    <Button x:Name="btnSelectInvert_M" Command="{Binding CmdSelectInvert_M}" MinWidth="30" ToolTip="Invert the selection.">I</Button>
+                    <Button x:Name="btnSelectAll_M" Command="{Binding CmdSelectAll_M}" ToolTip="Select all properties.">
+                        <local:AutoDisableImage Source="resource/icon_select_all.png" Stretch="UniformToFill" Width="23" />
+                    </Button>
+                    <Button x:Name="btnSelectNone_M" Command="{Binding CmdSelectNone_M}" ToolTip="Deselect all properties.">
+                        <local:AutoDisableImage Source="resource/icon_select_none.png" Stretch="UniformToFill" Width="23" />
+                    </Button>
+                    <Button x:Name="btnSelectInvert_M" Command="{Binding CmdSelectInvert_M}" ToolTip="Invert the selection.">
+                        <local:AutoDisableImage Source="resource/icon_select_invert.png" Stretch="UniformToFill"  Width="23"/>
+                    </Button>
                     <Separator />
-                    <Button x:Name="btnSelectStored_A" Command="{Binding CmdSelectStoredA}" MinWidth="30" ToolTip="Select only properties with left values.">L</Button>
-                    <Button x:Name="btnSelectStored_B" Command="{Binding CmdSelectStoredB}" MinWidth="30" ToolTip="Select only properties with right values.">R</Button>
+                    <Button x:Name="btnSelectStored_A" Command="{Binding CmdSelectStoredA}" ToolTip="Select only properties with left values.">
+                        <local:AutoDisableImage Source="resource/icon_select_left.png" Stretch="UniformToFill" Width="23"/>
+                    </Button>
+                    <Button x:Name="btnSelectStored_B" Command="{Binding CmdSelectStoredB}" ToolTip="Select only properties with right values.">
+                        <local:AutoDisableImage Source="resource/icon_select_right.png" Stretch="UniformToFill" Width="23"/>
+                    </Button>
                     <Separator />
                 </StackPanel>
                 <Grid Grid.Row="0"  Grid.Column="2">
@@ -486,12 +538,12 @@
                             </Style>
                         </ComboBox.Style>
                     </ComboBox>
-                    <Button Grid.Column="1" x:Name="BtnActivateB" ToolTip="Set right slot as current slot. Ctrl+Click to activate and restore.">
+                    <Button Grid.Column="1" x:Name="BtnActivateB" ToolTip="Set right slot as current slot. Ctrl+Click to activate and restore." >
                         <Button.InputBindings>
                             <MouseBinding Command="{Binding CmdActivateB}" Gesture="LeftClick" />
                             <MouseBinding Command="{Binding CmdLoadB}" Gesture="Ctrl+LeftClick" />
                         </Button.InputBindings>
-                        Set Active
+                        <local:AutoDisableImage Source="resource/icon_set_active.png" Stretch="UniformToFill" Height="18" />
                     </Button>
                 </Grid>
                 
@@ -527,7 +579,9 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    <Button x:Name="btnFilterClearM" Grid.Column="1" Command="{Binding CmdFilterClearM}" Width="30" Content="X" Foreground="Red" FontWeight="Bold" FontSize="12"/>
+                    <Button x:Name="btnFilterClearM" Grid.Column="1" Command="{Binding CmdFilterClearM}" Width="23" Padding="5">
+                        <local:AutoDisableImage Source="resource/icon_cancel.png" Stretch="UniformToFill" />
+                    </Button>
                     <ComboBox Name="cbxShowM" Grid.Column="2" SelectedIndex="{Binding ShowModeM, Mode=OneWayToSource}" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
                         <ComboBoxItem Tag="Empty" Content="Show Empty" />
                         <ComboBoxItem Tag="Stored" Content="Show Stored" />

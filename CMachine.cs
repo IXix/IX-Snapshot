@@ -22,7 +22,7 @@ namespace Snapshot
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
-    [MachineDecl(Name = "IX Snapshot 1.2", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
+    [MachineDecl(Name = "IX Snapshot 1.3", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         private readonly IBuzzMachineHost host;
