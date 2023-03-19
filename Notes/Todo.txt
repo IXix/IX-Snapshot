@@ -1,8 +1,3 @@
-Update docs
-
-
-Disable value field + unlock button for property groups
-
 An indicator in the treeview to show if a property has smoothing defined
 
 MIDI Mapping:

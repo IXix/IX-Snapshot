@@ -41,7 +41,7 @@
                              PreviewTextInput="PreviewTextInputValue"
                              MaxLength="{Binding MaxDigits}"
                              />
-                    <ToggleButton Name="btnLock"  Width="20" Height="20" ToolTip="Unlock to allow manual editing.">
+                    <ToggleButton Name="btnLock" IsEnabled="{Binding AllowEditing}" Width="20" Height="20" ToolTip="Unlock to allow manual editing.">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
                                 <Setter Property="Content" Value="{DynamicResource icon_lock}" />

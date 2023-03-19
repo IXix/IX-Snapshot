@@ -377,6 +377,8 @@ namespace Snapshot
 
         public bool AllowSmoothing => _property.AllowSmoothing;
 
+        public bool AllowEditing => _property.AllowEditing;
+
         public HashSet<CPropertyBase> Properties => _childProperties;
 
         public override bool? IsChecked

@@ -85,6 +85,7 @@ namespace Snapshot
             m_smoothingCount = null;
             m_smoothingUnits = null;
             m_smoothingAllow = true;
+            m_editingAllow = true;
             Track = null;
             ChildProperties = new HashSet<CPropertyBase>();
         }
@@ -212,6 +213,13 @@ namespace Snapshot
             set => m_smoothingAllow = value;
         }
 
+        protected bool m_editingAllow;
+        public bool AllowEditing
+        {
+            get => m_editingAllow;
+            set => m_editingAllow = value;
+        }
+
         virtual public string CurrentValueString => throw new NotImplementedException();
 
         protected int m_maxDigits;
@@ -315,6 +323,7 @@ namespace Snapshot
             _size = 0;
             UpdateSize();
             AllowSmoothing = false;
+            AllowEditing = false;
         }
 
         public IMachine Machine { get; private set; }
@@ -365,6 +374,7 @@ namespace Snapshot
             : base(owner, parent, parentMachine)
         {
             Name = name;
+            AllowEditing = false;
         }
 
         public override string Name { get; }
@@ -405,6 +415,7 @@ namespace Snapshot
             : base(owner, parent, parentMachine)
         {
             Name = name;
+            AllowEditing = false;
         }
 
         public override string Name { get; }
@@ -448,6 +459,8 @@ namespace Snapshot
             _trackCount = m.TrackCount;
             _owner = owner;
             _active = true;
+
+            AllowEditing = false;
 
             _allProperties = new HashSet<CPropertyBase>();
 
