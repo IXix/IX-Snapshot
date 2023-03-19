@@ -1,15 +1,9 @@
 Update docs
-	Changed order of buttons in main tab to match those in manager
-	Move info to a separate tab
-	Removed LOAD button from manager. Now use Ctrl+click "SetActive" to activate and restore simultaneously.
-	Ctrl+Alt+Leftclick on "Clear all" and "Clear selected" buttons in any tab clears properties from all slots. Will always prompt.
-	Added "Remove from all slots" to treeview item context menus. Will always promt.
-	Added notes for slots
-	Smoothing:
-		Global params Smoothing, Smoothing Units, Smoothing Shape.
-		Warn about CPU with many params
-		Property context menu items
-		Property settings dialog
+
+
+Disable value field + unlock button for property groups
+
+An indicator in the treeview to show if a property has smoothing defined
 
 MIDI Mapping:
 	Actions which work on selected properties
