@@ -239,7 +239,7 @@
                                 </TextBlock.Style>
                             </TextBlock>
                             <Button x:Name="btnFilterClear" Grid.Column="1" Command="{Binding CmdFilterClear}" Style="{StaticResource sBtnClearFilter}" >
-                                <local:AutoDisableImage Source="resource/icon_cancel.png" Stretch="UniformToFill" Width="18"/>
+                                <local:AutoDisableImage Source="resource/icon_cancel.png" Stretch="UniformToFill" Width="12"/>
                             </Button>
                             <ComboBox Name="cbxShow" Grid.Column="2" SelectedIndex="{Binding ShowMode, Mode=OneWayToSource}" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
                                 <ComboBoxItem Tag="Empty" Content="Show Empty" />
@@ -251,7 +251,7 @@
                             <Button x:Name="btnSelectAll" Command="{Binding CmdSelectAll}" ToolTip="Select all properties." >
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
-                                        <local:AutoDisableImage Source="resource/icon_select_all.png" Stretch="UniformToFill" Height="23"/>
+                                        <local:AutoDisableImage Source="resource/icon_select_all.png" Stretch="UniformToFill" Height="28"/>
                                         <!--<Label>All</Label>-->
                                     </StackPanel>
                                 </Button.Content>
@@ -259,7 +259,7 @@
                             <Button x:Name="btnSelectNone" Command="{Binding CmdSelectNone}" ToolTip="Deselect all properties.">
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
-                                        <local:AutoDisableImage Source="resource/icon_select_none.png" Stretch="UniformToFill" Height="23"/>
+                                        <local:AutoDisableImage Source="resource/icon_select_none.png" Stretch="UniformToFill" Height="28"/>
                                         <!--<Label>None</Label>-->
                                     </StackPanel>
                                 </Button.Content>
@@ -267,7 +267,7 @@
                             <Button x:Name="btnSelectStored" Command="{Binding CmdSelectStored}" ToolTip="Select only stored properties.">
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
-                                        <local:AutoDisableImage Source="resource/icon_select_stored.png" Stretch="UniformToFill" Height="23"/>
+                                        <local:AutoDisableImage Source="resource/icon_select_stored.png" Stretch="UniformToFill" Height="28"/>
                                         <!--<Label>Stored</Label>-->
                                     </StackPanel>
                                 </Button.Content>
@@ -275,7 +275,7 @@
                             <Button x:Name="btnSelectInvert" Command="{Binding CmdSelectInvert}" ToolTip="Invert the selection.">
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
-                                        <local:AutoDisableImage Source="resource/icon_select_invert.png" Stretch="UniformToFill" Height="23"/>
+                                        <local:AutoDisableImage Source="resource/icon_select_invert.png" Stretch="UniformToFill" Height="28"/>
                                         <!--<Label>Invert</Label>-->
                                     </StackPanel>
                                 </Button.Content>
@@ -459,7 +459,7 @@
                 </Grid.Resources>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -494,31 +494,30 @@
                         <local:AutoDisableImage Source="resource/icon_set_active.png" Stretch="UniformToFill" Height="18" />
                     </Button>
                 </Grid>
-                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center">
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" Grid.RowSpan="3">
                     <Button x:Name="CopyBtoA" Command="{Binding CmdBtoA}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to left.">
-                        <local:AutoDisableImage Source="resource/icon_copy_to_left.png" Stretch="UniformToFill"  Width="23" />
+                        <local:AutoDisableImage Source="resource/icon_copy_to_left.png" Stretch="UniformToFill"  Width="28" />
                     </Button>
                     <Button x:Name="CopyAtoB" Command="{Binding CmdAtoB}" IsEnabled="{Binding CanCopy}" ToolTip="Copy selected propertied to right.">
-                        <local:AutoDisableImage Source="resource/icon_copy_to_right.png" Stretch="UniformToFill" Width="23" />
+                        <local:AutoDisableImage Source="resource/icon_copy_to_right.png" Stretch="UniformToFill" Width="28" />
                     </Button>
                     <Separator />
                     <Button x:Name="btnSelectAll_M" Command="{Binding CmdSelectAll_M}" ToolTip="Select all properties.">
-                        <local:AutoDisableImage Source="resource/icon_select_all.png" Stretch="UniformToFill" Width="23" />
+                        <local:AutoDisableImage Source="resource/icon_select_all.png" Stretch="UniformToFill" Width="28" />
                     </Button>
                     <Button x:Name="btnSelectNone_M" Command="{Binding CmdSelectNone_M}" ToolTip="Deselect all properties.">
-                        <local:AutoDisableImage Source="resource/icon_select_none.png" Stretch="UniformToFill" Width="23" />
+                        <local:AutoDisableImage Source="resource/icon_select_none.png" Stretch="UniformToFill" Width="28" />
                     </Button>
                     <Button x:Name="btnSelectInvert_M" Command="{Binding CmdSelectInvert_M}" ToolTip="Invert the selection.">
-                        <local:AutoDisableImage Source="resource/icon_select_invert.png" Stretch="UniformToFill"  Width="23"/>
+                        <local:AutoDisableImage Source="resource/icon_select_invert.png" Stretch="UniformToFill"  Width="28"/>
                     </Button>
                     <Separator />
                     <Button x:Name="btnSelectStored_A" Command="{Binding CmdSelectStoredA}" ToolTip="Select only properties with left values.">
-                        <local:AutoDisableImage Source="resource/icon_select_left.png" Stretch="UniformToFill" Width="23"/>
+                        <local:AutoDisableImage Source="resource/icon_select_left.png" Stretch="UniformToFill" Width="28"/>
                     </Button>
                     <Button x:Name="btnSelectStored_B" Command="{Binding CmdSelectStoredB}" ToolTip="Select only properties with right values.">
-                        <local:AutoDisableImage Source="resource/icon_select_right.png" Stretch="UniformToFill" Width="23"/>
+                        <local:AutoDisableImage Source="resource/icon_select_right.png" Stretch="UniformToFill" Width="28"/>
                     </Button>
-                    <Separator />
                 </StackPanel>
                 <Grid Grid.Row="0"  Grid.Column="2">
                     <Grid.ColumnDefinitions>
@@ -579,8 +578,8 @@
                             </Style>
                         </TextBlock.Style>
                     </TextBlock>
-                    <Button x:Name="btnFilterClearM" Grid.Column="1" Command="{Binding CmdFilterClearM}" Width="23" Padding="5">
-                        <local:AutoDisableImage Source="resource/icon_cancel.png" Stretch="UniformToFill" />
+                    <Button x:Name="btnFilterClearM" Grid.Column="1" Command="{Binding CmdFilterClearM}">
+                        <local:AutoDisableImage Source="resource/icon_cancel.png" Stretch="UniformToFill" Width="12" />
                     </Button>
                     <ComboBox Name="cbxShowM" Grid.Column="2" SelectedIndex="{Binding ShowModeM, Mode=OneWayToSource}" MinWidth="78"  ToolTip="Select which properties to show. Selected properties are always visible." VerticalAlignment="Center">
                         <ComboBoxItem Tag="Empty" Content="Show Empty" />
