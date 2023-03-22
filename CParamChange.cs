@@ -75,7 +75,7 @@ namespace Snapshot
                     break;
 
                 case 5:
-                    phase = (t * t) - (3 - t * 2); // Reaper 6 - Cosine s-curve
+                    phase = (t * t) * (3 - t * 2); // Reaper 6 - Cosine s-curve
                     break;
 
                 case 6:  // Reaper 7 - Quartic s-curve

@@ -22,7 +22,7 @@ namespace Snapshot
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
-    [MachineDecl(Name = "IX Snapshot 1.3", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
+    [MachineDecl(Name = "IX Snapshot 1.3b", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         private readonly IBuzzMachineHost host;
@@ -408,7 +408,8 @@ namespace Snapshot
             {
             }
 
-            public Byte version = 2; // Current file version
+            public static Byte currentVersion = 3;
+            public Byte version = currentVersion; // Current file version
             public byte[] data;
         }
 
@@ -434,6 +435,22 @@ namespace Snapshot
                 catch (Exception)
                 {
                     _loadedState = new CMachineStateData();
+                }
+            }
+        }
+
+        public Byte LoadVersion
+        {
+            get
+            {
+                try
+                {
+                    return _loadedState.version;
+
+                }
+                catch
+                {
+                    return 0;
                 }
             }
         }
@@ -938,7 +955,7 @@ namespace Snapshot
             List<CMachineState> saveStates = new List<CMachineState>();
             foreach (CMachineState s in States.Where(x => x.Active))
             {
-                if (_slots.Exists(x => x.ContainsMachine(s)))
+                if (_slots.Exists(x => x.ContainsMachine(s)) || s.HasSmoothing)
                 {
                     saveStates.Add(s);
                 }
@@ -949,12 +966,34 @@ namespace Snapshot
                 w.Write(s.Machine.Name);
                 w.Write(s.Machine.DLL.Name);
 
+                // Machine/Group smoothing - New in file version 3
+                w.Write(s.SmoothingCount ?? -1); // Machine
+                w.Write(s.SmoothingUnits ?? -1); // ^^
+                w.Write(s.SmoothingShape ?? -1); // ^^
+                                               
+                w.Write(s.GlobalStates.SmoothingCount ?? -1); // Global group
+                w.Write(s.GlobalStates.SmoothingUnits ?? -1); // ^^
+                w.Write(s.GlobalStates.SmoothingShape ?? -1); // ^^
+
+                w.Write(s.TrackStates.SmoothingCount ?? -1); // Track group
+                w.Write(s.TrackStates.SmoothingUnits ?? -1); // ^^
+                w.Write(s.TrackStates.SmoothingShape ?? -1); // ^^
+                foreach(CPropertyBase pg in s.TrackStates.ChildProperties)
+                {
+                    w.Write(pg.SmoothingCount ?? -1); // Track param group
+                    w.Write(pg.SmoothingUnits ?? -1); // ^^
+                    w.Write(pg.SmoothingShape ?? -1); // ^^
+                }
+                // end Machine/Group smoothing
+
                 // Build a dictionary of properties to save and the snapshots they're referenced by
                 Dictionary<CPropertyBase, List<CMachineSnapshot>> saveProperties = new Dictionary<CPropertyBase, List<CMachineSnapshot>>();
                 foreach (CPropertyBase ps in s.AllProperties)
                 {
                     List<CMachineSnapshot> slots = _slots.Where(x => x.ContainsProperty(ps)).ToList();
-                    if (slots.Count() > 0 || ps.Checked == true)
+
+                    // Save any that are stored, checked or have non-default smoothing settings
+                    if (slots.Count() > 0 || ps.Checked == true || ps.HasSmoothing)
                     {
                         saveProperties[ps] = slots;
                     }
@@ -967,6 +1006,12 @@ namespace Snapshot
                     w.Write(p.Name);
                     w.Write(p.Track ?? -1);
                     w.Write(p.Checked?? false);
+
+                    // New in file version 3
+                    w.Write(p.SmoothingCount ?? -1);
+                    w.Write(p.SmoothingUnits ?? -1);
+                    w.Write(p.SmoothingShape ?? -1);
+
                     w.Write((Int32)slots.Count());
                     foreach (CMachineSnapshot snapshot in slots)
                     {
@@ -985,7 +1030,7 @@ namespace Snapshot
         {
             if (_loadedState == null) return;
 
-            if (_loadedState.version > 2) throw new Exception("Version mismatch");
+            if (_loadedState.version > CMachineStateData.currentVersion) throw new Exception("Version mismatch");
 
             MemoryStream stream = new MemoryStream(_loadedState.data);
             BinaryReader r = new BinaryReader(stream);
@@ -1051,6 +1096,28 @@ namespace Snapshot
                     // Should be one and only one state matching both name and dllname. Exception if not.
                     CMachineState s = States.Single(x => x.Machine.Name == name && x.Machine.DLL.Name == dllname);
 
+                    if(_loadedState.version >= 3)
+                    {
+                        // Machine/Group smoothing - New in file version 3
+                        s.SmoothingCount = r.ReadInt32(); // Machine
+                        s.SmoothingUnits = r.ReadInt32(); // ^^
+                        s.SmoothingShape = r.ReadInt32(); // ^^
+
+                        s.GlobalStates.SmoothingCount = r.ReadInt32(); // Global group
+                        s.GlobalStates.SmoothingUnits = r.ReadInt32(); // ^^
+                        s.GlobalStates.SmoothingShape = r.ReadInt32(); // ^^
+
+                        s.TrackStates.SmoothingCount  = r.ReadInt32(); // Track group
+                        s.TrackStates.SmoothingUnits  = r.ReadInt32(); // ^^
+                        s.TrackStates.SmoothingShape = r.ReadInt32(); // ^^
+                        foreach (CPropertyBase pg in s.TrackStates.ChildProperties)
+                        {
+                            pg.SmoothingCount  = r.ReadInt32(); // Track param group
+                            pg.SmoothingUnits  = r.ReadInt32(); // ^^
+                            pg.SmoothingShape = r.ReadInt32(); // ^^
+                        }
+                    }
+
                     Int32 count = r.ReadInt32(); // number of properties saved
                     for (Int32 i = 0; i < count; i++)
                     {
@@ -1062,6 +1129,13 @@ namespace Snapshot
                         CPropertyBase ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
 
                         ps.Checked = r.ReadBoolean(); //Property selected
+
+                        if(_loadedState.version >= 3)
+                        {
+                            ps.SmoothingCount = r.ReadInt32(); // New in file version 3
+                            ps.SmoothingUnits = r.ReadInt32(); // ^^
+                            ps.SmoothingShape = r.ReadInt32(); // ^^
+                        }
 
                         Int32 numslots = r.ReadInt32(); // number of saved snapshot values
                         for (int j = 0; j < numslots; j++)
@@ -1082,6 +1156,7 @@ namespace Snapshot
             SlotA.OnPropertyChanged("HasData");
             SlotB.OnPropertyChanged("HasData");
 
+            OnPropertyChanged("CurrentSlot");
             OnPropertyChanged("State");
             OnPropertyChanged("Selection");
         }

@@ -341,6 +341,12 @@ namespace Snapshot
                         }
                         break;
 
+                    case "CPropertyStateGroup":
+                        break;
+
+                    case "CTrackPropertyStateGroup":
+                        break;
+
                     default:
                         throw new Exception("Unknown property type.");
                 }
@@ -422,6 +428,12 @@ namespace Snapshot
                             CDataState key = p as CDataState;
                             DataValues[key] = key.Machine.Data;
                         }
+                        break;
+
+                    case "CPropertyStateGroup":
+                        break;
+
+                    case "CTrackPropertyStateGroup":
                         break;
 
                     default:
@@ -704,11 +716,19 @@ namespace Snapshot
         public void WriteData(BinaryWriter w)
         {
             w.Write(Name);
+            w.Write(Notes);
         }
 
         public void ReadData(BinaryReader r)
         {
+            Byte file_version = m_owner.LoadVersion;
+
             Name = r.ReadString();
+
+            if(file_version >= 3)
+            {
+                Notes = r.ReadString();
+            }
         }
 
         public override string ToString()

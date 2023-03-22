@@ -123,6 +123,29 @@ namespace Snapshot
 
         virtual public int Size => 0;
 
+        public virtual bool HasSmoothing
+        {
+            get
+            {
+                if (!m_smoothingAllow) return false;
+
+                bool result = m_smoothingCount != null || m_smoothingUnits != null || m_smoothingShape != null;
+                if (!result)
+                {
+                    foreach (var p in ChildProperties)
+                    {
+                        if (p.HasSmoothing)
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+                return result;
+            }
+        }
+
+
         protected bool? m_checked;
         virtual public bool? Checked
         {
@@ -189,21 +212,36 @@ namespace Snapshot
         virtual public int? SmoothingCount
         {
             get => m_smoothingCount;
-            set => m_smoothingCount = value;
+            set
+            {
+                if (value < 0)
+                    value = null;
+                m_smoothingCount = value;
+            }
         }
 
         protected int? m_smoothingUnits;
         virtual public int? SmoothingUnits
         {
             get => m_smoothingUnits;
-            set => m_smoothingUnits = value;
+            set
+            {
+                if (value < 0)
+                    value = null;
+                m_smoothingUnits = value;
+            }
         }
 
         protected int? m_smoothingShape;
         virtual public int? SmoothingShape
         {
             get => m_smoothingShape;
-            set => m_smoothingShape = value;
+            set
+            {
+                if (value < 0)
+                    value = null;
+                m_smoothingShape = value;
+            }
         }
 
         protected bool m_smoothingAllow;
@@ -468,9 +506,11 @@ namespace Snapshot
             {
                 DataState = new CDataState(owner, this, this, m);
                 _allProperties.Add(DataState);
+                ChildProperties.Add(DataState);
             }
 
             GlobalStates = new CPropertyStateGroup(owner, this, this, "Global");
+            ChildProperties.Add(GlobalStates);
             foreach (IParameter p in Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Global).Parameters)
             {
                 if (p.Flags.HasFlag(ParameterFlags.State))
@@ -482,6 +522,7 @@ namespace Snapshot
             }
 
             TrackStates = new CTrackPropertyStateGroup(owner, this, this, "Track");
+            ChildProperties.Add(TrackStates);
             IParameterGroup tracks = Machine.ParameterGroups.Single(x => x.Type == ParameterGroupType.Track);
             foreach (IParameter p in tracks.Parameters)
             {

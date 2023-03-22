@@ -488,6 +488,8 @@ namespace Snapshot
                     {
                         s.RefreshState(true);
                     }
+
+                    NotifyPropertyChanged("Notes");
                     break;
 
                 case "Names":
@@ -500,6 +502,7 @@ namespace Snapshot
                 case "CurrentSlot":
                     {
                         NotifyPropertyChanged("CurrentSlot");
+                        NotifyPropertyChanged("Notes");
                         foreach (CMachineStateVM s in States)
                         {
                             s.RefreshState(true);

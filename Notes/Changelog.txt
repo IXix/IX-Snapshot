@@ -1,3 +1,12 @@
+2023.03.22
+	Fixed broken cosine s-curve (formula typo)
+	v1.3a
+	Implemented save/load of new stuff. (Can't believe I forgot that. What a dope.)
+		per-property smoothing settings
+		snapshot notes
+	v1.3b
+		
+
 2023.03.17
 	Added icons for the various buttons
 	Added class AutoDisableImage (https://renebergelt.de/blog/2019/10/automatically-grayscale-images-on-disabled-wpf-buttons/)
