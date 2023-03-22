@@ -1,3 +1,5 @@
+Use a HashSet of child properties with stored values to reduce the amount of iteration over child properties done in GotValue
+
 MIDI Mapping:
 	Actions which work on selected properties
 		Add option to remember current selection at time of mapping or use whatever is selected when the action is triggered

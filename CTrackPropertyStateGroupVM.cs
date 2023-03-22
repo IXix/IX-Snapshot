@@ -25,7 +25,7 @@ namespace Snapshot
 
             foreach(CPropertyStateGroup param in _group.ChildProperties)
             {
-                _childProperties.Concat(param.ChildProperties);
+                _childProperties = _childProperties.Concat(param.ChildProperties).ToHashSet();
             }
 
             LoadChildren();
