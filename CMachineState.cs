@@ -123,25 +123,28 @@ namespace Snapshot
 
         virtual public int Size => 0;
 
-        public virtual bool HasSmoothing
+        public bool HasSmoothing
         {
             get
             {
                 if (!m_smoothingAllow) return false;
 
-                bool result = m_smoothingCount != null || m_smoothingUnits != null || m_smoothingShape != null;
-                if (!result)
+                return m_smoothingCount != null || m_smoothingUnits != null || m_smoothingShape != null;
+            }
+        }
+
+        public bool ChildHasSmoothing
+        {
+            get
+            {
+                foreach (var p in ChildProperties)
                 {
-                    foreach (var p in ChildProperties)
+                    if (p.HasSmoothing)
                     {
-                        if (p.HasSmoothing)
-                        {
-                            result = true;
-                            break;
-                        }
+                        return true;
                     }
                 }
-                return result;
+                return false;
             }
         }
 

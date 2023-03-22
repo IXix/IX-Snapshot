@@ -18,6 +18,7 @@ namespace Snapshot
             _ownerVM = ownerVM;
             _viewRef = view;
             _childProperties = new HashSet<CPropertyBase>();
+            m_smoothedChildren = new HashSet<CMachinePropertyItemVM>();
 
             _property.TreeStateChanged += OnTreeStateChanged;
             _property.PropertyStateChanged += OnPropertyStateChanged;
@@ -87,6 +88,7 @@ namespace Snapshot
         private void OnPropertyDlg_Cancelled(object sender, System.Windows.RoutedEventArgs e)
         {
             _ownerVM.RestoreTempState(this);
+            OnPropertyChanged("HasSmoothing");
         }
 
         internal string Validate(string txt)
@@ -313,6 +315,7 @@ namespace Snapshot
                     value = Math.Min(Math.Max((int)value, 0), int.MaxValue);
                 }
                 _property.SmoothingCount = value;
+                OnPropertyChanged("HasSmoothing");
                 OnPropertyChanged("SmoothingCount");
                 OnPropertyChanged("InheritedSmoothingCount");
                 OnPropertyChanged("SmoothingCountInherited");
@@ -342,6 +345,7 @@ namespace Snapshot
             set
             {
                 _property.SmoothingUnits = value;
+                OnPropertyChanged("HasSmoothing");
                 OnPropertyChanged("SmoothingUnits");
                 OnPropertyChanged("SmoothingUnitsInherited");
             }
@@ -370,12 +374,18 @@ namespace Snapshot
             set
             {
                 _property.SmoothingShape = value;
+                OnPropertyChanged("HasSmoothing");
                 OnPropertyChanged("SmoothingShape");
                 OnPropertyChanged("SmoothingShapeInherited");
             }
         }
 
         public bool AllowSmoothing => _property.AllowSmoothing;
+
+        public bool HasSmoothing => _property.HasSmoothing;
+
+        protected HashSet<CMachinePropertyItemVM> m_smoothedChildren;
+        public bool ChildHasSmoothing => m_smoothedChildren.Count > 0;
 
         public bool AllowEditing => _property.AllowEditing;
 
@@ -495,7 +505,104 @@ namespace Snapshot
             foreach (CPropertyBase p in _childProperties)
             {
                 CMachinePropertyItemVM pvm = new CMachinePropertyItemVM(p, this, _ownerVM, _viewRef);
+                pvm.PropertyChanged += OnChildPropertyChanged;
                 Children.Add(pvm);
+            }
+        }
+
+        private void UpdateChildSmoothing(CMachinePropertyItemVM child)
+        {
+            if (child.HasSmoothing || child.ChildHasSmoothing)
+            {
+                _ = m_smoothedChildren.Add(child);
+            }
+            else
+            {
+                _ = m_smoothedChildren.Remove(child);
+            }
+            OnPropertyChanged("ChildHasSmoothing");
+        }
+
+        protected void OnChildPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (sender is CMachinePropertyItemVM child)
+            {
+                switch(e.PropertyName)
+                {
+                    case "ChildHasSmoothing":
+                        UpdateChildSmoothing(child);
+                        break;
+
+                    case "DisplayName":
+                        break;
+
+                    case "DisplayValue":
+                        break;
+
+                    case "GotValue":
+                        //OnPropertyChanged("GotValue");
+                        break;
+
+                    case "HasSmoothing":
+                        UpdateChildSmoothing(child);
+                        break;
+
+                    case "InheritedSmoothingCount":
+                        break;
+
+                    case "IsChecked":
+                        //OnPropertyChanged("IsChecked");
+                        break;
+
+                    case "IsCheckedM":
+                        //OnPropertyChanged("IsCheckedM");
+                        break;
+
+                    case "IsExpanded":
+                        break;
+
+                    case "IsExpandedM":
+                        break;
+
+                    case "IsSelected":
+                        break;
+
+                    case "IsSelectedM":
+                        break;
+
+                    case "Size":
+                        break;
+
+                    case "SmoothingCount":
+                        UpdateChildSmoothing(child);
+                        break;
+
+                    case "SmoothingCountInherited":
+                        break;
+
+                    case "SmoothingUnits":
+                        UpdateChildSmoothing(child);
+                        break;
+
+                    case "SmoothingUnitsInherited":
+                        break;
+
+                    case "SmoothingShape":
+                        UpdateChildSmoothing(child);
+                        break;
+
+                    case "SmoothingShapeInherited":
+                        break;
+
+                    case "StoredValue":
+                        break;
+
+                    case "StoredValueDescription":
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
     }

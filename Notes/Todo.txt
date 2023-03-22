@@ -1,4 +1,6 @@
 An indicator in the treeview to show if a property has smoothing defined
+	Group shows blue if eiter it or a child has smoothing. Need different colours for the two states.
+		Needs another property ChildHasSmoothing
 
 MIDI Mapping:
 	Actions which work on selected properties

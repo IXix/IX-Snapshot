@@ -5,6 +5,7 @@
 		per-property smoothing settings
 		snapshot notes
 	v1.3b
+	Treeview items are now coloured to indicate whether they have actual or inherited smoothing
 		
 
 2023.03.17

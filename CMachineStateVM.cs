@@ -93,6 +93,7 @@ namespace Snapshot
             }
 
             OnPropertyChanged("GotValue");
+            OnPropertyChanged("HasSmoothing");
         }
 
         public override bool GotValue
@@ -118,6 +119,7 @@ namespace Snapshot
                 Properties.Add(_state.DataState);
                 DataState = new CMachinePropertyItemVM(_state.DataState, this, _ownerVM, _viewRef);
                 Children.Add(DataState);
+                DataState.PropertyChanged += OnChildPropertyChanged;
             }
 
             if (_state.AttributeStates.ChildProperties.Count > 0)
@@ -125,6 +127,7 @@ namespace Snapshot
                 Properties.UnionWith(_state.AttributeStates.ChildProperties);
                 AttributeStates = new CPropertyStateGroupVM(_state.AttributeStates, this, _ownerVM, _viewRef);
                 Children.Add(AttributeStates);
+                AttributeStates.PropertyChanged += OnChildPropertyChanged;
             }
 
             if (_state.GlobalStates.ChildProperties.Count > 0)
@@ -132,6 +135,7 @@ namespace Snapshot
                 Properties.UnionWith(_state.GlobalStates.ChildProperties);
                 GlobalStates = new CPropertyStateGroupVM(_state.GlobalStates, this, _ownerVM, _viewRef);
                 Children.Add(GlobalStates);
+                GlobalStates.PropertyChanged += OnChildPropertyChanged;
             }
 
             if (_state.TrackStates.ChildProperties.Count > 0)
@@ -139,6 +143,7 @@ namespace Snapshot
                 Properties.UnionWith(_state.TrackStates.ChildProperties);
                 TrackStates = new CTrackPropertyStateGroupVM(_state.TrackStates, this, _ownerVM, _viewRef);
                 Children.Add(TrackStates);
+                TrackStates.PropertyChanged += OnChildPropertyChanged;
             }
         }
 

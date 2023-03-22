@@ -40,6 +40,7 @@ namespace Snapshot
             {
                 CPropertyStateVM s = new CPropertyStateVM(p, this, _ownerVM, _viewRef);
                 Children.Add(s);
+                s.PropertyChanged += OnChildPropertyChanged;
             }
         }
 

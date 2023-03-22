@@ -53,6 +53,7 @@ namespace Snapshot
             {
                 CPropertyStateGroupVM gvm = new CPropertyStateGroupVM(pg, this, _ownerVM, _viewRef);
                 Children.Add(gvm);
+                gvm.PropertyChanged += OnChildPropertyChanged;
             }
         }
     }
