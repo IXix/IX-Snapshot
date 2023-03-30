@@ -562,9 +562,6 @@ namespace Snapshot
 
             switch (e.PropertyName)
             {
-                case "Name":
-                    //VM.OnPropertyChanged("Name"); //FIXME
-                    break;
 
                 case "TrackCount":
                     UpdateTracks();
@@ -579,6 +576,7 @@ namespace Snapshot
                     // "IsWireless":
                     // "LastEngineThread" :
                     // "MIDIInputChannel":
+                    // "Name":
                     // "OversampleFactor":
                     // "OverrideLatency":
                     // "Patterns":
@@ -672,7 +670,6 @@ namespace Snapshot
             }
 
             // Update treeview and info
-            //VM.OnTrackCountChanged(newCount, _trackCount); // FIXME
             _owner.OnPropertyChanged("SelectionInfo");
 
             // Update tracking

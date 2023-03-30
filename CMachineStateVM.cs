@@ -33,7 +33,7 @@ namespace Snapshot
             switch (e.PropertyName)
             {
                 case "Name":
-                    //FIXME
+                    OnPropertyChanged("DisplayName");
                     break;
 
                 case "TrackCount":
