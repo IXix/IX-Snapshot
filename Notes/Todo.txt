@@ -1,4 +1,14 @@
-BUG: Capture doesn't work for newly added tracks
+BUG:
+	TrackPropertyStateGroup GotValue isn't working properly
+
+Slots and selections
+	Thinking perhaps slots should contain a selection
+	Will help with improved MIDI mapping
+	Machine would have the actual selections that get used in the treeviews
+		Would copy selection from slot on slot change if the option was set
+	Also thinking that we can streamline things a bit by maintaining a hashset of selected properties
+		Now the main VM gets notified on IsChecked etc. we can simply add/remove the sender
+
 
 MIDI Mapping:
 	Actions which work on selected properties

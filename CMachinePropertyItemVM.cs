@@ -88,7 +88,7 @@ namespace Snapshot
         private void OnPropertyDlg_Cancelled(object sender, System.Windows.RoutedEventArgs e)
         {
             _ownerVM.RestoreTempState(this);
-            OnPropertyChanged("HasSmoothing");
+            NotifyPropertyChanged("HasSmoothing");
         }
 
         internal string Validate(string txt)
@@ -145,7 +145,7 @@ namespace Snapshot
             set
             {
                 ReferenceSlot().SetPropertyValue(_property, value);
-                OnPropertyChanged("ValueIsValid");
+                NotifyPropertyChanged("ValueIsValid");
             }
         }
 
@@ -162,21 +162,21 @@ namespace Snapshot
         // This signals the UI to update when the state changes from code eg. slot change, capture, restore
         private void OnPropertyStateChanged(object sender, EventArgs e)
         {
-            OnPropertyChanged("GotValue");
-            OnPropertyChanged("Size");
-            OnPropertyChanged("DisplayValue");
-            OnPropertyChanged("DisplayName");
-            OnPropertyChanged("StoredValue");
-            OnPropertyChanged("StoredValueDescription");
+            NotifyPropertyChanged("GotValue");
+            NotifyPropertyChanged("Size");
+            NotifyPropertyChanged("DisplayValue");
+            NotifyPropertyChanged("DisplayName");
+            NotifyPropertyChanged("StoredValue");
+            NotifyPropertyChanged("StoredValueDescription");
         }
 
         // This signals the UI to update when the tree changes from code eg. the select buttons
         private void OnTreeStateChanged(object sender, TreeStateEventArgs e)
         {
-            OnPropertyChanged("IsChecked");
-            OnPropertyChanged("IsCheckedM");
-            OnPropertyChanged("IsExpanded");
-            OnPropertyChanged("IsExpandedM");
+            NotifyPropertyChanged("IsChecked");
+            NotifyPropertyChanged("IsCheckedM");
+            NotifyPropertyChanged("IsExpanded");
+            NotifyPropertyChanged("IsExpandedM");
         }
 
         internal readonly CSnapshotMachineVM _ownerVM;
@@ -233,7 +233,11 @@ namespace Snapshot
 
         internal void Capture()
         {
-            ReferenceSlot().Capture(_childProperties, false);
+            ReferenceSlot().Capture(_property, false);
+            if(_childProperties.Count > 0)
+            {
+                ReferenceSlot().Capture(_childProperties, false);
+            }
             _ownerVM.Owner.OnPropertyChanged("State");
         }
 
@@ -272,14 +276,14 @@ namespace Snapshot
             get => _property.DisplayName;
         }
 
-        public virtual bool GotValue
-        {
-            get => _property.GotValue;
-        }
+        public virtual bool GotValue => ReferenceSlot().ContainsProperty(_property);
 
         public virtual string DisplayValue
         {
-            get => _property.DisplayValue;
+            get
+            {
+                return ReferenceSlot().GetPropertyDisplayValue(_property);
+            }
         }
 
         public int MaxDigits => _property.MaxDigits;
@@ -315,10 +319,10 @@ namespace Snapshot
                     value = Math.Min(Math.Max((int)value, 0), int.MaxValue);
                 }
                 _property.SmoothingCount = value;
-                OnPropertyChanged("HasSmoothing");
-                OnPropertyChanged("SmoothingCount");
-                OnPropertyChanged("InheritedSmoothingCount");
-                OnPropertyChanged("SmoothingCountInherited");
+                NotifyPropertyChanged("HasSmoothing");
+                NotifyPropertyChanged("SmoothingCount");
+                NotifyPropertyChanged("InheritedSmoothingCount");
+                NotifyPropertyChanged("SmoothingCountInherited");
             }
         }
 
@@ -345,9 +349,9 @@ namespace Snapshot
             set
             {
                 _property.SmoothingUnits = value;
-                OnPropertyChanged("HasSmoothing");
-                OnPropertyChanged("SmoothingUnits");
-                OnPropertyChanged("SmoothingUnitsInherited");
+                NotifyPropertyChanged("HasSmoothing");
+                NotifyPropertyChanged("SmoothingUnits");
+                NotifyPropertyChanged("SmoothingUnitsInherited");
             }
         }
 
@@ -374,9 +378,9 @@ namespace Snapshot
             set
             {
                 _property.SmoothingShape = value;
-                OnPropertyChanged("HasSmoothing");
-                OnPropertyChanged("SmoothingShape");
-                OnPropertyChanged("SmoothingShapeInherited");
+                NotifyPropertyChanged("HasSmoothing");
+                NotifyPropertyChanged("SmoothingShape");
+                NotifyPropertyChanged("SmoothingShapeInherited");
             }
         }
 
@@ -421,7 +425,7 @@ namespace Snapshot
                         Parent.UpdateTreeCheck();
                     }
 
-                    OnPropertyChanged("IsChecked");
+                    NotifyPropertyChanged("IsChecked");
                     Owner.OnPropertyChanged("Selection");
 
                     reentrancyCheck = false;
@@ -459,7 +463,7 @@ namespace Snapshot
                         Parent.UpdateTreeCheck("M");
                     }
 
-                    OnPropertyChanged("IsCheckedM");
+                    NotifyPropertyChanged("IsCheckedM");
 
                     reentrancyCheckM = false;
                 }
@@ -474,7 +478,7 @@ namespace Snapshot
                 if (value != _property.Expanded)
                 {
                     _property.Expanded = value;
-                    OnPropertyChanged("IsExpanded");
+                    NotifyPropertyChanged("IsExpanded");
                 }
 
                 // Expand all the way up to the root.
@@ -491,7 +495,7 @@ namespace Snapshot
                 if (value != _property.Expanded_M)
                 {
                     _property.Expanded_M = value;
-                    OnPropertyChanged("IsExpandedM");
+                    NotifyPropertyChanged("IsExpandedM");
                 }
 
                 // Expand all the way up to the root.
@@ -520,7 +524,7 @@ namespace Snapshot
             {
                 _ = m_smoothedChildren.Remove(child);
             }
-            OnPropertyChanged("ChildHasSmoothing");
+            NotifyPropertyChanged("ChildHasSmoothing");
         }
 
         protected void OnChildPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -551,11 +555,11 @@ namespace Snapshot
                         break;
 
                     case "IsChecked":
-                        //OnPropertyChanged("IsChecked");
+                        NotifyPropertyChanged("IsChecked");
                         break;
 
                     case "IsCheckedM":
-                        //OnPropertyChanged("IsCheckedM");
+                        NotifyPropertyChanged("IsCheckedM");
                         break;
 
                     case "IsExpanded":

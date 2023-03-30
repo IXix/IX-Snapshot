@@ -663,6 +663,7 @@ namespace Snapshot
                             CParameterState ps = new CParameterState(_owner, g, this, tracks.Parameters[gIndex], newIndex);
                             g.ChildProperties.Add(ps);
                             _allProperties.Add(ps);
+                            _owner.AllProperties.Add(ps);
                         }
                         delta--;
                     }

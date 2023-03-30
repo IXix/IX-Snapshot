@@ -236,17 +236,17 @@ namespace Snapshot
             };
         }
 
-        private void OnTreeChanged(object sender, TreeStateEventArgs e)
+        internal void OnTreeChanged(object sender, TreeStateEventArgs e)
         {
             CMachineState ms = sender as CMachineState;
             
             //CMachineStateVM vm = States.First(x => x._state == ms);
             CMachineStateVM vmA = StatesA.First(x => x._state == ms);
             CMachineStateVM vmB = StatesB.First(x => x._state == ms);
-            
+
             //vm.OnPropertyChanged("Expanded");
-            vmA.OnPropertyChanged("ExpandedM");
-            vmB.OnPropertyChanged("ExpandedM");
+            vmA.NotifyPropertyChanged("IsExpandedM");
+            vmB.NotifyPropertyChanged("IsExpandedM");
         }
 
         private void OnSlotPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -495,7 +495,7 @@ namespace Snapshot
                 case "Names":
                     foreach (CMachineStateVM s in States)
                     {
-                        s.OnPropertyChanged("Name");
+                        s.NotifyPropertyChanged("Name");
                     }
                     break;
 
@@ -579,13 +579,49 @@ namespace Snapshot
             state.TreeStateChanged += OnTreeChanged;
 
             var s0 = new CMachineStateVM(state, this, 0);
+            s0.PropertyChanged += OnChildPropertyChanged;
             States.Add(s0);
 
             var s1 = new CMachineStateVM(state, this, 1);
+            s1.PropertyChanged += OnChildPropertyChanged;
             StatesA.Add(s1);
 
             var s2 = new CMachineStateVM(state, this, 2);
+            s2.PropertyChanged += OnChildPropertyChanged;
             StatesB.Add(s2);
+        }
+
+        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch(e.PropertyName)
+            {
+                case "IsChecked":
+                    break;
+
+                case "IsCheckedM":
+                    break;
+
+                case "IsExpanded":
+                    break;
+
+                case "IsExpandedM":
+                    break;
+
+                case "IsSelected":
+                    break;
+
+                case "IsSelectedM":
+                    break;
+
+                case "GotValue":
+                    break;
+
+                case "HasSmoothing":
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         public void RemoveState(CMachineState state)

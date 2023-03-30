@@ -360,8 +360,13 @@ namespace Snapshot
             Capture(m_owner.GetSelectedProperties(true), true);
         }
 
-        public void Capture(CPropertyBase p)
+        public void Capture(CPropertyBase p, bool clearExisting)
         {
+            if (clearExisting)
+            {
+                Clear();
+            }
+
             switch (p.GetType().Name)
             {
                 case "CAttributeState":
@@ -385,6 +390,15 @@ namespace Snapshot
                         DataValues[key] = key.Machine.Data;
                     }
                     break;
+
+                case "CPropertyStateGroup":
+                    return;
+
+                case "CTrackPropertyStateGroup":
+                    return;
+
+                case "CMachineState":
+                    return;
 
                 default:
                     throw new Exception("Unknown property type.");

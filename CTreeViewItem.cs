@@ -70,7 +70,7 @@ namespace Snapshot
                 if (value != _isExpanded)
                 {
                     _isExpanded = value;
-                    OnPropertyChanged("IsExpanded");
+                    NotifyPropertyChanged("IsExpanded");
                 }
 
                 // Expand all the way up to the root.
@@ -87,7 +87,7 @@ namespace Snapshot
                 if (value != _isExpandedM)
                 {
                     _isExpandedM = value;
-                    OnPropertyChanged("IsExpandedM");
+                    NotifyPropertyChanged("IsExpandedM");
                 }
 
                 // Expand all the way up to the root.
@@ -108,7 +108,7 @@ namespace Snapshot
                 if (value != _isSelected)
                 {
                     _isSelected = value;
-                    OnPropertyChanged("IsSelected");
+                    NotifyPropertyChanged("IsSelected");
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace Snapshot
                 if (value != _isSelectedM)
                 {
                     _isSelectedM = value;
-                    OnPropertyChanged("IsSelectedM");
+                    NotifyPropertyChanged("IsSelectedM");
                 }
             }
         }
@@ -134,7 +134,7 @@ namespace Snapshot
                 if (value != _isVisible)
                 {
                     _isVisible = value;
-                    OnPropertyChanged("IsVisible");
+                    NotifyPropertyChanged("IsVisible");
                 }
             }
         }
@@ -147,7 +147,7 @@ namespace Snapshot
                 if (value != _isVisibleM)
                 {
                     _isVisibleM = value;
-                    OnPropertyChanged("IsVisibleM");
+                    NotifyPropertyChanged("IsVisibleM");
                 }
             }
         }
@@ -202,7 +202,7 @@ namespace Snapshot
                         Parent.UpdateTreeCheck();
                     }
 
-                    OnPropertyChanged("IsChecked");
+                    NotifyPropertyChanged("IsChecked");
 
                     reentrancyCheck = false;
                 }
@@ -240,7 +240,7 @@ namespace Snapshot
                         Parent.UpdateTreeCheck("M");
                     }
 
-                    OnPropertyChanged("IsCheckedM");
+                    NotifyPropertyChanged("IsCheckedM");
 
                     reentrancyCheckM = false;
                 }
@@ -322,7 +322,7 @@ namespace Snapshot
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public virtual void OnPropertyChanged(string propertyName)
+        public virtual void NotifyPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

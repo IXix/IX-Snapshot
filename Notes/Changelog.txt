@@ -1,5 +1,7 @@
 2023.03.30
 	Fixed update of treeview when machine renamed
+	Fixed added track params not being handled properly
+		Was scrambling about a bit with this so might have added unnecessary code.
 
 2023.03.22
 	Fixed broken cosine s-curve (formula typo)
