@@ -37,7 +37,7 @@ namespace Snapshot
             {
                 try
                 {
-                    _ = Children.First(x => (x as CMachinePropertyItemVM).GotValue);
+                    _ = Children.First(x => (x as CPropertyStateGroupVM).GotValue);
                     return true;
                 }
                 catch

@@ -1,6 +1,3 @@
-BUG:
-	TrackPropertyStateGroup GotValue isn't working properly
-
 Slots and selections
 	Thinking perhaps slots should contain a selection
 	Will help with improved MIDI mapping

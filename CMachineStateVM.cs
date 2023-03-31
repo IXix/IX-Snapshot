@@ -69,7 +69,15 @@ namespace Snapshot
 
         public void RefreshState(bool refreshProperties)
         {
-            if(AttributeStates != null)
+            if (refreshProperties)
+            {
+                foreach (CPropertyBase p in Properties)
+                {
+                    p.OnPropertyStateChanged();
+                }
+            }
+
+            if (AttributeStates != null)
             {
                 AttributeStates.NotifyPropertyChanged("GotValue");
             }
@@ -81,15 +89,11 @@ namespace Snapshot
 
             if (TrackStates != null)
             {
-                TrackStates.NotifyPropertyChanged("GotValue");
-            }
-
-            if(refreshProperties)
-            {
-                foreach(CPropertyBase p in Properties)
+                foreach(CPropertyStateGroupVM pvm in TrackStates.Children)
                 {
-                    p.OnPropertyStateChanged();
+                    pvm.NotifyPropertyChanged("GotValue");
                 }
+                TrackStates.NotifyPropertyChanged("GotValue");
             }
 
             NotifyPropertyChanged("GotValue");
