@@ -357,7 +357,7 @@ namespace Snapshot
 
         public void Capture()
         {
-            Capture(m_owner.GetSelectedProperties(true), true);
+            Capture(m_owner.Selection, true);
         }
 
         public void Capture(CPropertyBase p, bool clearExisting)
@@ -467,7 +467,7 @@ namespace Snapshot
 
         public void CaptureMissing()
         {
-            HashSet<CPropertyBase> targets = m_owner.GetSelectedProperties(true);
+            HashSet<CPropertyBase> targets = m_owner.Selection;
             targets.RemoveWhere(x => ContainsProperty(x) == true);
             Capture(targets, true);
         }
@@ -673,7 +673,7 @@ namespace Snapshot
 
         public void ClearSelected()
         {
-            Remove(m_owner.GetSelectedProperties(true));
+            Remove(m_owner.Selection);
         }
 
         public void ReadProperty(CPropertyBase p, BinaryReader r)

@@ -1,3 +1,6 @@
+Incorrect behaviour:
+	CMachine.Capture() clears unselected properties. Supposed to only affect selected.
+
 Slots and selections
 	Thinking perhaps slots should contain a selection
 	Will help with improved MIDI mapping

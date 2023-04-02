@@ -579,26 +579,52 @@ namespace Snapshot
             state.TreeStateChanged += OnTreeChanged;
 
             var s0 = new CMachineStateVM(state, this, 0);
-            s0.PropertyChanged += OnChildPropertyChanged;
             States.Add(s0);
 
             var s1 = new CMachineStateVM(state, this, 1);
-            s1.PropertyChanged += OnChildPropertyChanged;
             StatesA.Add(s1);
 
             var s2 = new CMachineStateVM(state, this, 2);
-            s2.PropertyChanged += OnChildPropertyChanged;
             StatesB.Add(s2);
         }
 
-        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
+        internal void OnChildPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            CMachinePropertyItemVM p = sender as CMachinePropertyItemVM;
             switch(e.PropertyName)
             {
+                case "DisplayName":
+                    break;
+
+                case "DisplayValue":
+                    break;
+
                 case "IsChecked":
+                    if(p.Children.Count == 0) // No groups
+                    {
+                        if ((bool) p.IsChecked)
+                        {
+                            Selection.Add(p._property);
+                        }
+                        else
+                        {
+                            Selection.Remove(p._property);
+                        }
+                    }
                     break;
 
                 case "IsCheckedM":
+                    if (p.Children.Count == 0) // No groups
+                    {
+                        if ((bool)p.IsCheckedM)
+                        {
+                            SelectionM.Add(p._property);
+                        }
+                        else
+                        {
+                            SelectionM.Remove(p._property);
+                        }
+                    }
                     break;
 
                 case "IsExpanded":
@@ -613,10 +639,25 @@ namespace Snapshot
                 case "IsSelectedM":
                     break;
 
+                case "IsVisible":
+                    break;
+
+                case "IsVisibleM":
+                    break;
+
                 case "GotValue":
                     break;
 
                 case "HasSmoothing":
+                    break;
+
+                case "Size":
+                    break;
+
+                case "StoredValue":
+                    break;
+
+                case "StoredValueDescription":
                     break;
 
                 default:
@@ -881,7 +922,10 @@ namespace Snapshot
             set => Owner.RestoreOnStop = value;
         }
 
-        public bool GotSelection => Owner.SelCount > 0;
+        private HashSet<CPropertyBase> Selection => Owner.Selection;
+        private HashSet<CPropertyBase> SelectionM => Owner.SelectionM;
+
+        public bool GotSelection => Owner.SelCount > 0; // FIXME: Use new Selection
 
         public bool CanCaptureMissing => Owner.MissingCount > 0;
 

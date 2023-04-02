@@ -20,6 +20,8 @@ namespace Snapshot
             _childProperties = new HashSet<CPropertyBase>();
             m_smoothedChildren = new HashSet<CMachinePropertyItemVM>();
 
+            PropertyChanged += ownerVM.OnChildPropertyChanged;
+
             _property.TreeStateChanged += OnTreeStateChanged;
             _property.PropertyStateChanged += OnPropertyStateChanged;
 
