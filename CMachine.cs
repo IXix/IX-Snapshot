@@ -1361,7 +1361,7 @@ namespace Snapshot
 
         internal void Capture()
         {
-            CurrentSlot.Capture(Selection, true);
+            CurrentSlot.Capture(Selection, false);
             OnPropertyChanged("State");
         }
 

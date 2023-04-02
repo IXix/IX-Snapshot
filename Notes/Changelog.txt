@@ -3,6 +3,7 @@
 		Updated in OnChildPropertyChanged
 		Hopefully better performance than previous method of iterating through properties
 		OnChildPropertyChanged gets called several times for each property though, not sure why
+	CMachine.Capture() no longer clears unselected properties
 
 2023.03.31
 	Fixed update of track params in treeviews
