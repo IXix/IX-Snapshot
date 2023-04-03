@@ -1,3 +1,13 @@
+2023.04.03
+	Added CMidiAction and derived types
+		CMidiAction for zero argument methods
+		CMidiActionSelection for methods which just require a selection
+		CMidiActionSelectionBool for methods which require a selection and a boolean
+	Altered MidiMap and _midiMapping structures
+	Adjusted MapCommand, MidiNote and MidiControlChange
+	Adjusted save/load code
+		Amazingly doesn't seem to require a change of data format!
+
 2023.04.02
 	Added CMachine. Selection and SelectionM
 		Updated in OnChildPropertyChanged

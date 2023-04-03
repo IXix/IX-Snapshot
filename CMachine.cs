@@ -324,10 +324,26 @@ namespace Snapshot
         public bool SlotHasData => CurrentSlot.StoredCount > 0;
 
         // This is the mapping of UI actions to MIDI events
-        public Dictionary<Action, CMidiEvent> MidiMap { get; private set; }
+        public class CMidiTargetInfo
+        {
+            public readonly int index; // slot index or -1 for machine
+            public readonly string command; // "Capture" etc.
+
+            public CMidiTargetInfo(int idx, string cmd)
+            {
+                index = idx;
+                command = cmd;
+            }
+
+            public override int GetHashCode()
+            {
+                return string.Format("%d%s", index, command).GetHashCode();
+            }
+        }
+        public Dictionary<CMidiTargetInfo, CMidiEvent> MidiMap { get; private set; }
 
         // This is the mechanism to trigger UI actions in response to MIDI events
-        private readonly Dictionary<Action, UInt32 /*code*/> _midiMapping;
+        private readonly Dictionary<UInt32 /*code*/, HashSet<CMidiAction>> _midiMapping;
 
         #region IBuzzMachine
 
@@ -344,8 +360,8 @@ namespace Snapshot
             };
             WorkThread.Start();
 
-            MidiMap = new Dictionary<Action, CMidiEvent>();
-            _midiMapping = new Dictionary<Action, UInt32>();
+            MidiMap = new Dictionary<CMidiTargetInfo, CMidiEvent>();
+            _midiMapping = new Dictionary<uint, HashSet<CMidiAction>>();
             _confirmClear = true;
 
             changeLock = new object();
@@ -826,49 +842,74 @@ namespace Snapshot
             SlotB.Restore();
         }
 
-        internal void MapCommand(string command, bool specific)
+        internal CMidiAction CreateMidiAction(object target, string command, bool specific)
         {
-            // Find the command
-            object target;
-            Type targetType;
-            MethodInfo method;
-            string owner;
             if (specific)
             {
-                targetType = CurrentSlot.GetType();
-                method = targetType.GetMethod(command, new Type[] { });
-                target = CurrentSlot;
-                owner = CurrentSlot.Name;
+                switch (command)
+                {
+                    case "Capture":
+                        return new CMidiActionSelectionBool(target, command, Selection, false);
+
+                    case "Clear":
+                        return new CMidiActionSelection(target, command, Selection);
+
+                    default:
+                        return new CMidiAction(target, command);
+                }
             }
             else
             {
-                targetType = this.GetType();
-                method = targetType.GetMethod(command, BindingFlags.NonPublic | BindingFlags.Instance);
-                target = this;
-                owner = Name;
+
+                return new CMidiAction(target, command);
+                //method = targetType.GetMethod(command, BindingFlags.NonPublic | BindingFlags.Instance);
             }
-            Action a = (Action)Delegate.CreateDelegate(typeof(Action), target, method);
+        }
+
+        internal void MapCommand(string command, bool specific)
+        {
+            string owner;
+            object target;
+            int index;
+
+            if (specific)
+            {
+                owner = CurrentSlot.Name;
+                index = CurrentSlot.Index;
+                target = CurrentSlot;
+            }
+            else
+            {
+                owner = Name;
+                target = this;
+                index = -1;
+            }
 
             // Retrieve the mapping or use defaults
+            CMidiTargetInfo key;
             CMidiEvent e;
-            if (MidiMap.ContainsKey(a))
+            try
             {
-                e = MidiMap[a];
+                var pair = MidiMap.Single(x => x.Key.index == index && x.Key.command == command);
+                key = pair.Key;
+                e = pair.Value;
             }
-            else
+            catch
             {
+                key = new CMidiTargetInfo(index, command);
                 e = new CMidiEvent();
             }
 
             // Show mapping dialog
-            _mappingDialog = new CMappingDialog(this, a.Method.Name, owner, e);
+            _mappingDialog = new CMappingDialog(this, command, owner, e);
             bool? result = _mappingDialog.ShowDialog();
 
             // Add/update mapping if necessary
             if (result == true)
             {
-                MidiMap[a] = e;
-                _midiMapping[a] = e.Encode();
+                MidiMap[key] = e;
+                CMidiAction a = CreateMidiAction(target, command, specific);
+                _midiMapping[e.Encode()].Add(a); // Don't think this will work. Need a way to avoid duplicate actions
             }
 
             // Reset these
@@ -924,25 +965,14 @@ namespace Snapshot
 
             // Save MIDI mapping
             w.Write(MidiMap.Count());
-            foreach (KeyValuePair<Action, CMidiEvent> item in MidiMap)
+            foreach (KeyValuePair<CMidiTargetInfo, CMidiEvent> item in MidiMap)
             {
-                Action a = item.Key;
+                CMidiTargetInfo info = item.Key;
+                CMidiEvent e = item.Value;
 
-                // if action belongs to a snapshot, we need to save the index
-                int slot = -1;
-                switch (a.Target.GetType().Name)
-                {
-                    case "CMachineSnapshot":
-                        slot = (a.Target as CMachineSnapshot).Index;
-                        break;
-
-                    default:
-                        break;
-                }
-
-                w.Write(a.Method.Name);
-                w.Write(slot);
-                item.Value.WriteData(w);
+                w.Write(info.command);
+                w.Write(info.index);
+                e.WriteData(w);
             }
 
             // Build a list of states to save by finding which are referred to by snapshots
@@ -1051,32 +1081,32 @@ namespace Snapshot
             Int32 numMappings = r.ReadInt32();
             for (int n = 0; n < numMappings; n++)
             {
-                string action = r.ReadString();
+                string command = r.ReadString();
                 int slot = r.ReadInt32();
+
+                CMidiTargetInfo info = new CMidiTargetInfo(slot, command);
                 CMidiEvent e = new CMidiEvent();
                 e.ReadData(r);
 
                 // Restore mapping settings
                 object target;
-                Type targetType;
-                MethodInfo method;
+                bool specific;
+
                 if (slot < 0) // machine action
                 {
-                    targetType = typeof(CMachine);
-                    method = targetType.GetMethod(action, BindingFlags.NonPublic | BindingFlags.Instance);
                     target = this;
+                    specific = false;
                 }
                 else // snapshot action
                 {
-                    targetType = typeof(CMachineSnapshot);
-                    method = targetType.GetMethod(action, new Type[] { });
                     target = _slots[slot];
+                    specific = true;
                 }
 
                 // Restore settings
-                Action a = (Action)Delegate.CreateDelegate(typeof(Action), target, method);
-                MidiMap[a] = e; // settings
-                _midiMapping[a] = e.Encode(); // mapping
+                CMidiAction a = CreateMidiAction(target, command, specific);
+                MidiMap[info] = e; // settings
+                _midiMapping[e.Encode()].Add(a); // mapping
             }
 
             // number of saved states
@@ -1179,11 +1209,13 @@ namespace Snapshot
             // This note on any channel
             UInt32 c2 = (UInt32)((noteOn << 24) | (128 /*v=any*/ << 16) | (note << 8) | 16 /*c=any*/);
 
-            if (velocity == 0)
+            if (velocity == 0) //Note-off
             {
                 c1 = c1 & 0xFFFFFF | (noteOff << 24);
+                c2 = c2 & 0xFFFFFF | (noteOff << 24);
             }
 
+            // If we're learning...
             if (LearnEvent != null)
             {
                 LearnEvent.Message = noteOn;
@@ -1195,12 +1227,19 @@ namespace Snapshot
                 return;
             }
 
-            // Fire off matching actions
-            foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2))
+            // Fire off matching actions, this note, this channel 
+            foreach (CMidiAction item in _midiMapping[c1])
             {
-                item.Key();
-                OnPropertyChanged("State");
+                item.Trigger();
             }
+
+            // Fire off matching actions, this note, any channel 
+            foreach (CMidiAction item in _midiMapping[c2])
+            {
+                item.Trigger();
+            }
+
+            OnPropertyChanged("State");
         }
 
         public void MidiControlChange(int ctrl, int channel, int value)
@@ -1219,6 +1258,7 @@ namespace Snapshot
             // This controller on any channel, with any value
             UInt32 c4 = (UInt32)((msg << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | 16 /*c=any*/);
 
+            // If we're learning...
             if (LearnEvent != null)
             {
                 LearnEvent.Message = msg;
@@ -1230,12 +1270,31 @@ namespace Snapshot
                 return;
             }
 
-            // Fire off matching actions
-            foreach (KeyValuePair<Action, UInt32> item in _midiMapping.Where(x => x.Value == c1 || x.Value == c2 || x.Value == c3 || x.Value == c4))
+            // Fire off matching actions, this controller, this channel, this value
+            foreach (CMidiAction item in _midiMapping[c1])
             {
-                item.Key();
-                OnPropertyChanged("State");
+                item.Trigger();
             }
+
+            // Fire off matching actions, this controller, this channel, any value
+            foreach (CMidiAction item in _midiMapping[c2])
+            {
+                item.Trigger();
+            }
+
+            // Fire off matching actions, this controller, any channel, this value
+            foreach (CMidiAction item in _midiMapping[c3])
+            {
+                item.Trigger();
+            }
+
+            // Fire off matching actions, this controller, any channel, any value
+            foreach (CMidiAction item in _midiMapping[c4])
+            {
+                item.Trigger();
+            }
+
+            OnPropertyChanged("State");
         }
 
         #endregion IBuzzMachine

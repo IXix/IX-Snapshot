@@ -64,6 +64,7 @@
     <Compile Include="CMachineState.cs" />
     <Compile Include="CMachine.cs" />
     <Compile Include="CMachineStateVM.cs" />
+    <Compile Include="CMidiAction.cs" />
     <Compile Include="CParamChange.cs" />
     <Compile Include="CPropertyStateGroupVM.cs" />
     <Compile Include="CSnapshotMachineVM.cs" />
