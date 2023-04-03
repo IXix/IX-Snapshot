@@ -1,11 +1,14 @@
+Save/load selection seems broken
+
 MIDI Mapping:
-	Test whether it's possible to map the same command multiple times
+	Warn when MIDI event is already mapped to another action
+		Might want to have one MIDI message do multiple actions but some would cause conflict eg. Capture and Clear on same slot
+
 	Add UI for selection/clear options
 		Not appropriate for every command so need to hide/disable based on command string
 
-	Warn when MIDI message is already mapped to something else
-		Might want to have one MIDI message do multiple actions but some would cause conflict eg. Capture and Clear on same slot
-		Might want same in main UI
+	Purge/Clear via MIDI should have option to confirm
+		Add bool to the methods and change to CMidiActionSelectionBool
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.

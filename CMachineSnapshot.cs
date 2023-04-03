@@ -465,11 +465,10 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void CaptureMissing()
+        public void CaptureMissing(HashSet<CPropertyBase> targets)
         {
-            HashSet<CPropertyBase> targets = m_owner.Selection;
-            targets.RemoveWhere(x => ContainsProperty(x) == true);
-            Capture(targets, true);
+            HashSet<CPropertyBase> missing = targets.Where(x => ContainsProperty(x) == false).ToHashSet();
+            Capture(missing, false);
         }
 
         public void Restore(HashSet<CPropertyBase> properties)
@@ -549,24 +548,10 @@ namespace Snapshot
                 );
         }
 
-        public void Purge()
+        public void Purge(HashSet<CPropertyBase> selection)
         {
-            Purge(true);
-        }
-
-        public void Purge(bool main)
-        {
-            HashSet<CPropertyBase> removers;
-            if (main)
-            {
-                removers = StoredProperties.Where(x => x.Active == false || x.Checked == false).ToHashSet();
-                Remove(removers);
-            }
-            else
-            {
-                removers = StoredProperties.Where(x => x.Active == false || x.Checked_M == false).ToHashSet();
-                Remove(removers);
-            }
+            HashSet<CPropertyBase> removers = StoredProperties.Where(x => x.Active == false || selection.Contains(x) == false).ToHashSet();
+            Remove(removers);
 
             foreach(CPropertyBase p in removers.Where(x => x.Active))
             {
@@ -671,9 +656,9 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void ClearSelected()
+        public void ClearSelected(HashSet<CPropertyBase> targets)
         {
-            Remove(m_owner.Selection);
+            Remove(targets);
         }
 
         public void ReadProperty(CPropertyBase p, BinaryReader r)

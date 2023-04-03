@@ -7,6 +7,10 @@
 	Adjusted MapCommand, MidiNote and MidiControlChange
 	Adjusted save/load code
 		Amazingly doesn't seem to require a change of data format!
+	Fixed some instances where an action unintentionally modified the selection
+	Reworked Purge methods
+	Fixed various bugs in new MIDI stuff
+	Mapping dialog now blocks all MIDI while open
 
 2023.04.02
 	Added CMachine. Selection and SelectionM

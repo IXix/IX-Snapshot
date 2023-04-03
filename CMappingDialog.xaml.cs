@@ -53,6 +53,7 @@ namespace Snapshot
 
             Command = command;
             Settings = settings;
+            _owner.MappingDialogSettings = Settings; // Blocks MIDI events
 
             InitializeComponent();
 
@@ -75,15 +76,14 @@ namespace Snapshot
         public string Command { get; set; }
         public CMidiEvent Settings { get; set; }
 
-        bool _learning;
         public bool Learning
         {
-            get => _learning;
+            get => _owner.MappingDialogSettings.Learning;
             set
             {
-                if(value != _learning)
+                if(value != _owner.MappingDialogSettings.Learning)
                 {
-                    _learning = value;
+                    _owner.MappingDialogSettings.Learning = value;
                     OnPropertyChanged("Learning");
                     OnPropertyChanged("Settings");
                 }
@@ -102,7 +102,6 @@ namespace Snapshot
 
         private void btnLearn_Click(object sender, RoutedEventArgs e)
         {
-            _owner.LearnEvent = Settings;
             Learning = true;
         }
     }

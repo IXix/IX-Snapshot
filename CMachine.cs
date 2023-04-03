@@ -339,6 +339,12 @@ namespace Snapshot
             {
                 return string.Format("%d%s", index, command).GetHashCode();
             }
+
+            public override bool Equals(object obj)
+            {
+                CMidiTargetInfo that = obj as CMidiTargetInfo;
+                return index == that.index && command == that.command;
+            }
         }
         public Dictionary<CMidiTargetInfo, CMidiEvent> MidiMap { get; private set; }
 
@@ -753,7 +759,7 @@ namespace Snapshot
 
         public void CaptureMissingA()
         {
-            HashSet<CPropertyBase> targets = SelectionM;
+            HashSet<CPropertyBase> targets = new HashSet<CPropertyBase>(SelectionM);
             targets.RemoveWhere(x => SlotA.ContainsProperty(x) == true);
             SlotA.Capture(targets, false);
             OnPropertyChanged("State");
@@ -764,7 +770,7 @@ namespace Snapshot
             string msg = string.Format("Discard {0} stored properties from {1}?", SlotA.RedundantCount_M, SlotA.Name);
             if (Confirm("Confirm purge", msg))
             {
-                SlotA.Purge(false);
+                SlotA.Purge(SelectionM);
                 OnPropertyChanged("State");
             }
         }
@@ -802,7 +808,7 @@ namespace Snapshot
 
         public void CaptureMissingB()
         {
-            HashSet<CPropertyBase> targets = SelectionM;
+            HashSet<CPropertyBase> targets = new HashSet<CPropertyBase>(SelectionM);
             targets.RemoveWhere(x => SlotB.ContainsProperty(x) == true);
             SlotB.Capture(targets, false);
             OnPropertyChanged("State");
@@ -813,7 +819,7 @@ namespace Snapshot
             string msg = string.Format("Discard {0} stored properties from {1}?", SlotB.RedundantCount_M, SlotB.Name);
             if (Confirm("Confirm purge", msg))
             {
-                SlotB.Purge(false);
+                SlotB.Purge(SelectionM);
                 OnPropertyChanged("State");
             }
         }
@@ -851,7 +857,13 @@ namespace Snapshot
                     case "Capture":
                         return new CMidiActionSelectionBool(target, command, Selection, false);
 
-                    case "Clear":
+                    case "CaptureMissing":
+                        return new CMidiActionSelection(target, command, Selection);
+
+                    case "ClearSelected":
+                        return new CMidiActionSelection(target, command, Selection);
+
+                    case "Purge":
                         return new CMidiActionSelection(target, command, Selection);
 
                     default:
@@ -860,9 +872,7 @@ namespace Snapshot
             }
             else
             {
-
                 return new CMidiAction(target, command);
-                //method = targetType.GetMethod(command, BindingFlags.NonPublic | BindingFlags.Instance);
             }
         }
 
@@ -888,11 +898,13 @@ namespace Snapshot
             // Retrieve the mapping or use defaults
             CMidiTargetInfo key;
             CMidiEvent e;
+            UInt32? prevCode = null;
             try
             {
                 var pair = MidiMap.Single(x => x.Key.index == index && x.Key.command == command);
                 key = pair.Key;
                 e = pair.Value;
+                prevCode = e.Encode();
             }
             catch
             {
@@ -908,12 +920,34 @@ namespace Snapshot
             if (result == true)
             {
                 MidiMap[key] = e;
+                UInt32 code = e.Encode();
                 CMidiAction a = CreateMidiAction(target, command, specific);
-                _midiMapping[e.Encode()].Add(a); // Don't think this will work. Need a way to avoid duplicate actions
+
+                // Remove old mapping if necessary
+                if(prevCode != null && code != prevCode)
+                {
+                    _midiMapping[(UInt32)prevCode].Remove(a);
+                    if(_midiMapping[(UInt32)prevCode].Count == 0)
+                    {
+                        _midiMapping.Remove((UInt32)prevCode);
+                    }
+                }
+
+                if (e.Message > 0) // Add if message isn't undefined
+                {
+                    if (_midiMapping.ContainsKey(code))
+                    {
+                        _midiMapping[code].Add(a);
+                    }
+                    else
+                    {
+                        _midiMapping[code] = new HashSet<CMidiAction>() { a };
+                    }
+                }
             }
 
             // Reset these
-            LearnEvent = null;
+            MappingDialogSettings = null;
             _mappingDialog = null;
         }
 
@@ -964,6 +998,8 @@ namespace Snapshot
             }
 
             // Save MIDI mapping
+            //   We could prune items where e.Message == 0 but no harm leaving them.
+            //   Just don't add them to the _midiMapping on load.
             w.Write(MidiMap.Count());
             foreach (KeyValuePair<CMidiTargetInfo, CMidiEvent> item in MidiMap)
             {
@@ -1106,7 +1142,10 @@ namespace Snapshot
                 // Restore settings
                 CMidiAction a = CreateMidiAction(target, command, specific);
                 MidiMap[info] = e; // settings
-                _midiMapping[e.Encode()].Add(a); // mapping
+                if(e.Message > 0)  // don't add undefined messages to the mapping
+                {
+                    _midiMapping[e.Encode()].Add(a); // mapping
+                }
             }
 
             // number of saved states
@@ -1198,10 +1237,36 @@ namespace Snapshot
             }
         }
 
+        private void DoMidiAction(UInt32 code)
+        {
+            if (_midiMapping.ContainsKey(code))
+            {
+                foreach (CMidiAction item in _midiMapping[code])
+                {
+                    item.Trigger();
+                }
+            }
+        }
+
         public void MidiNote(int channel, int note, int velocity)
         {
             const Byte noteOn = 1;
             const Byte noteOff = 2;
+
+            // If MIDI dialog is open...
+            if (MappingDialogSettings != null)
+            {
+                // If we're actually learning, store the values and stop learning
+                if (MappingDialogSettings.Learning)
+                {
+                    MappingDialogSettings.Message = noteOn;
+                    MappingDialogSettings.Channel = (Byte)channel;
+                    MappingDialogSettings.Primary = (Byte)note;
+                    MappingDialogSettings.Secondary = (Byte)128; // undefined
+                    _mappingDialog.Learning = false;
+                }
+                return;
+            }
 
             // This note on this channel
             UInt32 c1 = (UInt32)((noteOn << 24) | (128 /*v=any*/ << 16) | (note << 8) | channel);
@@ -1215,29 +1280,11 @@ namespace Snapshot
                 c2 = c2 & 0xFFFFFF | (noteOff << 24);
             }
 
-            // If we're learning...
-            if (LearnEvent != null)
-            {
-                LearnEvent.Message = noteOn;
-                LearnEvent.Channel = (Byte)channel;
-                LearnEvent.Primary = (Byte)note;
-                LearnEvent.Secondary = (Byte)128; // undefined
-                LearnEvent = null;
-                _mappingDialog.Learning = false;
-                return;
-            }
+            // Fire off matching actions, this note, this channel
+            DoMidiAction(c1);
 
-            // Fire off matching actions, this note, this channel 
-            foreach (CMidiAction item in _midiMapping[c1])
-            {
-                item.Trigger();
-            }
-
-            // Fire off matching actions, this note, any channel 
-            foreach (CMidiAction item in _midiMapping[c2])
-            {
-                item.Trigger();
-            }
+            // Fire off matching actions, this note, any channel
+            DoMidiAction(c2);
 
             OnPropertyChanged("State");
         }
@@ -1245,6 +1292,21 @@ namespace Snapshot
         public void MidiControlChange(int ctrl, int channel, int value)
         {
             const Byte msg = 3; // Controller
+
+            // If MIDI dialog is open...
+            if (MappingDialogSettings != null)
+            {
+                // If we're actually learning, store the values and stop learning
+                if (MappingDialogSettings.Learning)
+                {
+                    MappingDialogSettings.Message = msg;
+                    MappingDialogSettings.Channel = (Byte)channel;
+                    MappingDialogSettings.Primary = (Byte)ctrl;
+                    MappingDialogSettings.Secondary = (Byte)value;
+                    _mappingDialog.Learning = false;
+                    return;
+                }
+            }
 
             // This controller on this channel, with this value
             UInt32 c1 = (UInt32)((msg << 24) | (value << 16) | (ctrl << 8) | channel);
@@ -1258,41 +1320,17 @@ namespace Snapshot
             // This controller on any channel, with any value
             UInt32 c4 = (UInt32)((msg << 24) | (128/*v=any*/ << 16) | (ctrl << 8) | 16 /*c=any*/);
 
-            // If we're learning...
-            if (LearnEvent != null)
-            {
-                LearnEvent.Message = msg;
-                LearnEvent.Channel = (Byte)channel;
-                LearnEvent.Primary = (Byte)ctrl;
-                LearnEvent.Secondary = (Byte)value;
-                LearnEvent = null;
-                _mappingDialog.Learning = false;
-                return;
-            }
-
             // Fire off matching actions, this controller, this channel, this value
-            foreach (CMidiAction item in _midiMapping[c1])
-            {
-                item.Trigger();
-            }
+            DoMidiAction(c1);
 
             // Fire off matching actions, this controller, this channel, any value
-            foreach (CMidiAction item in _midiMapping[c2])
-            {
-                item.Trigger();
-            }
+            DoMidiAction(c2);
 
             // Fire off matching actions, this controller, any channel, this value
-            foreach (CMidiAction item in _midiMapping[c3])
-            {
-                item.Trigger();
-            }
+            DoMidiAction(c3);
 
             // Fire off matching actions, this controller, any channel, any value
-            foreach (CMidiAction item in _midiMapping[c4])
-            {
-                item.Trigger();
-            }
+            DoMidiAction(c4);
 
             OnPropertyChanged("State");
         }
@@ -1412,7 +1450,7 @@ namespace Snapshot
             get; set;
         }
 
-        public CMidiEvent LearnEvent { get; internal set; }
+        public CMidiEvent MappingDialogSettings { get; internal set; }
 
         #endregion Global Parameters
 
@@ -1426,16 +1464,23 @@ namespace Snapshot
 
         internal void CaptureMissing()
         {
-            HashSet<CPropertyBase> targets = Selection;
-            targets.RemoveWhere(x => CurrentSlot.ContainsProperty(x) == true);
-            CurrentSlot.Capture(targets, false);
+            CurrentSlot.CaptureMissing(Selection);
             OnPropertyChanged("State");
         }
 
-        internal void Restore(object param = null)
+        internal void Restore(object param = null) // This one is for the worker thread
         {
             CMachineSnapshot s = CurrentSlot;
             if(s.HasData)
+            {
+                s.Restore();
+            }
+        }
+
+        internal void Restore() // This one is for MIDI
+        {
+            CMachineSnapshot s = CurrentSlot;
+            if (s.HasData)
             {
                 s.Restore();
             }
@@ -1446,7 +1491,7 @@ namespace Snapshot
             string msg = string.Format("Discard {0} stored properties?", CurrentSlot.RedundantCount);
             if (Confirm("Confirm purge", msg))
             {
-                CurrentSlot.Purge(true);
+                CurrentSlot.Purge(Selection);
                 OnPropertyChanged("State");
             }
         }
@@ -1556,6 +1601,8 @@ namespace Snapshot
             Primary = 128;
             Secondary = 128;
         }
+
+        public bool Learning { get; set; }
 
         public Byte Channel { get; set; } // 16 = Any
 
