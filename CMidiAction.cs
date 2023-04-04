@@ -15,14 +15,17 @@ namespace Snapshot
         protected readonly string m_methodName;
         protected readonly Type m_targetType;
 
+        protected readonly CMidiEventSettings m_settings;
+
         protected MethodInfo m_methodInfo;
         protected Action m_action; // Derived types hide this with their own implementations
 
-        public CMidiAction(object target, string methodName)
+        public CMidiAction(object target, string methodName, CMidiEventSettings settings)
         {
             m_target = target;
             m_targetType = m_target.GetType();
             m_methodName = methodName;
+            m_settings = settings;
 
             Init();
         }
@@ -58,10 +61,10 @@ namespace Snapshot
         protected HashSet<CPropertyBase> m_selection;
         protected new Action<HashSet<CPropertyBase>> m_action;
 
-        public CMidiActionSelection(object target, string methodName, HashSet<CPropertyBase> selection)
-            : base(target, methodName)
+        public CMidiActionSelection(object target, string methodName, CMidiEventSettings settings)
+            : base(target, methodName, settings)
         {
-            m_selection = new HashSet<CPropertyBase>(selection);
+            m_selection = settings.Selection;
         }
 
         protected override void Init()
@@ -82,10 +85,10 @@ namespace Snapshot
         protected new Action<HashSet<CPropertyBase>, bool> m_action;
         protected bool m_bval;
 
-        public CMidiActionSelectionBool(object target, string methodName, HashSet<CPropertyBase> selection, bool bval)
-            : base(target, methodName, selection)
+        public CMidiActionSelectionBool(object target, string methodName, CMidiEventSettings settings)
+            : base(target, methodName, settings)
         {
-            m_bval = bval;
+            m_bval = settings.BoolOption1;
         }
 
         protected override void Init()

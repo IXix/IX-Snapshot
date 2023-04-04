@@ -296,6 +296,61 @@ namespace Snapshot
             };
             PropertyStateChanged?.Invoke(this, args);
         }
+
+        public void WriteSmoothingInfo(BinaryWriter w)
+        {
+            w.Write((Int32)(SmoothingCount ?? -1));
+            w.Write((Int32)(SmoothingUnits ?? -1));
+            w.Write((Int32)(SmoothingShape ?? -1));
+        }
+
+        public void ReadSmoothingInfo(BinaryReader r)
+        {
+            SmoothingCount = r.ReadInt32();
+            SmoothingUnits = r.ReadInt32();
+            SmoothingShape = r.ReadInt32();
+        }
+
+        public virtual void WritePropertyInfo(BinaryWriter w)
+        {
+            throw new Exception("Unexpected call to CPropertyBase.WritePropertyInfo()");
+        }
+
+        public static CPropertyBase FindPropertyFromSavedInfo(BinaryReader r, CMachineState s)
+        {
+            CPropertyBase p = null;
+
+            Byte type = r.ReadByte();
+            switch(type)
+            {
+                case 0: // Attribute
+                    string name = r.ReadString();
+                    p = s.AttributeStates.ChildProperties.Single(x => x.Name == name);
+                    break;
+
+                case 1: // Parameter
+                    Byte group = r.ReadByte();
+                    Int32 idx = r.ReadInt32();
+                    Int32 track = -1;
+                    if (group == (Byte) ParameterGroupType.Track)
+                    {
+                        track = r.ReadInt32();
+                    }
+
+                    IParameter param = s.Machine.ParameterGroups[group].Parameters[idx];
+                    p = s.AllProperties.Single(x => x is CParameterState && (x as CParameterState).Parameter == param && x.Track == track);
+                    break;
+
+                case 2: // Data
+                    p = s.DataState;
+                    break;
+
+                default:
+                    throw new Exception("Unexpected type in CPropertyBase.ReadPropertyInfo");
+            }
+
+            return p;
+        }
     }
 
     public class CParameterState : CPropertyBase
@@ -331,6 +386,16 @@ namespace Snapshot
             return Parameter.DescribeValue(value);
         }
 
+        public override void WritePropertyInfo(BinaryWriter w)
+        {
+            w.Write((Byte)1); // Property type 1 == Parameter
+            w.Write((Byte) Parameter.Group.Type);
+            w.Write((Int32)Parameter.IndexInGroup);
+            if(Parameter.Group.Type == ParameterGroupType.Track)
+            {
+                w.Write(Track ?? -1);
+            }
+        }
     }
 
     public class CAttributeState : CPropertyBase
@@ -353,6 +418,12 @@ namespace Snapshot
         public override int Size => sizeof(int);
 
         public override int? CurrentValue => Attribute.Value;
+
+        public override void WritePropertyInfo(BinaryWriter w)
+        {
+            w.Write((Byte)0); // Property type 0 == Attribute
+            w.Write(Attribute.Name);
+        }
     }
 
     public class CDataState : CPropertyBase
@@ -406,6 +477,11 @@ namespace Snapshot
                     return;
                 }
             }));
+        }
+
+        public override void WritePropertyInfo(BinaryWriter w)
+        {
+            w.Write((Byte)2); // Property type 2 == Data
         }
     }
 

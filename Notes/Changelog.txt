@@ -1,3 +1,14 @@
+2023.04.04
+	Implemented UI for new specific midi action options
+	Renamed CMidiEvent to CMidiEventSettings
+	Reduced code repetition in save/load routines for smoothing data
+	Improved save/load of properties
+		Old method didn't account for potential duplicate param names
+		Added CPropertyBase. WritePropertyInfo() and FindPropertyFromSavedInfo()
+	Implemented save/load of midi action selection
+		Selection is now part of CMidiEventSettings rather than CMidiAction
+	Added some missing properties to CSnapshotMachineVM.OnChildPropertyChanged()
+
 2023.04.03
 	Added CMidiAction and derived types
 		CMidiAction for zero argument methods

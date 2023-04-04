@@ -18,11 +18,52 @@ namespace Snapshot
 {
     public partial class CMappingDialog : Window, INotifyPropertyChanged
     {
-        public CMappingDialog(CMachine owner, string command, string target, CMidiEvent settings)
+        public CMappingDialog(CMachine owner, string command, string target, CMidiEventSettings settings, bool specific)
         {
             _owner = owner;
 
             DataContext = this;
+
+            // These are off for machine level actions
+            ShowSelectionCheck = false;
+            ShowBoolOption1 = false;
+
+            if (specific)
+            {
+                switch (command)
+                {
+                    case "Capture":
+                        ShowSelectionCheck = true;
+                        ShowBoolOption1 = true;
+                        BoolOption1Text = "Clear existing values";
+                        break;
+
+                    case "CaptureMissing":
+                        ShowSelectionCheck = true;
+                        break;
+
+                    case "Clear":
+                        ShowBoolOption1 = true;
+                        BoolOption1Text = "Require confirmation";
+                        break;
+
+                    case "ClearSelected":
+                        ShowBoolOption1 = true;
+                        BoolOption1Text = "Require confirmation";
+                        break;
+
+                    case "Purge":
+                        ShowBoolOption1 = true;
+                        BoolOption1Text = "Require confirmation";
+                        break;
+
+                    case "Restore":
+                        break;
+
+                    default:
+                        break;
+                }
+            }
 
             TypeValues = new List<string>();
             TypeValues.Add("Undefined");
@@ -74,7 +115,12 @@ namespace Snapshot
         readonly CMachine _owner;
 
         public string Command { get; set; }
-        public CMidiEvent Settings { get; set; }
+        public CMidiEventSettings Settings { get; set; }
+
+        public bool ShowSelectionCheck { get; set; }
+
+        public bool ShowBoolOption1 { get; set; }
+        public string BoolOption1Text { get; set; }
 
         public bool Learning
         {

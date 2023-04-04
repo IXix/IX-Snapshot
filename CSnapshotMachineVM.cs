@@ -593,10 +593,16 @@ namespace Snapshot
             CMachinePropertyItemVM p = sender as CMachinePropertyItemVM;
             switch(e.PropertyName)
             {
+                case "ChildHasSmoothing":
+                    break;
+
                 case "DisplayName":
                     break;
 
                 case "DisplayValue":
+                    break;
+
+                case "InheritedSmoothingCount":
                     break;
 
                 case "IsChecked":
@@ -652,6 +658,24 @@ namespace Snapshot
                     break;
 
                 case "Size":
+                    break;
+
+                case "SmoothingCount":
+                    break;
+
+                case "SmoothingCountInherited":
+                    break;
+
+                case "SmoothingUnits":
+                    break;
+
+                case "SmoothingUnitsInherited":
+                    break;
+
+                case "SmoothingShape":
+                    break;
+
+                case "SmoothingShapeInherited":
                     break;
 
                 case "StoredValue":

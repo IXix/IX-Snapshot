@@ -346,7 +346,7 @@ namespace Snapshot
                 return index == that.index && command == that.command;
             }
         }
-        public Dictionary<CMidiTargetInfo, CMidiEvent> MidiMap { get; private set; }
+        public Dictionary<CMidiTargetInfo, CMidiEventSettings> MidiMap { get; private set; }
 
         // This is the mechanism to trigger UI actions in response to MIDI events
         private readonly Dictionary<UInt32 /*code*/, HashSet<CMidiAction>> _midiMapping;
@@ -366,7 +366,7 @@ namespace Snapshot
             };
             WorkThread.Start();
 
-            MidiMap = new Dictionary<CMidiTargetInfo, CMidiEvent>();
+            MidiMap = new Dictionary<CMidiTargetInfo, CMidiEventSettings>();
             _midiMapping = new Dictionary<uint, HashSet<CMidiAction>>();
             _confirmClear = true;
 
@@ -432,7 +432,7 @@ namespace Snapshot
             {
             }
 
-            public static Byte currentVersion = 3;
+            public static Byte currentVersion = 4;
             public Byte version = currentVersion; // Current file version
             public byte[] data;
         }
@@ -848,31 +848,31 @@ namespace Snapshot
             SlotB.Restore();
         }
 
-        internal CMidiAction CreateMidiAction(object target, string command, bool specific)
+        internal CMidiAction CreateMidiAction(object target, string command, bool specific, CMidiEventSettings settings)
         {
             if (specific)
             {
                 switch (command)
                 {
                     case "Capture":
-                        return new CMidiActionSelectionBool(target, command, Selection, false);
+                        return new CMidiActionSelectionBool(target, command, settings);
 
                     case "CaptureMissing":
-                        return new CMidiActionSelection(target, command, Selection);
+                        return new CMidiActionSelection(target, command, settings);
 
                     case "ClearSelected":
-                        return new CMidiActionSelection(target, command, Selection);
+                        return new CMidiActionSelection(target, command, settings);
 
                     case "Purge":
-                        return new CMidiActionSelection(target, command, Selection);
+                        return new CMidiActionSelection(target, command, settings);
 
                     default:
-                        return new CMidiAction(target, command);
+                        return new CMidiAction(target, command, settings);
                 }
             }
             else
             {
-                return new CMidiAction(target, command);
+                return new CMidiAction(target, command, settings);
             }
         }
 
@@ -897,7 +897,7 @@ namespace Snapshot
 
             // Retrieve the mapping or use defaults
             CMidiTargetInfo key;
-            CMidiEvent e;
+            CMidiEventSettings e;
             UInt32? prevCode = null;
             try
             {
@@ -909,27 +909,36 @@ namespace Snapshot
             catch
             {
                 key = new CMidiTargetInfo(index, command);
-                e = new CMidiEvent();
+                e = new CMidiEventSettings(this);
             }
 
             // Show mapping dialog
-            _mappingDialog = new CMappingDialog(this, command, owner, e);
+            _mappingDialog = new CMappingDialog(this, command, owner, e, specific);
             bool? result = _mappingDialog.ShowDialog();
 
             // Add/update mapping if necessary
             if (result == true)
             {
+                if(e.StoreSelection)
+                {
+                    e.Selection = new HashSet<CPropertyBase>(Selection);
+                }
+                else
+                {
+                    e.Selection = new HashSet<CPropertyBase>(); ;
+                }
+
                 MidiMap[key] = e;
                 UInt32 code = e.Encode();
-                CMidiAction a = CreateMidiAction(target, command, specific);
+                CMidiAction a = CreateMidiAction(target, command, specific, e);
 
                 // Remove old mapping if necessary
                 if(prevCode != null && code != prevCode)
                 {
-                    _midiMapping[(UInt32)prevCode].Remove(a);
+                    _ = _midiMapping[(UInt32)prevCode].Remove(a);
                     if(_midiMapping[(UInt32)prevCode].Count == 0)
                     {
-                        _midiMapping.Remove((UInt32)prevCode);
+                        _ = _midiMapping.Remove((UInt32)prevCode);
                     }
                 }
 
@@ -937,11 +946,11 @@ namespace Snapshot
                 {
                     if (_midiMapping.ContainsKey(code))
                     {
-                        _midiMapping[code].Add(a);
+                        _ = _midiMapping[code].Add(a);
                     }
                     else
                     {
-                        _midiMapping[code] = new HashSet<CMidiAction>() { a };
+                        _ = _midiMapping[code] = new HashSet<CMidiAction>() { a };
                     }
                 }
             }
@@ -1001,10 +1010,10 @@ namespace Snapshot
             //   We could prune items where e.Message == 0 but no harm leaving them.
             //   Just don't add them to the _midiMapping on load.
             w.Write(MidiMap.Count());
-            foreach (KeyValuePair<CMidiTargetInfo, CMidiEvent> item in MidiMap)
+            foreach (KeyValuePair<CMidiTargetInfo, CMidiEventSettings> item in MidiMap)
             {
                 CMidiTargetInfo info = item.Key;
-                CMidiEvent e = item.Value;
+                CMidiEventSettings e = item.Value;
 
                 w.Write(info.command);
                 w.Write(info.index);
@@ -1027,22 +1036,12 @@ namespace Snapshot
                 w.Write(s.Machine.DLL.Name);
 
                 // Machine/Group smoothing - New in file version 3
-                w.Write(s.SmoothingCount ?? -1); // Machine
-                w.Write(s.SmoothingUnits ?? -1); // ^^
-                w.Write(s.SmoothingShape ?? -1); // ^^
-                                               
-                w.Write(s.GlobalStates.SmoothingCount ?? -1); // Global group
-                w.Write(s.GlobalStates.SmoothingUnits ?? -1); // ^^
-                w.Write(s.GlobalStates.SmoothingShape ?? -1); // ^^
-
-                w.Write(s.TrackStates.SmoothingCount ?? -1); // Track group
-                w.Write(s.TrackStates.SmoothingUnits ?? -1); // ^^
-                w.Write(s.TrackStates.SmoothingShape ?? -1); // ^^
-                foreach(CPropertyBase pg in s.TrackStates.ChildProperties)
+                s.WriteSmoothingInfo(w); // Machine
+                s.GlobalStates.WriteSmoothingInfo(w); // Global group
+                s.TrackStates.WriteSmoothingInfo(w); // Track group
+                foreach(CPropertyBase pg in s.TrackStates.ChildProperties) // Track param groups
                 {
-                    w.Write(pg.SmoothingCount ?? -1); // Track param group
-                    w.Write(pg.SmoothingUnits ?? -1); // ^^
-                    w.Write(pg.SmoothingShape ?? -1); // ^^
+                    pg.WriteSmoothingInfo(w);
                 }
                 // end Machine/Group smoothing
 
@@ -1063,14 +1062,13 @@ namespace Snapshot
                 {
                     CPropertyBase p = item.Key;
                     List<CMachineSnapshot> slots = item.Value;
-                    w.Write(p.Name);
-                    w.Write(p.Track ?? -1);
+
+                    p.WritePropertyInfo(w);
+
                     w.Write(p.Checked?? false);
 
                     // New in file version 3
-                    w.Write(p.SmoothingCount ?? -1);
-                    w.Write(p.SmoothingUnits ?? -1);
-                    w.Write(p.SmoothingShape ?? -1);
+                    p.WriteSmoothingInfo(w);
 
                     w.Write((Int32)slots.Count());
                     foreach (CMachineSnapshot snapshot in slots)
@@ -1121,7 +1119,7 @@ namespace Snapshot
                 int slot = r.ReadInt32();
 
                 CMidiTargetInfo info = new CMidiTargetInfo(slot, command);
-                CMidiEvent e = new CMidiEvent();
+                CMidiEventSettings e = new CMidiEventSettings(this);
                 e.ReadData(r);
 
                 // Restore mapping settings
@@ -1140,11 +1138,19 @@ namespace Snapshot
                 }
 
                 // Restore settings
-                CMidiAction a = CreateMidiAction(target, command, specific);
+                CMidiAction a = CreateMidiAction(target, command, specific, e);
                 MidiMap[info] = e; // settings
                 if(e.Message > 0)  // don't add undefined messages to the mapping
                 {
-                    _midiMapping[e.Encode()].Add(a); // mapping
+                    var code = e.Encode();
+                    if(_midiMapping.ContainsKey(code))
+                    {
+                        _midiMapping[code].Add(a); // mapping
+                    }
+                    else
+                    {
+                        _midiMapping[code] = new HashSet<CMidiAction>() { a };
+                    }
                 }
             }
 
@@ -1162,42 +1168,41 @@ namespace Snapshot
                     if(_loadedState.version >= 3)
                     {
                         // Machine/Group smoothing - New in file version 3
-                        s.SmoothingCount = r.ReadInt32(); // Machine
-                        s.SmoothingUnits = r.ReadInt32(); // ^^
-                        s.SmoothingShape = r.ReadInt32(); // ^^
-
-                        s.GlobalStates.SmoothingCount = r.ReadInt32(); // Global group
-                        s.GlobalStates.SmoothingUnits = r.ReadInt32(); // ^^
-                        s.GlobalStates.SmoothingShape = r.ReadInt32(); // ^^
-
-                        s.TrackStates.SmoothingCount  = r.ReadInt32(); // Track group
-                        s.TrackStates.SmoothingUnits  = r.ReadInt32(); // ^^
-                        s.TrackStates.SmoothingShape = r.ReadInt32(); // ^^
-                        foreach (CPropertyBase pg in s.TrackStates.ChildProperties)
+                        s.ReadSmoothingInfo(r); // Machine
+                        s.GlobalStates.ReadSmoothingInfo(r); // Global group
+                        s.TrackStates.ReadSmoothingInfo(r); // Track group
+                        foreach (CPropertyBase pg in s.TrackStates.ChildProperties) // Track param groups
                         {
-                            pg.SmoothingCount  = r.ReadInt32(); // Track param group
-                            pg.SmoothingUnits  = r.ReadInt32(); // ^^
-                            pg.SmoothingShape = r.ReadInt32(); // ^^
+                            pg.ReadSmoothingInfo(r); 
                         }
                     }
 
                     Int32 count = r.ReadInt32(); // number of properties saved
                     for (Int32 i = 0; i < count; i++)
                     {
-                        name = r.ReadString(); // Property name
-                        int? track = r.ReadInt32(); // Property track (-1 if null)
-                        if (track < 0) track = null;
+                        CPropertyBase ps;
 
-                        // Should be one and only one property matching name and track. Exception if not.
-                        CPropertyBase ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
+                        if(LoadVersion < 4)
+                        {
+                            // Keeping this for backwards compatibility
+                            // Had to change save/load of properties because param names aren't necessarily unique
+                            name = r.ReadString(); // Property name
+                            int? track = r.ReadInt32(); // Property track (-1 if null)
+                            if (track < 0) track = null;
+
+                            // Should be one and only one property matching name and track. Exception if not.
+                            ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
+                        }
+                        else
+                        {
+                            ps = CPropertyBase.FindPropertyFromSavedInfo(r, s);
+                        }
 
                         ps.Checked = r.ReadBoolean(); //Property selected
 
                         if(_loadedState.version >= 3)
                         {
-                            ps.SmoothingCount = r.ReadInt32(); // New in file version 3
-                            ps.SmoothingUnits = r.ReadInt32(); // ^^
-                            ps.SmoothingShape = r.ReadInt32(); // ^^
+                            ps.ReadSmoothingInfo(r); // Property smoothing. New in file version 3
                         }
 
                         Int32 numslots = r.ReadInt32(); // number of saved snapshot values
@@ -1450,7 +1455,7 @@ namespace Snapshot
             get; set;
         }
 
-        public CMidiEvent MappingDialogSettings { get; internal set; }
+        public CMidiEventSettings MappingDialogSettings { get; internal set; }
 
         #endregion Global Parameters
 
@@ -1592,15 +1597,21 @@ namespace Snapshot
         }
     }
 
-    public class CMidiEvent
+    public class CMidiEventSettings
     {
-        public CMidiEvent()
+        public CMidiEventSettings(CMachine owner)
         {
+            m_owner = owner;
+
             Channel = 16;
             Message = 0; // Undefined;
             Primary = 128;
             Secondary = 128;
+
+            Selection = new HashSet<CPropertyBase>();
         }
+
+        private readonly CMachine m_owner;
 
         public bool Learning { get; set; }
 
@@ -1613,6 +1624,12 @@ namespace Snapshot
         
         public Byte Secondary { get; set; } // Velocity or value. 128 = undefined
 
+        public HashSet<CPropertyBase> Selection { get; set; }
+
+        public bool StoreSelection { get; set; }
+
+        public bool BoolOption1 { get; set; }
+
         public UInt32 Encode()
         {
             return (UInt32) ((Message << 24) | (Secondary << 16) | (Primary << 8) | Channel);
@@ -1620,10 +1637,39 @@ namespace Snapshot
 
         internal void ReadData(BinaryReader r)
         {
+            Byte file_version = m_owner.LoadVersion;
+
             Channel = r.ReadByte();
             Message = r.ReadByte();
             Primary = r.ReadByte();
             Secondary = r.ReadByte();
+
+            if (file_version >= 4)
+            {
+                StoreSelection = r.ReadBoolean();
+                BoolOption1 = r.ReadBoolean();
+                Selection = new HashSet<CPropertyBase>();
+
+                UInt32 nMachines = r.ReadUInt32();
+                for(UInt32 i = 0; i < nMachines; i++)
+                {
+                    string macName = r.ReadString();
+                    string dllName = r.ReadString();
+
+                    // Should be one and only one state matching both name and dllname. Exception if not.
+                    CMachineState s = m_owner.States.Single(x => x.Machine.Name == macName && x.Machine.DLL.Name == dllName);
+
+                    UInt32 nProperties = r.ReadUInt32();
+                    for (UInt32 ip = 0; ip < nProperties; ip++)
+                    {
+                        CPropertyBase p = CPropertyBase.FindPropertyFromSavedInfo(r, s);
+                        if(p != null)
+                        {
+                            Selection.Add(p);
+                        }
+                    }
+                }
+            }
         }
 
         internal void WriteData(BinaryWriter w)
@@ -1632,6 +1678,43 @@ namespace Snapshot
             w.Write(Message);
             w.Write(Primary);
             w.Write(Secondary);
+
+            // New in file version 4
+            w.Write(StoreSelection);
+            w.Write(BoolOption1);
+
+            // Build list of machines and properties
+            Dictionary<CMachineState, HashSet<CPropertyBase>> savedata = new Dictionary<CMachineState, HashSet<CPropertyBase>>();
+            foreach(CPropertyBase p in Selection)
+            {
+                // TEMP TEST
+                if(p is CMachineState || p is CPropertyStateGroup || p is CTrackPropertyStateGroup)
+                {
+                    throw new Exception("Group!");
+                }
+
+                if(savedata.ContainsKey(p.ParentMachine))
+                {
+                    savedata[p.ParentMachine].Add(p);
+                }
+                else
+                {
+                    savedata[p.ParentMachine] = new HashSet<CPropertyBase>() { p };
+                }
+            }
+
+            // Write structured data
+            w.Write(savedata.Count);
+            foreach(CMachineState s in savedata.Keys)
+            {
+                w.Write(s.Machine.Name);
+                w.Write(s.Machine.DLL.Name);
+                w.Write(savedata[s].Count);
+                foreach(CPropertyBase p in savedata[s])
+                {
+                    p.WritePropertyInfo(w);
+                }
+            }
         }
     }
 

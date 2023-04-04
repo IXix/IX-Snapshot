@@ -1,19 +1,23 @@
 Save/load selection seems broken
+	seems to only save checked state if slot has data or something.
+	same is true of smoothing data, not saved if no values stored
+	Would prefer selection to always be saved
 
 MIDI Mapping:
 	Warn when MIDI event is already mapped to another action
 		Might want to have one MIDI message do multiple actions but some would cause conflict eg. Capture and Clear on same slot
 
-	Add UI for selection/clear options
-		Not appropriate for every command so need to hide/disable based on command string
-
-	Purge/Clear via MIDI should have option to confirm
+	Specific Purge/Clear via MIDI should have option to confirm
 		Add bool to the methods and change to CMidiActionSelectionBool
+
+	Can we show the mapping on the buttons?
+		Top left corner for machine level, top right for slot level
+
+	Need an overview of all mapping
+		DataGrid?
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.
-
-Include MIDI mapping data on info tab
 	
 Find a way to include machine connections in snapshots.
 	Have a look at how wde does it in his mixer console
