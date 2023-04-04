@@ -770,7 +770,7 @@ namespace Snapshot
             string msg = string.Format("Discard {0} stored properties from {1}?", SlotA.RedundantCount_M, SlotA.Name);
             if (Confirm("Confirm purge", msg))
             {
-                SlotA.Purge(SelectionM);
+                SlotA.Purge(SelectionM, false);
                 OnPropertyChanged("State");
             }
         }
@@ -790,7 +790,7 @@ namespace Snapshot
             string msg = string.Format("Discard all stored properties from {0}?", SlotA.Name);
             if (Confirm("Confirm clear", msg))
             {
-                SlotA.Clear();
+                SlotA.Clear(false);
                 OnPropertyChanged("State");
             }
         }
@@ -819,7 +819,7 @@ namespace Snapshot
             string msg = string.Format("Discard {0} stored properties from {1}?", SlotB.RedundantCount_M, SlotB.Name);
             if (Confirm("Confirm purge", msg))
             {
-                SlotB.Purge(SelectionM);
+                SlotB.Purge(SelectionM, false);
                 OnPropertyChanged("State");
             }
         }
@@ -838,7 +838,7 @@ namespace Snapshot
         {
             if (Confirm("Confirm clear", "Discard all stored properties from right?"))
             {
-                SlotB.Clear();
+                SlotB.Clear(false);
                 OnPropertyChanged("State");
             }
         }
@@ -858,13 +858,16 @@ namespace Snapshot
                         return new CMidiActionSelectionBool(target, command, settings);
 
                     case "CaptureMissing":
-                        return new CMidiActionSelection(target, command, settings);
+                        return new CMidiActionSelectionBool(target, command, settings);
 
                     case "ClearSelected":
-                        return new CMidiActionSelection(target, command, settings);
+                        return new CMidiActionSelectionBool(target, command, settings);
+
+                    case "Clear":
+                        return new CMidiActionBool(target, command, settings);
 
                     case "Purge":
-                        return new CMidiActionSelection(target, command, settings);
+                        return new CMidiActionSelectionBool(target, command, settings);
 
                     default:
                         return new CMidiAction(target, command, settings);
@@ -925,7 +928,7 @@ namespace Snapshot
                 }
                 else
                 {
-                    e.Selection = new HashSet<CPropertyBase>(); ;
+                    e.Selection = Selection;
                 }
 
                 MidiMap[key] = e;
@@ -1496,7 +1499,7 @@ namespace Snapshot
             string msg = string.Format("Discard {0} stored properties?", CurrentSlot.RedundantCount);
             if (Confirm("Confirm purge", msg))
             {
-                CurrentSlot.Purge(Selection);
+                CurrentSlot.Purge(Selection, false);
                 OnPropertyChanged("State");
             }
         }
@@ -1506,7 +1509,7 @@ namespace Snapshot
             string msg = string.Format("Discard all stored properties from {0}?", CurrentSlot.Name);
             if (Confirm("Confirm clear", msg))
             {
-                CurrentSlot.Clear();
+                CurrentSlot.Clear(false);
                 OnPropertyChanged("State");
             }
         }
@@ -1518,7 +1521,7 @@ namespace Snapshot
             {
                 foreach(CMachineSnapshot slot in Slots)
                 {
-                    slot.Clear();
+                    slot.Clear(false);
                 }
                 OnPropertyChanged("State");
             }

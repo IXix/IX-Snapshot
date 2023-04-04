@@ -364,7 +364,7 @@ namespace Snapshot
         {
             if (clearExisting)
             {
-                Clear();
+                Clear(false);
             }
 
             switch (p.GetType().Name)
@@ -415,7 +415,7 @@ namespace Snapshot
         {
             if(clearExisting)
             {
-                Clear();
+                Clear(false);
             }
 
             foreach (IPropertyState p in targets)
@@ -465,7 +465,8 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void CaptureMissing(HashSet<CPropertyBase> targets)
+        // Dummy bool is to avoid having a separate CMidiAction subclass just for this method
+        public void CaptureMissing(HashSet<CPropertyBase> targets, bool dummy = false)
         {
             HashSet<CPropertyBase> missing = targets.Where(x => ContainsProperty(x) == false).ToHashSet();
             Capture(missing, false);
@@ -548,17 +549,43 @@ namespace Snapshot
                 );
         }
 
-        public void Purge(HashSet<CPropertyBase> selection)
+        internal bool Confirm(string title, string msg)
+        {
+            MessageBoxResult result = MessageBox.Show(msg, title, MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.No)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void Purge(HashSet<CPropertyBase> selection, bool confirm)
         {
             HashSet<CPropertyBase> removers = StoredProperties.Where(x => x.Active == false || selection.Contains(x) == false).ToHashSet();
-            Remove(removers);
 
-            foreach(CPropertyBase p in removers.Where(x => x.Active))
+            if(removers.Count == 0)
             {
-                p.OnPropertyStateChanged();
+                return;
             }
 
-            OnPropertyChanged("HasData");
+            bool proceed = true;
+
+            if (confirm)
+            {
+                proceed = Confirm("Confirm Purge", string.Format("Remove {0} stored properties?", removers.Count));
+            }
+            
+            if(proceed)
+            {
+                Remove(removers);
+
+                foreach(CPropertyBase p in removers.Where(x => x.Active))
+                {
+                    p.OnPropertyStateChanged();
+                }
+
+                OnPropertyChanged("HasData");
+            }
         }
 
         public void Remove(CPropertyBase p)
@@ -640,25 +667,44 @@ namespace Snapshot
             OnPropertyChanged("HasData");
         }
 
-        public void Clear()
+        public void Clear(bool confirm)
         {
-            HashSet<CPropertyBase> removed = new HashSet<CPropertyBase>(StoredProperties);
-
-            AttributeValues.Clear();
-            ParameterValues.Clear();
-            DataValues.Clear();
-            StoredProperties.Clear();
-
-            foreach(CPropertyBase p in removed)
+            bool proceed = true;
+            if(confirm)
             {
-                p.OnPropertyStateChanged();
+                proceed = Confirm("Clear", string.Format("Remove {0} stored properties?", StoredCount));
             }
-            OnPropertyChanged("HasData");
+
+            if (proceed)
+            {
+                HashSet<CPropertyBase> removed = new HashSet<CPropertyBase>(StoredProperties);
+
+                AttributeValues.Clear();
+                ParameterValues.Clear();
+                DataValues.Clear();
+                StoredProperties.Clear();
+
+                foreach (CPropertyBase p in removed)
+                {
+                    p.OnPropertyStateChanged();
+                }
+                OnPropertyChanged("HasData");
+            }
         }
 
-        public void ClearSelected(HashSet<CPropertyBase> targets)
+        public void ClearSelected(HashSet<CPropertyBase> targets, bool confirm)
         {
-            Remove(targets);
+            bool proceed = true;
+
+            if(confirm)
+            {
+                proceed = Confirm("Clear Properties", string.Format("Remove {0} stored properties?", targets.Count));
+            }
+
+            if(proceed)
+            {
+                Remove(targets);
+            }
         }
 
         public void ReadProperty(CPropertyBase p, BinaryReader r)

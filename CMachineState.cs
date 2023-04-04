@@ -331,7 +331,7 @@ namespace Snapshot
                 case 1: // Parameter
                     Byte group = r.ReadByte();
                     Int32 idx = r.ReadInt32();
-                    Int32 track = -1;
+                    Int32? track = null;
                     if (group == (Byte) ParameterGroupType.Track)
                     {
                         track = r.ReadInt32();
@@ -393,7 +393,7 @@ namespace Snapshot
             w.Write((Int32)Parameter.IndexInGroup);
             if(Parameter.Group.Type == ParameterGroupType.Track)
             {
-                w.Write(Track ?? -1);
+                w.Write((Int32)Track);
             }
         }
     }

@@ -35,7 +35,7 @@ namespace Snapshot
                     case "Capture":
                         ShowSelectionCheck = true;
                         ShowBoolOption1 = true;
-                        BoolOption1Text = "Clear existing values";
+                        BoolOption1Text = "Clear non-selected values";
                         break;
 
                     case "CaptureMissing":
@@ -49,11 +49,13 @@ namespace Snapshot
 
                     case "ClearSelected":
                         ShowBoolOption1 = true;
+                        ShowSelectionCheck = true;
                         BoolOption1Text = "Require confirmation";
                         break;
 
                     case "Purge":
                         ShowBoolOption1 = true;
+                        ShowSelectionCheck = true;
                         BoolOption1Text = "Require confirmation";
                         break;
 

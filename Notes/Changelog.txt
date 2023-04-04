@@ -8,6 +8,10 @@
 	Implemented save/load of midi action selection
 		Selection is now part of CMidiEventSettings rather than CMidiAction
 	Added some missing properties to CSnapshotMachineVM.OnChildPropertyChanged()
+	Implemented confirmation for specific clear/purge actions
+		Adjusted some CMachineSnapshot methods to take additional bool argument
+	Fixed global param lookup on load
+	Changed CMidiAction subclasses and inheritance, removed unnecessary members
 
 2023.04.03
 	Added CMidiAction and derived types

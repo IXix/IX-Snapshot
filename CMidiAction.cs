@@ -56,39 +56,35 @@ namespace Snapshot
     };
 
     // For methods with a single argument of type HashSet<CPropertyBase>
-    class CMidiActionSelection : CMidiAction
+    class CMidiActionBool : CMidiAction
     {
-        protected HashSet<CPropertyBase> m_selection;
-        protected new Action<HashSet<CPropertyBase>> m_action;
+        protected new Action<bool> m_action;
 
-        public CMidiActionSelection(object target, string methodName, CMidiEventSettings settings)
+        public CMidiActionBool(object target, string methodName, CMidiEventSettings settings)
             : base(target, methodName, settings)
         {
-            m_selection = settings.Selection;
         }
 
         protected override void Init()
         {
-            m_methodInfo = m_targetType.GetMethod(m_methodName, new Type[] { typeof(HashSet<CPropertyBase>) });
-            m_action = (Action<HashSet<CPropertyBase>>)Delegate.CreateDelegate(typeof(Action<HashSet<CPropertyBase>>), m_target, m_methodInfo);
+            m_methodInfo = m_targetType.GetMethod(m_methodName, new Type[] { typeof(bool) });
+            m_action = (Action<bool>)Delegate.CreateDelegate(typeof(Action<bool>), m_target, m_methodInfo);
         }
 
         public override void Trigger()
         {
-            m_action(m_selection);
+            m_action(m_settings.BoolOption1);
         }
     }
 
     // For methods with arguments of type HashSet<CPropertyBase> and bool
-    class CMidiActionSelectionBool : CMidiActionSelection
+    class CMidiActionSelectionBool : CMidiActionBool
     {
         protected new Action<HashSet<CPropertyBase>, bool> m_action;
-        protected bool m_bval;
-
+        
         public CMidiActionSelectionBool(object target, string methodName, CMidiEventSettings settings)
             : base(target, methodName, settings)
         {
-            m_bval = settings.BoolOption1;
         }
 
         protected override void Init()
@@ -99,7 +95,7 @@ namespace Snapshot
 
         public override void Trigger()
         {
-            m_action(m_selection, m_bval);
+            m_action(m_settings.Selection, m_settings.BoolOption1);
         }
     }
 }
