@@ -18,9 +18,10 @@ namespace Snapshot
 {
     public partial class CMappingDialog : Window, INotifyPropertyChanged
     {
-        public CMappingDialog(CMachine owner, string command, string target, CMidiEventSettings settings, bool specific)
+        public CMappingDialog(CMachine owner, CMidiTargetInfo target, CMidiEventSettings settings, bool specific)
         {
             _owner = owner;
+            _target = target;
 
             DataContext = this;
 
@@ -30,7 +31,7 @@ namespace Snapshot
 
             if (specific)
             {
-                switch (command)
+                switch (target.command)
                 {
                     case "Capture":
                         ShowSelectionCheck = true;
@@ -67,11 +68,13 @@ namespace Snapshot
                 }
             }
 
-            TypeValues = new List<string>();
-            TypeValues.Add("Undefined");
-            TypeValues.Add("Note On");
-            TypeValues.Add("Note Off");
-            TypeValues.Add("Controller");
+            TypeValues = new List<string>
+            {
+                "Undefined",
+                "Note On",
+                "Note Off",
+                "Controller"
+            };
 
             ChannelValues = new List<string>();
             for (Byte i = 1; i <= 16; i++)
@@ -85,7 +88,7 @@ namespace Snapshot
             {
                 PrimaryValues.Add(i.ToString());
             }
-            PrimaryValues.Add("Undefined");
+            PrimaryValues.Add("Any");
 
             SecondaryValues = new List<string>();
             for (Byte i = 1; i <= 128; i++)
@@ -94,14 +97,17 @@ namespace Snapshot
             }
             SecondaryValues.Add("Any");
 
-            Command = command;
             Settings = settings;
             _owner.MappingDialogSettings = Settings; // Blocks MIDI events
 
             InitializeComponent();
 
-            Title = string.Format("{0}->{1}", target, command);
+            string targetName = target.index < 0 ? "Snaphot" : _owner.Slots[target.index].Name;
+
+            Title = string.Format("{0}->{1}", targetName, target.command);
         }
+
+        private readonly CMidiTargetInfo _target;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public virtual void OnPropertyChanged(string propertyName)
@@ -116,7 +122,6 @@ namespace Snapshot
 
         readonly CMachine _owner;
 
-        public string Command { get; set; }
         public CMidiEventSettings Settings { get; set; }
 
         public bool ShowSelectionCheck { get; set; }
@@ -140,6 +145,28 @@ namespace Snapshot
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
+            // FIXME: Remove dialog target from conflict list
+            List<CMidiTargetInfo> conflicts = _owner.FindDuplicateMappings(Settings);
+            conflicts.Remove(_target);
+
+            if (conflicts.Count > 0)
+            {
+                
+                string msg = "MIDI event conflicts with mapping for:\n";
+                foreach(CMidiTargetInfo t in conflicts)
+                {
+                    string targetName = t.index < 0 ? "Snapshot" : string.Format("Slot {0}", t.index);
+                    msg += string.Format("{0}->{1}\n", targetName, t.command);
+                }
+                msg += "\nIs this okay?";
+                    
+                MessageBoxResult result = MessageBox.Show(msg, "Mapping conflict", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             DialogResult = true;
         }
 

@@ -324,28 +324,6 @@ namespace Snapshot
         public bool SlotHasData => CurrentSlot.StoredCount > 0;
 
         // This is the mapping of UI actions to MIDI events
-        public class CMidiTargetInfo
-        {
-            public readonly int index; // slot index or -1 for machine
-            public readonly string command; // "Capture" etc.
-
-            public CMidiTargetInfo(int idx, string cmd)
-            {
-                index = idx;
-                command = cmd;
-            }
-
-            public override int GetHashCode()
-            {
-                return string.Format("%d%s", index, command).GetHashCode();
-            }
-
-            public override bool Equals(object obj)
-            {
-                CMidiTargetInfo that = obj as CMidiTargetInfo;
-                return index == that.index && command == that.command;
-            }
-        }
         public Dictionary<CMidiTargetInfo, CMidiEventSettings> MidiMap { get; private set; }
 
         // This is the mechanism to trigger UI actions in response to MIDI events
@@ -879,6 +857,11 @@ namespace Snapshot
             }
         }
 
+        internal List<CMidiTargetInfo> FindDuplicateMappings(CMidiEventSettings settings)
+        {
+            return MidiMap.Where(item => item.Value.CheckConflict(settings)).Select(pair => pair.Key).ToList();
+        }
+
         internal void MapCommand(string command, bool specific)
         {
             string owner;
@@ -916,7 +899,7 @@ namespace Snapshot
             }
 
             // Show mapping dialog
-            _mappingDialog = new CMappingDialog(this, command, owner, e, specific);
+            _mappingDialog = new CMappingDialog(this, key, e, specific);
             bool? result = _mappingDialog.ShowDialog();
 
             // Add/update mapping if necessary
@@ -1282,10 +1265,18 @@ namespace Snapshot
             // This note on any channel
             UInt32 c2 = (UInt32)((noteOn << 24) | (128 /*v=any*/ << 16) | (note << 8) | 16 /*c=any*/);
 
+            // Any note on this channel
+            UInt32 c3 = (UInt32)((noteOn << 24) | (128 /*v=any*/ << 16) | (128 /*n=any*/ << 8) | channel);
+
+            // Any note on any channel
+            UInt32 c4 = (UInt32)((noteOn << 24) | (128 /*v=any*/ << 16) | (128 /*n=any*/ << 8) | 16 /*c=any*/);
+
             if (velocity == 0) //Note-off
             {
                 c1 = c1 & 0xFFFFFF | (noteOff << 24);
                 c2 = c2 & 0xFFFFFF | (noteOff << 24);
+                c3 = c3 & 0xFFFFFF | (noteOff << 24);
+                c4 = c4 & 0xFFFFFF | (noteOff << 24);
             }
 
             // Fire off matching actions, this note, this channel
@@ -1293,6 +1284,12 @@ namespace Snapshot
 
             // Fire off matching actions, this note, any channel
             DoMidiAction(c2);
+
+            // Fire off matching actions, any note, this channel
+            DoMidiAction(c3);
+
+            // Fire off matching actions, any note, any channel
+            DoMidiAction(c4);
 
             OnPropertyChanged("State");
         }
@@ -1600,16 +1597,39 @@ namespace Snapshot
         }
     }
 
+    public class CMidiTargetInfo
+    {
+        public readonly int index; // slot index or -1 for machine
+        public readonly string command; // "Capture" etc.
+
+        public CMidiTargetInfo(int idx, string cmd)
+        {
+            index = idx;
+            command = cmd;
+        }
+
+        public override int GetHashCode()
+        {
+            return string.Format("%d%s", index, command).GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            CMidiTargetInfo that = obj as CMidiTargetInfo;
+            return index == that.index && command == that.command;
+        }
+    }
+
     public class CMidiEventSettings
     {
         public CMidiEventSettings(CMachine owner)
         {
             m_owner = owner;
 
-            Channel = 16;
+            Channel = 16; // Any
             Message = 0; // Undefined;
-            Primary = 128;
-            Secondary = 128;
+            Primary = 128; // Any
+            Secondary = 128; // Any
 
             Selection = new HashSet<CPropertyBase>();
         }
@@ -1718,6 +1738,32 @@ namespace Snapshot
                     p.WritePropertyInfo(w);
                 }
             }
+        }
+
+        // Check if this event clashes with that event
+        internal bool CheckConflict(CMidiEventSettings that)
+        {
+            if (Message != that.Message) return false;
+
+            // If neither is 'Any'
+            if (Channel < 16 && that.Channel < 16)
+            {
+                if (Channel != that.Channel) return false;
+            }
+
+            // If neither is 'Any;
+            if (Primary < 128 && that.Primary < 128)
+            {
+                if (Primary != that.Primary) return false;
+            }
+
+            // If neither is 'Any;
+            if (Secondary < 128 && that.Secondary < 128)
+            {
+                if (Secondary != that.Secondary) return false;
+            }
+
+            return true;
         }
     }
 
