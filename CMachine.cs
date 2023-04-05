@@ -862,6 +862,34 @@ namespace Snapshot
             return MidiMap.Where(item => item.Value.CheckConflict(settings)).Select(pair => pair.Key).ToList();
         }
 
+        internal void RemoveMapping(CMidiTargetInfo target, bool clearSettings)
+        {
+            if (MidiMap.ContainsKey(target))
+            {
+                CMidiEventSettings e = MidiMap[target];
+                UInt32 code = e.Encode();
+
+                _ = _midiMapping[code].Remove(target.action);
+                if (_midiMapping[code].Count == 0)
+                {
+                    _ = _midiMapping.Remove(code);
+                }
+
+                if(clearSettings)
+                {
+                    e.Reset();
+                }
+            }
+        }
+
+        internal void RemoveMappings(List<CMidiTargetInfo> conflicts)
+        {
+            foreach(CMidiTargetInfo target in conflicts)
+            {
+                RemoveMapping(target, true);
+            }
+        }
+
         internal void MapCommand(string command, bool specific)
         {
             string owner;
@@ -916,27 +944,30 @@ namespace Snapshot
 
                 MidiMap[key] = e;
                 UInt32 code = e.Encode();
-                CMidiAction a = CreateMidiAction(target, command, specific, e);
 
                 // Remove old mapping if necessary
                 if(prevCode != null && code != prevCode)
                 {
-                    _ = _midiMapping[(UInt32)prevCode].Remove(a);
-                    if(_midiMapping[(UInt32)prevCode].Count == 0)
+                    if(_midiMapping.ContainsKey((UInt32)prevCode))
                     {
-                        _ = _midiMapping.Remove((UInt32)prevCode);
+                        _ = _midiMapping[(UInt32)prevCode].Remove(key.action);
+                        if(_midiMapping[(UInt32)prevCode].Count == 0)
+                        {
+                            _ = _midiMapping.Remove((UInt32)prevCode);
+                        }
                     }
                 }
 
                 if (e.Message > 0) // Add if message isn't undefined
                 {
+                    key.action = CreateMidiAction(target, command, specific, e);
                     if (_midiMapping.ContainsKey(code))
                     {
-                        _ = _midiMapping[code].Add(a);
+                        _ = _midiMapping[code].Add(key.action);
                     }
                     else
                     {
-                        _ = _midiMapping[code] = new HashSet<CMidiAction>() { a };
+                        _ = _midiMapping[code] = new HashSet<CMidiAction>() { key.action };
                     }
                 }
             }
@@ -1124,18 +1155,18 @@ namespace Snapshot
                 }
 
                 // Restore settings
-                CMidiAction a = CreateMidiAction(target, command, specific, e);
+                info.action = CreateMidiAction(target, command, specific, e);
                 MidiMap[info] = e; // settings
                 if(e.Message > 0)  // don't add undefined messages to the mapping
                 {
                     var code = e.Encode();
                     if(_midiMapping.ContainsKey(code))
                     {
-                        _midiMapping[code].Add(a); // mapping
+                        _midiMapping[code].Add(info.action); // mapping
                     }
                     else
                     {
-                        _midiMapping[code] = new HashSet<CMidiAction>() { a };
+                        _midiMapping[code] = new HashSet<CMidiAction>() { info.action };
                     }
                 }
             }
@@ -1602,10 +1633,13 @@ namespace Snapshot
         public readonly int index; // slot index or -1 for machine
         public readonly string command; // "Capture" etc.
 
+        public CMidiAction action;
+
         public CMidiTargetInfo(int idx, string cmd)
         {
             index = idx;
             command = cmd;
+            action = null;
         }
 
         public override int GetHashCode()
@@ -1743,6 +1777,9 @@ namespace Snapshot
         // Check if this event clashes with that event
         internal bool CheckConflict(CMidiEventSettings that)
         {
+            // If either is undefined
+            if (Message == 0 || that.Message == 0) return false;
+
             if (Message != that.Message) return false;
 
             // If neither is 'Any'
@@ -1764,6 +1801,19 @@ namespace Snapshot
             }
 
             return true;
+        }
+
+        internal void Reset()
+        {
+            Channel = 16; // Any
+            Message = 0; // Undefined;
+            Primary = 128; // Any
+            Secondary = 128; // Any
+
+            Selection = new HashSet<CPropertyBase>();
+
+            StoreSelection = false;
+            BoolOption1 = false;
         }
     }
 

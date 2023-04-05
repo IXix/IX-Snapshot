@@ -949,7 +949,7 @@ namespace Snapshot
         private HashSet<CPropertyBase> Selection => Owner.Selection;
         private HashSet<CPropertyBase> SelectionM => Owner.SelectionM;
 
-        public bool GotSelection => Owner.SelCount > 0; // FIXME: Use new Selection
+        public bool GotSelection => Owner.SelCount > 0;
 
         public bool CanCaptureMissing => Owner.MissingCount > 0;
 

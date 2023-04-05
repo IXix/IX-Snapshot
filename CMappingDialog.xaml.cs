@@ -145,25 +145,36 @@ namespace Snapshot
 
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
-            // FIXME: Remove dialog target from conflict list
+            // Check for conflicting mappings
             List<CMidiTargetInfo> conflicts = _owner.FindDuplicateMappings(Settings);
-            conflicts.Remove(_target);
+            _ = conflicts.Remove(_target);
 
             if (conflicts.Count > 0)
             {
-                
-                string msg = "MIDI event conflicts with mapping for:\n";
+                string msg = "MIDI event conflicts with mapping for:\n\n";
                 foreach(CMidiTargetInfo t in conflicts)
                 {
                     string targetName = t.index < 0 ? "Snapshot" : string.Format("Slot {0}", t.index);
-                    msg += string.Format("{0}->{1}\n", targetName, t.command);
+                    msg += string.Format("\t{0}->{1}\n", targetName, t.command);
                 }
                 msg += "\nIs this okay?";
+                msg += "\n\n'Yes' to accept conflicts.\n'No' to remove conflicts.\n'Cancel' to edit settings.";
                     
-                MessageBoxResult result = MessageBox.Show(msg, "Mapping conflict", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.No)
+                MessageBoxResult result = MessageBox.Show(msg, "Mapping conflict", MessageBoxButton.YesNoCancel);
+                switch(result)
                 {
-                    return;
+                    case MessageBoxResult.Yes: // Keep conflicts
+                        break;
+
+                    case MessageBoxResult.No: // Remove conflicts
+                        _owner.RemoveMappings(conflicts);
+                        break;
+
+                    case MessageBoxResult.Cancel: // Back to dialog
+                        return;
+
+                    default:
+                        return; // Shouldn't happen
                 }
             }
 

@@ -1,6 +1,7 @@
 2023.04.05
 	Implemented warning if new MIDI mapping conflicts with one or more existing mapping
 	Expanded note triggering to handle "any note on this channel" and "any note on any channel"
+	Implemented option to keep or remove conflicting MIDI mappings
 
 2023.04.04
 	Implemented UI for new specific midi action options
