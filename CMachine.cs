@@ -975,6 +975,8 @@ namespace Snapshot
             // Reset these
             MappingDialogSettings = null;
             _mappingDialog = null;
+
+            OnPropertyChanged("MidiMap");
         }
 
         /* FILE STRUCTURE
@@ -1644,13 +1646,26 @@ namespace Snapshot
 
         public override int GetHashCode()
         {
-            return string.Format("%d%s", index, command).GetHashCode();
+            return string.Format("{0}{1}", index, command).GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
             CMidiTargetInfo that = obj as CMidiTargetInfo;
-            return index == that.index && command == that.command;
+            if (that != null)
+            {
+                return index == that.index && command == that.command;
+            }
+            return false;
+        }
+
+        public string Description
+        {
+            get
+            {
+                string targetName = index < 0 ? "" : string.Format("Slot {0} -> ", index);
+                return targetName + command;
+            }
         }
     }
 
@@ -1669,6 +1684,29 @@ namespace Snapshot
         }
 
         private readonly CMachine m_owner;
+
+        public string Description
+        {
+            get
+            {
+                switch(Message)
+                {
+                    case 0:
+                        return "Undefined";
+
+                    case 1:
+                        return string.Format("Note: {0}, Ch.{1}",
+                            Primary < 128 ? Primary.ToString() : "Any",
+                            Channel < 16 ? (Channel + 1).ToString() : "Any");
+
+                    case 2:
+                        return "FIXME";
+
+                    default:
+                        return "";
+                }
+            }
+        }
 
         public bool Learning { get; set; }
 

@@ -7,8 +7,10 @@ MIDI Mapping:
 	Can we show the mapping on the buttons?
 		Top left corner for machine level, top right for slot level
 
-	Need an overview of all mapping
-		DataGrid?
+	Mapping view
+		Thinking maybe we should delete undefined mappings from MidiMap
+			It's slightly nice that it remembers what the settings used to be but
+			the awkwardness of the clutter isn't worth it.
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.

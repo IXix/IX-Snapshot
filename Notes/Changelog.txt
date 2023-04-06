@@ -1,3 +1,6 @@
+2023.04.06
+	Initial stab at DataGrid view of MIDI mappings
+
 2023.04.05
 	Implemented warning if new MIDI mapping conflicts with one or more existing mapping
 	Expanded note triggering to handle "any note on this channel" and "any note on any channel"

@@ -686,5 +686,30 @@
         <TabItem Header="Info">
             <TextBlock x:Name="txtInfoDisplay" TextWrapping="Wrap" Text="{Binding SelectionInfo, UpdateSourceTrigger=PropertyChanged}" />
         </TabItem>
+
+        <TabItem Header="MIDI">
+            <DataGrid ItemsSource="{Binding MidiMap, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" AutoGenerateColumns="False" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Target">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel >
+                                    <TextBlock Text="{Binding Path=Key.(local:CMidiTargetInfo.Description)}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Event">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel >
+                                    <TextBlock Text="{Binding Path=Value.(local:CMidiEventSettings.Description)}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </TabItem>
     </TabControl>
 </UserControl>

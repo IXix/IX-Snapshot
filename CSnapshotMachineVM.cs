@@ -754,6 +754,8 @@ namespace Snapshot
         public ObservableCollection<CMachineStateVM> StatesA { get; }
         public ObservableCollection<CMachineStateVM> StatesB { get; }
 
+        public Dictionary<CMidiTargetInfo, CMidiEventSettings> MidiMap => Owner.MidiMap;
+
         #region Commands
         public SimpleCommand CmdCapture { get; private set; }
         public SimpleCommand CmdCaptureMissing { get; private set; }
