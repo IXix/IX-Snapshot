@@ -933,36 +933,28 @@ namespace Snapshot
             _mappingDialog = new CMappingDialog(this, key, e, specific);
             bool? result = _mappingDialog.ShowDialog();
 
+            bool removePrev = false;
+
             // Add/update mapping if necessary
             if (result == true)
             {
-                if(e.StoreSelection)
+                if (e.Message > 0)
                 {
-                    e.Selection = new HashSet<CPropertyBase>(Selection);
-                }
-                else
-                {
-                    e.Selection = Selection;
-                }
+                    MidiMap[key] = e;
+                    UInt32 code = e.Encode();
 
-                MidiMap[key] = e;
-                UInt32 code = e.Encode();
+                    // Flag to remove old mapping if necessary
+                    removePrev = prevCode != null && code != prevCode;
 
-                // Remove old mapping if necessary
-                if(prevCode != null && code != prevCode)
-                {
-                    if(_midiMapping.ContainsKey((UInt32)prevCode))
+                    if (e.StoreSelection)
                     {
-                        _ = _midiMapping[(UInt32)prevCode].Remove(key.action);
-                        if(_midiMapping[(UInt32)prevCode].Count == 0)
-                        {
-                            _ = _midiMapping.Remove((UInt32)prevCode);
-                        }
+                        e.Selection = new HashSet<CPropertyBase>(Selection);
                     }
-                }
+                    else
+                    {
+                        e.Selection = Selection;
+                    }
 
-                if (e.Message > 0) // Add if message isn't undefined
-                {
                     key.action = CreateMidiAction(target, command, specific, e);
                     if (_midiMapping.ContainsKey(code))
                     {
@@ -972,17 +964,34 @@ namespace Snapshot
                     {
                         _ = _midiMapping[code] = new HashSet<CMidiAction>() { key.action };
                     }
+                }
+                else // Undefined - remove mapping
+                {
+                    _ = MidiMap.Remove(key);
+                    removePrev = true;
+                }
 
-                    if(specific) // Slot
+                if(removePrev)
+                {
+                    if (_midiMapping.ContainsKey((UInt32)prevCode))
                     {
-                        CurrentSlot.MidiInfo.Update(command, e);
-                        OnPropertyChanged("SlotMidi");
+                        _ = _midiMapping[(UInt32)prevCode].Remove(key.action);
+                        if (_midiMapping[(UInt32)prevCode].Count == 0)
+                        {
+                            _ = _midiMapping.Remove((UInt32)prevCode);
+                        }
                     }
-                    else // Machine
-                    {
-                        MidiInfo.Update(command, e);
-                        OnPropertyChanged("MachineMidi");
-                    }
+                }
+
+                if (specific) // Slot
+                {
+                    CurrentSlot.MidiInfo.Update(command, e);
+                    OnPropertyChanged("SlotMidi");
+                }
+                else // Machine
+                {
+                    MidiInfo.Update(command, e);
+                    OnPropertyChanged("MachineMidi");
                 }
             }
 
@@ -1040,8 +1049,6 @@ namespace Snapshot
             }
 
             // Save MIDI mapping
-            //   We could prune items where e.Message == 0 but no harm leaving them.
-            //   Just don't add them to the _midiMapping on load.
             w.Write(MidiMap.Count());
             foreach (KeyValuePair<CMidiTargetInfo, CMidiEventSettings> item in MidiMap)
             {
@@ -1173,17 +1180,24 @@ namespace Snapshot
                 // Restore settings
                 info.action = CreateMidiAction(target, command, specific, e);
                 MidiMap[info] = e; // settings
-                if(e.Message > 0)  // don't add undefined messages to the mapping
+
+                var code = e.Encode();
+                if(_midiMapping.ContainsKey(code))
                 {
-                    var code = e.Encode();
-                    if(_midiMapping.ContainsKey(code))
-                    {
-                        _midiMapping[code].Add(info.action); // mapping
-                    }
-                    else
-                    {
-                        _midiMapping[code] = new HashSet<CMidiAction>() { info.action };
-                    }
+                    _midiMapping[code].Add(info.action); // mapping
+                }
+                else
+                {
+                    _midiMapping[code] = new HashSet<CMidiAction>() { info.action };
+                }
+
+                if (specific) // Slot
+                {
+                    _slots[slot].MidiInfo.Update(command, e);
+                }
+                else // Machine
+                {
+                    MidiInfo.Update(command, e);
                 }
             }
 
@@ -1260,6 +1274,8 @@ namespace Snapshot
             OnPropertyChanged("CurrentSlot");
             OnPropertyChanged("State");
             OnPropertyChanged("Selection");
+            OnPropertyChanged("SlotMidi");
+            OnPropertyChanged("MachineMidi");
         }
 
         // Called after song load or template drop
@@ -1706,7 +1722,7 @@ namespace Snapshot
                 switch(Message)
                 {
                     case 0:
-                        return "Undefined";
+                        return "";
 
                     case 1:
                         return string.Format("Note: {0}, Ch.{1}",

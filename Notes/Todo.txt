@@ -7,9 +7,7 @@ MIDI Mapping:
 	Hide midi indicator tooltips if string is empty
 	Make indicators clickable to launch mapping dialog
 	Mapping view
-		Thinking maybe we should delete undefined mappings from MidiMap
-			It's slightly nice that it remembers what the settings used to be but
-			the awkwardness of the clutter isn't worth it.
+		DataGrid doesn't update when MidiMap is changed
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.

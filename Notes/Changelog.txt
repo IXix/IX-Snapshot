@@ -4,6 +4,7 @@
 		Right side = slot mapping
 		Mapping info displayed in tooltip of indicator circles
 			Might be better in the button tooltip though
+	Undefined midi mappings are now removed from MidiMap
 
 2023.04.06
 	Initial stab at DataGrid view of MIDI mappings
