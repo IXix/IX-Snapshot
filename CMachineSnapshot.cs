@@ -21,6 +21,7 @@ namespace Snapshot
             ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>();
             DataValues = new Dictionary<CDataState, byte[]>();
             StoredProperties = new HashSet<CPropertyBase>();
+            MidiInfo = new CMidiBindingInfo();
         }
 
         public CMachineSnapshot(CMachineSnapshot src)
@@ -47,6 +48,8 @@ namespace Snapshot
         public HashSet<CPropertyBase> StoredProperties { get; internal set; }
 
         public int Index { get; private set; }
+
+        public CMidiBindingInfo MidiInfo;
 
         private string _name;
         public string Name

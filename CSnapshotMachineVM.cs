@@ -424,6 +424,14 @@ namespace Snapshot
         {
             switch (e.PropertyName)
             {
+                case "MachineMidi":
+                    NotifyPropertyChanged("MachineMidi");
+                    break;
+
+                case "MidiInfo":
+                    NotifyPropertyChanged("SlotMidi");
+                    break;
+
                 case "Selection":
                     NotifyPropertyChanged("GotSelection");
                     NotifyPropertyChanged("CanCaptureMissing");
@@ -755,6 +763,10 @@ namespace Snapshot
         public ObservableCollection<CMachineStateVM> StatesB { get; }
 
         public Dictionary<CMidiTargetInfo, CMidiEventSettings> MidiMap => Owner.MidiMap;
+
+        // These are to show info about MIDI bindings on the UI buttons
+        public CMidiBindingInfo MachineMidi => Owner.MidiInfo;
+        public CMidiBindingInfo SlotMidi => CurrentSlot.MidiInfo;
 
         #region Commands
         public SimpleCommand CmdCapture { get; private set; }

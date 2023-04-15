@@ -326,6 +326,8 @@ namespace Snapshot
         // This is the mapping of UI actions to MIDI events
         public Dictionary<CMidiTargetInfo, CMidiEventSettings> MidiMap { get; private set; }
 
+        public CMidiBindingInfo MidiInfo;
+
         // This is the mechanism to trigger UI actions in response to MIDI events
         private readonly Dictionary<UInt32 /*code*/, HashSet<CMidiAction>> _midiMapping;
 
@@ -363,6 +365,7 @@ namespace Snapshot
             States = new ObservableCollection<CMachineState>();
             AllProperties = new HashSet<CPropertyBase>();
             VM = new CSnapshotMachineVM(this);
+            MidiInfo = new CMidiBindingInfo();
 
             ReadOnlyCollection<IMachine> machines = Global.Buzz.Song.Machines;
             foreach (IMachine m in machines)
@@ -968,6 +971,17 @@ namespace Snapshot
                     else
                     {
                         _ = _midiMapping[code] = new HashSet<CMidiAction>() { key.action };
+                    }
+
+                    if(specific) // Slot
+                    {
+                        CurrentSlot.MidiInfo.Update(command, e);
+                        OnPropertyChanged("SlotMidi");
+                    }
+                    else // Machine
+                    {
+                        MidiInfo.Update(command, e);
+                        OnPropertyChanged("MachineMidi");
                     }
                 }
             }

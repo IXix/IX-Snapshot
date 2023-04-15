@@ -9,7 +9,7 @@
              d:DesignHeight="500" d:DesignWidth="500" Height="500" Loaded="Main_Loaded">
     <UserControl.Resources>
         <ResourceDictionary>
-            
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Common.xaml"/>
             </ResourceDictionary.MergedDictionaries>
@@ -27,115 +27,135 @@
 
 
             <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
-        <!-- Named styles -->
-        
-        <!-- Prevent treeview context menu items using the IsChecked state of the underlying property. -->
-        <!-- Don't know why just setting IsCheckable=False on the menuitem definitions doesn't work. -->
-        <Style x:Key="propertyMenuItem" TargetType="MenuItem">
-            <Setter Property="IsCheckable" Value="False" />
-        </Style>
+            <!-- Named styles -->
 
-        <Style x:Key="tvi_text_base" TargetType="TextBlock">
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="FontFamily" Value="Segoe UI" />
-            <Setter Property="FontSize" Value="14" />
-        </Style>
+            <Style x:Key="sButtonAction" TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
 
-        <Style x:Key="propertyMenuItemM" BasedOn="{StaticResource propertyMenuItem}" TargetType="MenuItem">
-            <!-- for things that don't belong in the main treeview context menu -->
-            
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+            <Style x:Key="sMidiIndicator" TargetType="Ellipse">
+                <Setter Property="Width" Value="7" />
+                <Setter Property="Height" Value="7" />
+            </Style>
+
+            <Style x:Key="sMachineMidiIndicator" TargetType="Ellipse" BasedOn="{StaticResource sMidiIndicator}">
+                <Setter Property="Fill" Value="Green" />
+                <Setter Property="Margin" Value="5,1,1,1"/>
+            </Style>
+
+            <Style x:Key="sSlotMidiIndicator" TargetType="Ellipse" BasedOn="{StaticResource sMidiIndicator}">
+                <Setter Property="Fill" Value="Blue" />
+                <Setter Property="Margin" Value="1,1,5,1"/>
+            </Style>
+
+            <!-- Prevent treeview context menu items using the IsChecked state of the underlying property. -->
+            <!-- Don't know why just setting IsCheckable=False on the menuitem definitions doesn't work. -->
+            <Style x:Key="propertyMenuItem" TargetType="MenuItem">
+                <Setter Property="IsCheckable" Value="False" />
+            </Style>
+
+            <Style x:Key="tvi_text_base" TargetType="TextBlock">
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontFamily" Value="Segoe UI" />
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+
+            <Style x:Key="propertyMenuItemM" BasedOn="{StaticResource propertyMenuItem}" TargetType="MenuItem">
+                <!-- for things that don't belong in the main treeview context menu -->
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type TreeView}}, Path=Name}" Value="MachineList">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-        <Style x:Key="separatorM" TargetType="Separator">
-            <!-- for things that don't belong in the main treeview context menu -->
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+            <Style x:Key="separatorM" TargetType="Separator">
+                <!-- for things that don't belong in the main treeview context menu -->
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type TreeView}}, Path=Name}" Value="MachineList">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-        <!-- ******** Slot ComboBox items ******* -->
-        <Style x:Key="cbi_slots" TargetType="ComboBoxItem">
-            <Setter Property="FontWeight" Value="Normal" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding HasData}" Value="True">
-                    <Setter Property="FontWeight" Value="Bold" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+            <!-- ******** Slot ComboBox items ******* -->
+            <Style x:Key="cbi_slots" TargetType="ComboBoxItem">
+                <Setter Property="FontWeight" Value="Normal" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding HasData}" Value="True">
+                        <Setter Property="FontWeight" Value="Bold" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-        <DataTemplate x:Key="slot_combo_item">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
-        </DataTemplate>
+            <DataTemplate x:Key="slot_combo_item">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </DataTemplate>
 
-        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
-        <!-- TreeViewItem context menus-->
+            <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+            <!-- TreeViewItem context menus-->
 
-        <ContextMenu x:Key="main_treeitemmenu">
-            <MenuItem Header="Capture" Command="{Binding CmdCapture}" Style="{StaticResource propertyMenuItem}" />
-            <MenuItem Header="Restore" Command="{Binding CmdRestore}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Clear" Command="{Binding CmdClear}" Style="{StaticResource propertyMenuItem}" />
-            <Separator />
-            <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" Style="{StaticResource propertyMenuItem}" />
-            <Separator Style="{StaticResource separatorM}" />
-            <MenuItem Header="Copy to opposite" Command="{Binding CmdCopyAcross}" Style="{StaticResource propertyMenuItemM}" />
-            <Separator Style="{StaticResource separatorM}" />
-            <MenuItem Header="Settings..." Command="{Binding CmdOpenSettings}" Style="{StaticResource propertyMenuItem}" />
-        </ContextMenu>
+            <ContextMenu x:Key="main_treeitemmenu">
+                <MenuItem Header="Capture" Command="{Binding CmdCapture}" Style="{StaticResource propertyMenuItem}" />
+                <MenuItem Header="Restore" Command="{Binding CmdRestore}" Style="{StaticResource propertyMenuItem}" />
+                <Separator />
+                <MenuItem Header="Clear" Command="{Binding CmdClear}" Style="{StaticResource propertyMenuItem}" />
+                <Separator />
+                <MenuItem Header="Remove from all slots" Command="{Binding CmdClearAll}" Style="{StaticResource propertyMenuItem}" />
+                <Separator Style="{StaticResource separatorM}" />
+                <MenuItem Header="Copy to opposite" Command="{Binding CmdCopyAcross}" Style="{StaticResource propertyMenuItemM}" />
+                <Separator Style="{StaticResource separatorM}" />
+                <MenuItem Header="Settings..." Command="{Binding CmdOpenSettings}" Style="{StaticResource propertyMenuItem}" />
+            </ContextMenu>
 
-        <!-- ******* TreeViewItem Styles ******* -->
-        <Style x:Key="tvis_item" TargetType="{x:Type TreeViewItem}">
-            <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
-            <EventSetter Event="PreviewMouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown" />
+            <!-- ******* TreeViewItem Styles ******* -->
+            <Style x:Key="tvis_item" TargetType="{x:Type TreeViewItem}">
+                <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
+                <EventSetter Event="PreviewMouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown" />
 
-            <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
-            <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" />
+                <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
+                <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-            <Setter Property="Visibility" Value="{Binding IsVisible, Mode=OneWay}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="Visibility" Value="{Binding IsVisible, Mode=OneWay}" />
 
-            <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <!-- Easier to set as manager and override for main -->
-            <Style.Triggers>
-                <!-- Override IsExpanded setter for main -->
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+                <Setter Property="IsExpanded" Value="{Binding IsExpandedM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <!-- Easier to set as manager and override for main -->
+                <Style.Triggers>
+                    <!-- Override IsExpanded setter for main -->
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                                  AncestorType={x:Type TreeView}}, Path=Name}" Value="MachineList">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-        <Style x:Key="tvis_panel" TargetType="StackPanel">
-            <Setter Property="ContextMenu" Value="{StaticResource main_treeitemmenu}" />
-        </Style>
+            <Style x:Key="tvis_panel" TargetType="StackPanel">
+                <Setter Property="ContextMenu" Value="{StaticResource main_treeitemmenu}" />
+            </Style>
 
-        <Style x:Key="tvis_checkbox" TargetType="CheckBox">
-            <Setter Property="IsChecked" Value="{Binding IsCheckedM}" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
+            <Style x:Key="tvis_checkbox" TargetType="CheckBox">
+                <Setter Property="IsChecked" Value="{Binding IsCheckedM}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type TreeView}}, Path=Name}" Value="MachineList">
-                    <Setter Property="IsChecked" Value="{Binding IsChecked}" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
+                        <Setter Property="IsChecked" Value="{Binding IsChecked}" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
 
-        <Style x:Key="tvis_property_name" TargetType="TextBlock">
-            <Setter Property="Text" Value="{Binding DisplayName}" />
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True" >
-                    <Setter Property="FontWeight" Value="Bold" />
-                </DataTrigger>
+            <Style x:Key="tvis_property_name" TargetType="TextBlock">
+                <Setter Property="Text" Value="{Binding DisplayName}" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding GotValue, UpdateSourceTrigger=PropertyChanged}" Value="True" >
+                        <Setter Property="FontWeight" Value="Bold" />
+                    </DataTrigger>
                     <DataTrigger Binding="{Binding ChildHasSmoothing, UpdateSourceTrigger=PropertyChanged}" Value="True" >
                         <Setter Property="Foreground" Value="DarkOrange" />
                     </DataTrigger>
@@ -143,54 +163,54 @@
                         <Setter Property="Foreground" Value="Blue" />
                     </DataTrigger>
                 </Style.Triggers>
-        </Style>
+            </Style>
 
-        <Style x:Key="tvis_property_value" TargetType="TextBlock">
-            <Setter Property="FontWeight" Value="Normal" />
-            <Setter Property="Text" Value="{Binding DisplayValue}" />
-        </Style>
+            <Style x:Key="tvis_property_value" TargetType="TextBlock">
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="Text" Value="{Binding DisplayValue}" />
+            </Style>
 
-        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
-        <!-- General Treeview Item Templates -->
-        <!-- Things that contain properties or other containers of properties -->
-        <HierarchicalDataTemplate x:Key="property_container_template" ItemsSource="{Binding Children}">
-            <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
-                <StackPanel.InputBindings>
-                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdOpenSettings}" />
-                </StackPanel.InputBindings>
-                <CheckBox IsThreeState="True" Focusable="False" Click="OnThreeStateClick" Style="{StaticResource tvis_checkbox}" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <TextBlock Style="{StaticResource tvis_property_name}" />
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </HierarchicalDataTemplate>
-
-        <!-- Actual properties -->
-        <DataTemplate x:Key="property_template" DataType="{x:Type local:CPropertyStateVM}">
-            <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
-                <StackPanel.InputBindings>
-                    <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdOpenSettings}" />
-                </StackPanel.InputBindings>
-                <CheckBox Focusable="False" Style="{StaticResource tvis_checkbox}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
-                <ContentPresenter>
-                    <ContentPresenter.Content>
-                        <StackPanel Orientation="Horizontal">
+            <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+            <!-- General Treeview Item Templates -->
+            <!-- Things that contain properties or other containers of properties -->
+            <HierarchicalDataTemplate x:Key="property_container_template" ItemsSource="{Binding Children}">
+                <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
+                    <StackPanel.InputBindings>
+                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdOpenSettings}" />
+                    </StackPanel.InputBindings>
+                    <CheckBox IsThreeState="True" Focusable="False" Click="OnThreeStateClick" Style="{StaticResource tvis_checkbox}" VerticalAlignment="Center" Margin="0,0,5,0" />
+                    <ContentPresenter>
+                        <ContentPresenter.Content>
                             <TextBlock Style="{StaticResource tvis_property_name}" />
-                            <TextBlock Style="{StaticResource tvis_property_value}" />
-                        </StackPanel>
-                    </ContentPresenter.Content>
-                </ContentPresenter>
-            </StackPanel>
-        </DataTemplate>
+                        </ContentPresenter.Content>
+                    </ContentPresenter>
+                </StackPanel>
+            </HierarchicalDataTemplate>
 
-        <!-- Treeview item template selector class defined in code behind-->
-        <local:ItemTemplateSelector x:Key="tvi_template_selector"
+            <!-- Actual properties -->
+            <DataTemplate x:Key="property_template" DataType="{x:Type local:CPropertyStateVM}">
+                <StackPanel Orientation="Horizontal" Style="{StaticResource tvis_panel}" >
+                    <StackPanel.InputBindings>
+                        <MouseBinding Gesture="LeftDoubleClick" Command="{Binding CmdOpenSettings}" />
+                    </StackPanel.InputBindings>
+                    <CheckBox Focusable="False" Style="{StaticResource tvis_checkbox}" Click="OnThreeStateClick" VerticalAlignment="Center" Margin="0,0,5,0" />
+                    <ContentPresenter>
+                        <ContentPresenter.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource tvis_property_name}" />
+                                <TextBlock Style="{StaticResource tvis_property_value}" />
+                            </StackPanel>
+                        </ContentPresenter.Content>
+                    </ContentPresenter>
+                </StackPanel>
+            </DataTemplate>
+
+            <!-- Treeview item template selector class defined in code behind-->
+            <local:ItemTemplateSelector x:Key="tvi_template_selector"
             PropertyContainerTemplate="{StaticResource property_container_template}"
             PropertyStateTemplate="{StaticResource property_template}" />
-        
-        <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+
+            <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
             <Style TargetType="Button" x:Key="sBtnClearFilter" BasedOn="{StaticResource sButtonDefault}">
                 <Setter Property="Foreground" Value="Red" />
@@ -218,7 +238,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        
+
                         <!-- Treeview content templates defined in resources -->
                         <TreeView x:Name="MachineList" Grid.Row="0"
                                   ItemContainerStyle="{StaticResource tvis_item}"
@@ -346,8 +366,7 @@
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Capture" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
-                                    <Setter Property="Foreground" Value="Black" />
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                             <Setter Property="Foreground" Value="Gray" />
@@ -355,7 +374,36 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            Capture selected
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.CaptureSelected}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MachineMidi.CaptureSelected}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Capture selected</TextBlock>
+                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.CaptureSelected}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SlotMidi.CaptureSelected}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </Grid>
                         </Button>
                         <Button x:Name="btnCaptureMissing" ToolTip="{StaticResource str_ttCaptureMissing}">
                             <Button.InputBindings>
@@ -364,8 +412,7 @@
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="CaptureMissing" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
-                                    <Setter Property="Foreground" Value="Black" />
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CanCaptureMissing, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                             <Setter Property="Foreground" Value="Gray" />
@@ -373,7 +420,36 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            Capture missing
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.CaptureMissing}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MachineMidi.CaptureMissing}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Capture missing</TextBlock>
+                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.CaptureMissing}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SlotMidi.CaptureMissing}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </Grid>
                         </Button>
                         <Separator />
                         <Button x:Name="btnPurge" ToolTip="{StaticResource str_ttPurge}">
@@ -383,8 +459,7 @@
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Purge" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
-                                    <Setter Property="Foreground" Value="Black" />
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CanPurge, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                             <Setter Property="Foreground" Value="Gray" />
@@ -392,7 +467,36 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            Purge
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.Purge}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MachineMidi.Purge}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Purge</TextBlock>
+                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.Purge}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SlotMidi.Purge}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </Grid>
                         </Button>
                         <Button x:Name="btnClear" ToolTip="{StaticResource str_ttClear}">
                             <Button.InputBindings>
@@ -402,8 +506,7 @@
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
-                                    <Setter Property="Foreground" Value="Black" />
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                             <Setter Property="Foreground" Value="Gray" />
@@ -411,7 +514,36 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            Clear all
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.ClearAll}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MachineMidi.ClearAll}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Clear all</TextBlock>
+                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.ClearAll}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SlotMidi.ClearAll}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </Grid>
                         </Button>
                         <Button x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
                             <Button.InputBindings>
@@ -421,8 +553,7 @@
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
-                                    <Setter Property="Foreground" Value="Black" />
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                             <Setter Property="Foreground" Value="Gray" />
@@ -430,7 +561,36 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            Clear selected
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.ClearSelected}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MachineMidi.ClearSelected}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Clear selected</TextBlock>
+                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.ClearSelected}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SlotMidi.ClearSelected}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </Grid>
                         </Button>
                         <Separator />
                         <Button x:Name="btnRestore" ToolTip="{StaticResource str_ttRestore}">
@@ -440,8 +600,7 @@
                                 <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Restore" Gesture="Ctrl+RightClick" />
                             </Button.InputBindings>
                             <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
-                                    <Setter Property="Foreground" Value="Black" />
+                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                             <Setter Property="Foreground" Value="Gray" />
@@ -449,7 +608,36 @@
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
-                            Restore all
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.RestoreAll}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding MachineMidi.RestoreAll}" Value="">
+                                                    <Setter Property="Fill" Value="Gray" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Restore all</TextBlock>
+                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.RestoreAll}">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SlotMidi.RestoreAll}" Value="">
+                                                    <Setter Property="Visibility" Value="Hidden" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                            </Grid>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -551,7 +739,7 @@
                         <local:AutoDisableImage Source="resource/icon_set_active.png" Stretch="UniformToFill" Height="18" />
                     </Button>
                 </Grid>
-                
+
                 <!-- Treeview content templates defined in resources -->
                 <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0"
                           ItemContainerStyle="{StaticResource tvis_item}"
@@ -570,7 +758,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    
+
                     <TextBox x:Name="txtFilterM" Grid.Column="0" VerticalContentAlignment="Center" Text="{Binding FilterTextM, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="14" FontStyle="Italic"/>
                     <TextBlock IsHitTestVisible="False" Text="Filter" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                         <TextBlock.Style>
@@ -593,7 +781,7 @@
                         <ComboBoxItem Tag="All" Content="Show All" IsSelected="True" />
                     </ComboBox>
                 </Grid>
-                
+
                 <StackPanel Orientation="Vertical" Grid.Row="3" Grid.Column="0">
                     <Button x:Name="btnCaptureA" ToolTip="{StaticResource str_ttCaptureSelected}">
                         <Button.InputBindings>
