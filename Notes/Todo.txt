@@ -4,6 +4,7 @@ Save/load selection seems broken
 	Would prefer selection to always be saved
 
 MIDI Mapping:
+	Provide more detail about clashes in warning message
 	Mapping view
 		DataGrid doesn't update when MidiMap is changed
 

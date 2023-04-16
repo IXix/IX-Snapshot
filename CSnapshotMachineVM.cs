@@ -427,6 +427,7 @@ namespace Snapshot
                 // Don't need to do anything special for these, default catches them.
                 //case "MidiMap":
                 //case "MachineMidi":
+                //case "SlotMidi":
                 //case "MidiInfo":
 
                 case "Selection":
@@ -508,6 +509,7 @@ namespace Snapshot
                     {
                         NotifyPropertyChanged("CurrentSlot");
                         NotifyPropertyChanged("Notes");
+                        NotifyPropertyChanged("SlotMidi");
                         foreach (CMachineStateVM s in States)
                         {
                             s.RefreshState(true);

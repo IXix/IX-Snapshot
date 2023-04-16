@@ -129,6 +129,19 @@
                 </GroupBox>
 
                 <GroupBox Header="Options">
+                    <GroupBox.Style>
+                        <Style TargetType="GroupBox">
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ShowSelectionCheck}" Value="False" />
+                                        <Condition Binding="{Binding ShowBoolOption1}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Style>
                     <StackPanel>
                         <CheckBox x:Name="chkStoreSelection" IsChecked="{Binding Settings.StoreSelection}" Content="Remember selection">
                             <CheckBox.Style>
@@ -141,9 +154,10 @@
                                 </Style>
                             </CheckBox.Style>
                         </CheckBox>
-                        <CheckBox x:Name="chkOption1" IsChecked="{Binding Settings.BoolOption1}" Visibility="Visible" Content="{Binding BoolOption1Text}">
+                        <CheckBox x:Name="chkOption1" IsChecked="{Binding Settings.BoolOption1}" Content="{Binding BoolOption1Text}">
                             <CheckBox.Style>
                                 <Style TargetType="CheckBox" BasedOn="{StaticResource sCheckBoxDefault}">
+                                    <Setter Property="Visibility" Value="Visible" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding ShowBoolOption1, UpdateSourceTrigger=PropertyChanged}" Value="False">
                                             <Setter Property="Visibility" Value="Collapsed" />
