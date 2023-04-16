@@ -4,7 +4,6 @@ Save/load selection seems broken
 	Would prefer selection to always be saved
 
 MIDI Mapping:
-	Hide midi indicator tooltips if string is empty
 	Make indicators clickable to launch mapping dialog
 	Mapping view
 		DataGrid doesn't update when MidiMap is changed

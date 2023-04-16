@@ -59,6 +59,17 @@
     </Style>
     <Style TargetType="TextBox" BasedOn="{StaticResource sTextBoxDefault}" />
 
+    <!-- Hide empty tooltips -->
+    <Style TargetType="ToolTip">
+        <Style.Triggers>
+            <Trigger Property="Content"
+                 Value="">
+                <Setter Property="Visibility"
+                    Value="Collapsed" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- Tooltips for common controls-->
     <system:String x:Key="str_ttCaptureSelected">Capture selected properties.</system:String>
     <system:String x:Key="str_ttCaptureMissing">Capture selected properties that don't have values.</system:String>

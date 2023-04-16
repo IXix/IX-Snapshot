@@ -1,3 +1,6 @@
+2023.04.16
+	Empty tooltips are now hidden
+
 2023.04.15
 	Implemented display of midi mapping settings on main UI buttons
 		Left side = machine mapping
