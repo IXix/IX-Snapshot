@@ -381,6 +381,9 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.CaptureSelected}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Capture" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -393,6 +396,9 @@
                                 </Ellipse>
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Center">Capture selected</TextBlock>
                                 <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.CaptureSelected}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Capture" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -427,6 +433,9 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.CaptureMissing}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="CaptureMissing" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -439,6 +448,9 @@
                                 </Ellipse>
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Center">Capture missing</TextBlock>
                                 <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.CaptureMissing}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="CaptureMissing" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -474,6 +486,9 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.Purge}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Purge" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -486,6 +501,9 @@
                                 </Ellipse>
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Center">Purge</TextBlock>
                                 <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.Purge}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Purge" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -521,6 +539,9 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.ClearAll}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -533,6 +554,9 @@
                                 </Ellipse>
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Center">Clear all</TextBlock>
                                 <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.ClearAll}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -568,6 +592,9 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.ClearSelected}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -580,6 +607,9 @@
                                 </Ellipse>
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Center">Clear selected</TextBlock>
                                 <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.ClearSelected}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -615,6 +645,9 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.RestoreAll}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Restore" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -627,11 +660,14 @@
                                 </Ellipse>
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Center">Restore all</TextBlock>
                                 <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.RestoreAll}">
+                                    <Ellipse.InputBindings>
+                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Restore" MouseAction="LeftClick" />
+                                    </Ellipse.InputBindings>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding SlotMidi.RestoreAll}" Value="">
-                                                    <Setter Property="Visibility" Value="Hidden" />
+                                                    <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

@@ -1,5 +1,6 @@
 2023.04.16
 	Empty tooltips are now hidden
+	Left-click on midi mapping indicators now opens mapping dialog
 
 2023.04.15
 	Implemented display of midi mapping settings on main UI buttons
