@@ -5,8 +5,7 @@ Save/load selection seems broken
 
 MIDI Mapping:
 	Provide more detail about clashes in warning message
-	Mapping view
-		DataGrid doesn't update when MidiMap is changed
+	Make items in DataGrid clickable to open mapping dialog 
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.

@@ -3,6 +3,8 @@
 	Left-click on midi mapping indicators now opens mapping dialog
 	Implemented proper note names
 	Mapping dialog improvements
+	Converted MidiMap to ObservableCollection to make it more compatible with the DataGrid
+		Moved the CMidiEventsettings object into CMidiTargetInfo and adjusted all relevant code.
 
 2023.04.15
 	Implemented display of midi mapping settings on main UI buttons

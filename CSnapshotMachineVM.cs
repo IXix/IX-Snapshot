@@ -761,7 +761,7 @@ namespace Snapshot
         public ObservableCollection<CMachineStateVM> StatesA { get; }
         public ObservableCollection<CMachineStateVM> StatesB { get; }
 
-        public Dictionary<CMidiTargetInfo, CMidiEventSettings> MidiMap => Owner.MidiMap;
+        public ObservableCollection<CMidiTargetInfo> MidiMap => Owner.MidiMap;
 
         // These are to show info about MIDI bindings on the UI buttons
         public CMidiBindingInfo MachineMidi => Owner.MidiInfo;

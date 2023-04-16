@@ -326,7 +326,7 @@ namespace Snapshot
         public bool SlotHasData => CurrentSlot.StoredCount > 0;
 
         // This is the mapping of UI actions to MIDI events
-        public Dictionary<CMidiTargetInfo, CMidiEventSettings> MidiMap { get; private set; }
+        public ObservableCollection<CMidiTargetInfo> MidiMap { get; private set; }
 
         public CMidiBindingInfo MidiInfo;
 
@@ -358,7 +358,7 @@ namespace Snapshot
             };
             WorkThread.Start();
 
-            MidiMap = new Dictionary<CMidiTargetInfo, CMidiEventSettings>();
+            MidiMap = new ObservableCollection<CMidiTargetInfo>();
             _midiMapping = new Dictionary<uint, HashSet<CMidiAction>>();
             _confirmClear = true;
 
@@ -874,15 +874,14 @@ namespace Snapshot
 
         internal List<CMidiTargetInfo> FindDuplicateMappings(CMidiEventSettings settings)
         {
-            return MidiMap.Where(item => item.Value.CheckConflict(settings)).Select(pair => pair.Key).ToList();
+            return MidiMap.Where(item => item.settings.CheckConflict(settings)).ToList();
         }
 
         internal void RemoveMapping(CMidiTargetInfo target, bool clearSettings)
         {
-            if (MidiMap.ContainsKey(target))
+            if (MidiMap.Contains(target))
             {
-                CMidiEventSettings e = MidiMap[target];
-                UInt32 code = e.Encode();
+                UInt32 code = target.settings.Encode();
 
                 _ = _midiMapping[code].Remove(target.action);
                 if (_midiMapping[code].Count == 0)
@@ -892,7 +891,7 @@ namespace Snapshot
 
                 if(clearSettings)
                 {
-                    e.Reset();
+                    target.settings.Reset();
                 }
             }
         }
@@ -926,20 +925,19 @@ namespace Snapshot
 
             // Retrieve the mapping or use defaults
             CMidiTargetInfo key;
-            CMidiEventSettings e;
+
             UInt32? prevCode = null;
             try
             {
-                var pair = MidiMap.Single(x => x.Key.index == index && x.Key.command == command);
-                key = pair.Key;
-                e = pair.Value;
-                prevCode = e.Encode();
+                key = MidiMap.First(x => x.index == index && x.command == command);
+                prevCode = key.settings.Encode();
             }
-            catch
+            catch (InvalidOperationException ex) // Not in collection
             {
-                key = new CMidiTargetInfo(index, command);
-                e = new CMidiEventSettings(this);
+                key = new CMidiTargetInfo(index, command, this);
             }
+
+            CMidiEventSettings e = key.settings;
 
             // Show mapping dialog
             _mappingDialog = new CMappingDialog(this, key, e, specific);
@@ -952,7 +950,11 @@ namespace Snapshot
             {
                 if (e.Message > 0)
                 {
-                    MidiMap[key] = e;
+                    if(prevCode == null) // New mapping
+                    {
+                        MidiMap.Add(key);
+                    }
+
                     UInt32 code = e.Encode();
 
                     // Flag to remove old mapping if necessary
@@ -1062,14 +1064,11 @@ namespace Snapshot
 
             // Save MIDI mapping
             w.Write(MidiMap.Count());
-            foreach (KeyValuePair<CMidiTargetInfo, CMidiEventSettings> item in MidiMap)
+            foreach (CMidiTargetInfo info in MidiMap)
             {
-                CMidiTargetInfo info = item.Key;
-                CMidiEventSettings e = item.Value;
-
                 w.Write(info.command);
                 w.Write(info.index);
-                e.WriteData(w);
+                info.settings.WriteData(w);
             }
 
             // Build a list of states to save by finding which are referred to by snapshots
@@ -1170,8 +1169,8 @@ namespace Snapshot
                 string command = r.ReadString();
                 int slot = r.ReadInt32();
 
-                CMidiTargetInfo info = new CMidiTargetInfo(slot, command);
-                CMidiEventSettings e = new CMidiEventSettings(this);
+                CMidiTargetInfo info = new CMidiTargetInfo(slot, command, this);
+                CMidiEventSettings e = info.settings;
                 e.ReadData(r);
 
                 // Restore mapping settings
@@ -1191,7 +1190,10 @@ namespace Snapshot
 
                 // Restore settings
                 info.action = CreateMidiAction(target, command, specific, e);
-                MidiMap[info] = e; // settings
+                if (MidiMap.Contains(info))
+                    throw new Exception("MIDI mapping already exists"); // Shouldn't be possible
+
+                MidiMap.Add(info);
 
                 var code = e.Encode();
                 if(_midiMapping.ContainsKey(code))
@@ -1678,12 +1680,14 @@ namespace Snapshot
         public readonly string command; // "Capture" etc.
 
         public CMidiAction action;
+        public CMidiEventSettings settings;
 
-        public CMidiTargetInfo(int idx, string cmd)
+        public CMidiTargetInfo(int idx, string cmd, CMachine owner)
         {
             index = idx;
             command = cmd;
             action = null;
+            settings = new CMidiEventSettings(owner);
         }
 
         public override int GetHashCode()
@@ -1709,6 +1713,8 @@ namespace Snapshot
                 return targetName + command;
             }
         }
+
+        public string EventDetails => settings.Description;
     }
 
     public class CMidiEventSettings

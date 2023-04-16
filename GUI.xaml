@@ -918,7 +918,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
-                                    <TextBlock Text="{Binding Path=Key.(local:CMidiTargetInfo.Description)}" />
+                                    <TextBlock Text="{Binding Description}" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -927,7 +927,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
-                                    <TextBlock Text="{Binding Path=Value.(local:CMidiEventSettings.Description)}" />
+                                    <TextBlock Text="{Binding EventDetails}" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
