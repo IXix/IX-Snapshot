@@ -6,7 +6,6 @@
             d:DataContext="{d:DesignInstance Type=local:CMappingDialog}"
             xmlns:local="clr-namespace:Snapshot"
             Title="Map MIDI event"
-            MinHeight="200"
             MinWidth="200"
             SizeToContent="WidthAndHeight"
             ResizeMode="NoResize"
@@ -29,75 +28,134 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" HorizontalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center">
+            
             <TextBlock>Type</TextBlock>
             <ComboBox Name="cmbType" ItemsSource="{Binding TypeValues}" SelectedIndex="{Binding Settings.Message}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="MIDI message type."/>
-            <TextBlock>Channel</TextBlock>
-            <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Settings.Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="MIDI channel number.">
-                <ComboBox.Style>
-                    <Style TargetType="{x:Type ComboBox}">
-                        <Setter Property="IsEnabled" Value="True" />
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel" BasedOn="{StaticResource sStackPanelDefault}">
+                        <Setter Property="Visibility" Value="Visible" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="0">
-                                <Setter Property="IsEnabled" Value="False" />
-                                <Setter Property="Foreground" Value="LightGray" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ComboBox.Style>
-            </ComboBox>
-            <TextBlock Name="txtPrimary">Note/Controller</TextBlock>
-            <ComboBox Name="cmbPrimary" ItemsSource="{Binding PrimaryValues}" SelectedIndex="{Binding Settings.Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" ToolTip="Note/CC number.">
-                <ComboBox.Style>
-                    <Style TargetType="{x:Type ComboBox}">
-                        <Setter Property="IsEnabled" Value="True" />
-                        <Setter Property="Foreground" Value="Black" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="0">
-                                <Setter Property="IsEnabled" Value="False" />
-                                <Setter Property="Foreground" Value="LightGray" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ComboBox.Style>
-            </ComboBox>
-            <TextBlock>Controller Value</TextBlock>
-            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="Controller value.">
-                <ComboBox.Style>
-                    <Style TargetType="{x:Type ComboBox}">
-                        <Setter Property="IsEnabled" Value="False" />
-                        <Setter Property="Foreground" Value="LightGray" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="3">
-                                <Setter Property="IsEnabled" Value="True" />
-                                <Setter Property="Foreground" Value="Black" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ComboBox.Style>
-            </ComboBox>
-            <CheckBox x:Name="chkStoreSelection" IsChecked="{Binding Settings.StoreSelection}" Content="Remember selection">
-                <CheckBox.Style>
-                    <Style TargetType="CheckBox" BasedOn="{StaticResource sCheckBoxDefault}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowSelectionCheck, UpdateSourceTrigger=PropertyChanged}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </CheckBox.Style>
-            </CheckBox>
-            <CheckBox x:Name="chkClearExisting" IsChecked="{Binding Settings.BoolOption1}" Content="{Binding BoolOption1Text}">
-                <CheckBox.Style>
-                    <Style TargetType="CheckBox" BasedOn="{StaticResource sCheckBoxDefault}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ShowBoolOption1, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </CheckBox.Style>
-            </CheckBox>
+                </StackPanel.Style>
+                <GroupBox Header="MIDI">
+                    <StackPanel>
+                        <TextBlock>Channel</TextBlock>
+                        <ComboBox Name="cmbChannel" ItemsSource="{Binding ChannelValues}" SelectedIndex="{Binding Settings.Channel}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="MIDI channel number.">
+                            <ComboBox.Style>
+                                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource sComboDefault}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="0">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                            <Setter Property="Foreground" Value="LightGray" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
+
+                        <TextBlock Name="txtPrimary" Visibility="Visible" >
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Text" Value="Note" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="3">
+                                            <Setter Property="Text" Value="Controller" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <ComboBox Name="cmbPrimary" SelectedIndex="{Binding Settings.Primary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" ToolTip="Note/CC number.">
+                            <ComboBox.Style>
+                                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource sComboDefault}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="0">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                            <Setter Property="Foreground" Value="LightGray" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="1">
+                                            <Setter Property="ItemsSource" Value="{Binding PrimaryNotes}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="2">
+                                            <Setter Property="ItemsSource" Value="{Binding PrimaryNotes}" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="3">
+                                            <Setter Property="ItemsSource" Value="{Binding PrimaryValues}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ComboBox.Style>
+                        </ComboBox>
+
+                        <StackPanel>
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel" BasedOn="{StaticResource sStackPanelDefault}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="3">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+
+                            <TextBlock>Controller Value</TextBlock>
+                            <ComboBox Name="cmbSecondary" ItemsSource="{Binding SecondaryValues}" SelectedIndex="{Binding Settings.Secondary}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="200" Margin="0,0,0,5" ToolTip="Controller value.">
+                                <ComboBox.Style>
+                                    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource sComboDefault}">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                        <Setter Property="Foreground" Value="LightGray" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=cmbType, Path=SelectedIndex}" Value="3">
+                                                <Setter Property="IsEnabled" Value="True" />
+                                                <Setter Property="Foreground" Value="Black" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.Style>
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Options">
+                    <StackPanel>
+                        <CheckBox x:Name="chkStoreSelection" IsChecked="{Binding Settings.StoreSelection}" Content="Remember selection">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox" BasedOn="{StaticResource sCheckBoxDefault}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ShowSelectionCheck, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                        <CheckBox x:Name="chkOption1" IsChecked="{Binding Settings.BoolOption1}" Visibility="Visible" Content="{Binding BoolOption1Text}">
+                            <CheckBox.Style>
+                                <Style TargetType="CheckBox" BasedOn="{StaticResource sCheckBoxDefault}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ShowBoolOption1, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </CheckBox.Style>
+                        </CheckBox>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+
             <Button Name="btnLearn" Width="200" Click="btnLearn_Click" Height="30">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource sButtonDefault}">

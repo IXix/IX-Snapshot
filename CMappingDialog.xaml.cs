@@ -28,6 +28,7 @@ namespace Snapshot
             // These are off for machine level actions
             ShowSelectionCheck = false;
             ShowBoolOption1 = false;
+            BoolOption1Text = "Option1";
 
             if (specific)
             {
@@ -67,6 +68,19 @@ namespace Snapshot
                         break;
                 }
             }
+            else
+            {
+                switch (target.command)
+                {
+                    case "Capture":
+                        ShowBoolOption1 = true;
+                        BoolOption1Text = "Clear non-selected values";
+                        break;
+
+                    default:
+                        break;
+                }
+            }
 
             TypeValues = new List<string>
             {
@@ -90,6 +104,9 @@ namespace Snapshot
             }
             PrimaryValues.Add("Any");
 
+            PrimaryNotes = CMachine.NoteNames.ToList();
+            PrimaryNotes.Add("Any");
+
             SecondaryValues = new List<string>();
             for (Byte i = 1; i <= 128; i++)
             {
@@ -102,7 +119,7 @@ namespace Snapshot
 
             InitializeComponent();
 
-            string targetName = target.index < 0 ? "Snaphot" : _owner.Slots[target.index].Name;
+            string targetName = target.index < 0 ? _owner.Name : _owner.Slots[target.index].Name;
 
             Title = string.Format("{0}->{1}", targetName, target.command);
         }
@@ -118,6 +135,7 @@ namespace Snapshot
         public List<string> TypeValues { get; private set; }
         public List<string> ChannelValues { get; private set; }
         public List<string> PrimaryValues { get; private set; }
+        public List<string> PrimaryNotes { get; private set; }
         public List<string> SecondaryValues { get; private set; }
 
         readonly CMachine _owner;

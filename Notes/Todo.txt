@@ -24,9 +24,6 @@ Morphing
 		Perhaps target the active slot? That would make sense as you could test the morphed values.
 		Suggests a requirement for "Apply on morph" option in UI
 
-Mapping dialog
-	Would be nice if we could swap the content to display note names or controller names depending on which was selected
-
 Context menu for treeview items
 	Remove from all slots?
 	Set all same properties to value?

@@ -33,6 +33,8 @@ namespace Snapshot
         private Thread WorkThread;
         private int workFlag = 0;
 
+        public static readonly string[] NoteNames = new string[128];
+
         private IMachine ThisMachine { get; set; }
         private IParameter SlotParam { get; set; }
 
@@ -339,6 +341,16 @@ namespace Snapshot
             timer = new Stopwatch();
             m_selection = new HashSet<CPropertyBase>();
             m_selectionM = new HashSet<CPropertyBase>();
+
+            // Build note list if necessary
+            if (NoteNames[0] == null)
+            {
+                string[] notes = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+                for (int i = 0; i < 128; i++)
+                {
+                    NoteNames[i] = string.Format("{0}: {1}{2}", i + 1, notes[i % 12], i / 12);
+                }
+            }
 
             WorkThread = new Thread(SendChanges)
             {
@@ -971,7 +983,7 @@ namespace Snapshot
                     removePrev = true;
                 }
 
-                if(removePrev)
+                if(removePrev && prevCode != null)
                 {
                     if (_midiMapping.ContainsKey((UInt32)prevCode))
                     {
@@ -1721,16 +1733,23 @@ namespace Snapshot
             {
                 switch(Message)
                 {
-                    case 0:
+                    case 0: // Undefined
                         return "";
 
-                    case 1:
-                        return string.Format("Note: {0}, Ch.{1}",
-                            Primary < 128 ? Primary.ToString() : "Any",
+                    case 1: // Note-on
+                        return string.Format("Note: {0}, Ch. {1}",
+                            Primary < 128 ? CMachine.NoteNames[Primary] : "Any",
                             Channel < 16 ? (Channel + 1).ToString() : "Any");
 
-                    case 2:
-                        return "FIXME";
+                    case 2: // Note-off
+                        return string.Format("Note-off: {0}, Ch. {1}",
+                            Primary < 128 ? CMachine.NoteNames[Primary] : "Any",
+                            Channel < 16 ? (Channel + 1).ToString() : "Any");
+
+                    case 3: // Controller
+                        return string.Format("CC: {0}, Ch. {1}",
+                            Primary < 128 ? (Primary + 1).ToString() : "Any",
+                            Channel < 16 ? (Channel + 1).ToString() : "Any");
 
                     default:
                         return "";

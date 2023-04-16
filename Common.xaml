@@ -8,9 +8,10 @@
         <Setter Property="Margin" Value="1" />
     </Style>
 
-    <Style TargetType="StackPanel">
+    <Style TargetType="StackPanel" x:Key="sStackPanelDefault">
         <Setter Property="Margin" Value="1" />
     </Style>
+    <Style TargetType="StackPanel" BasedOn="{StaticResource sStackPanelDefault}" />
 
     <Style TargetType="Separator">
         <Setter Property="Margin" Value="1,5" />
@@ -48,9 +49,10 @@
         <Setter Property="Margin" Value="1" />
     </Style>
 
-    <Style TargetType="ComboBox" x:Key="comboBase">
+    <Style TargetType="ComboBox" x:Key="sComboDefault">
         <Setter Property="Margin" Value="1,1"/>
     </Style>
+    <Style TargetType="ComboBox" BasedOn="{StaticResource sComboDefault}" />
 
     <Style TargetType="TextBox" x:Key="sTextBoxDefault">
         <Setter Property="FontFamily" Value="Segoe UI" />
@@ -64,8 +66,7 @@
         <Style.Triggers>
             <Trigger Property="Content"
                  Value="">
-                <Setter Property="Visibility"
-                    Value="Collapsed" />
+                <Setter Property="Visibility" Value="Collapsed" />
             </Trigger>
         </Style.Triggers>
     </Style>

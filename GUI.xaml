@@ -326,7 +326,7 @@
                         <TextBlock Grid.Row="0">Slot Name</TextBlock>
                         <ComboBox Grid.Row="1" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" IsEditable="True" SelectedIndex="{Binding Slot}" Text="{Binding SlotName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select current slot." IsTextSearchEnabled="False">
                             <ComboBox.Style>
-                                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource comboBase}">
+                                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource sComboDefault}">
                                     <Setter Property="FontWeight" Value="Normal" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
@@ -706,7 +706,7 @@
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelA, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot A." IsTextSearchEnabled="False" >
                         <ComboBox.Style>
-                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource comboBase}">
+                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource sComboDefault}">
                                 <Setter Property="FontWeight" Value="Normal" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SlotA.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
@@ -757,7 +757,7 @@
                     </Grid.ColumnDefinitions>
                     <ComboBox Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource slot_combo_item}" ItemContainerStyle="{StaticResource cbi_slots}" ItemsSource="{Binding Slots, UpdateSourceTrigger=PropertyChanged}" SelectedIndex="{Binding SelB, Mode=TwoWay}" IsEditable="True" Text="{Binding SlotNameB, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="Select slot B." IsTextSearchEnabled="False" >
                         <ComboBox.Style>
-                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource comboBase}">
+                            <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource sComboDefault}">
                                 <Setter Property="FontWeight" Value="Normal" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding SlotB.HasData, UpdateSourceTrigger=PropertyChanged}" Value="True">
