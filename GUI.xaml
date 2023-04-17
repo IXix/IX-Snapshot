@@ -387,7 +387,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.CaptureSelected}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.CaptureSelected, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -402,7 +402,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.CaptureSelected}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.CaptureSelected, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -439,7 +439,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.CaptureMissing}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.CaptureMissing, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -454,7 +454,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.CaptureMissing}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.CaptureMissing, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -492,7 +492,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.Purge}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.Purge, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -507,7 +507,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.Purge}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.Purge, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -545,7 +545,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.ClearAll}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.ClearAll, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -560,7 +560,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.ClearAll}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.ClearAll, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -598,7 +598,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.ClearSelected}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.ClearSelected, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -613,7 +613,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.ClearSelected}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.ClearSelected, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -651,7 +651,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.RestoreAll}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.RestoreAll, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -666,7 +666,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.RestoreAll}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.RestoreAll, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>

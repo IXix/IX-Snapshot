@@ -163,7 +163,7 @@ namespace Snapshot
         private void btnOkay_Click(object sender, RoutedEventArgs e)
         {
             // Check for conflicting mappings
-            List<CMidiTargetInfo> conflicts = _owner.FindDuplicateMappings(Settings);
+            List<CMidiTargetInfo> conflicts = _owner.FindDuplicateMappings(_info.settings);
             _ = conflicts.Remove(_info);
 
             if (conflicts.Count > 0)
@@ -172,7 +172,7 @@ namespace Snapshot
                 foreach(CMidiTargetInfo t in conflicts)
                 {
                     string targetName = t.index < 0 ? "Snapshot" : string.Format("Slot {0}", t.index);
-                    msg += string.Format("\t{0}->{1}\n", targetName, t.command);
+                    msg += string.Format("\t{0} ({1})\n", t.Description, t.EventDetails);
                 }
                 msg += "\nIs this okay?";
                 msg += "\n\n'Yes' to accept conflicts.\n'No' to remove conflicts.\n'Cancel' to edit settings.";

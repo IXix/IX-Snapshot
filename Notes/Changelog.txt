@@ -1,6 +1,8 @@
 2023.04.17
 	Doubleclick on item in datagrid now opens mapping dialog
 		Reworked a lot of stuff to make this happen. Everything needs testing again.
+	Fixed various problems largely caused by the above.
+	Split CMidiTargetInfo and CMidiEventSettings into separate files
 
 2023.04.16
 	Empty tooltips are now hidden

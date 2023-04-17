@@ -425,10 +425,16 @@ namespace Snapshot
             switch (e.PropertyName)
             {
                 // Don't need to do anything special for these, default catches them.
-                //case "MidiMap":
                 //case "MachineMidi":
                 //case "SlotMidi":
                 //case "MidiInfo":
+
+                case "MidiMap":
+                    NotifyPropertyChanged("MidiMap");
+                    NotifyPropertyChanged("MachineMidi");
+                    NotifyPropertyChanged("SlotMidi");
+                    NotifyPropertyChanged("MidiInfo");
+                    break;
 
                 case "Selection":
                     NotifyPropertyChanged("GotSelection");

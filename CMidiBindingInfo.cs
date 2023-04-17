@@ -46,7 +46,14 @@ namespace Snapshot
 
         internal void Update(CMidiTargetInfo info)
         {
-            m_info[info.command] = info.EventDetails;
+            if(info.settings.Message > 0)
+            {
+                m_info[info.command] = info.EventDetails;
+            }
+            else // remove undefined mapping
+            {
+                m_info.Remove(info.command);
+            }
         }
     }
 }

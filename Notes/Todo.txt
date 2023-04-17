@@ -13,7 +13,7 @@ Save/load selection seems broken
 	Would prefer selection to always be saved
 
 MIDI Mapping:
-	Provide more detail about clashes in warning message
+	Mapping details in datagrid don't update on change
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.
