@@ -39,9 +39,35 @@
             <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
             <!-- Named styles -->
 
+            <Style x:Key="sButtonPanel" TargetType="ItemsControl" >
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                            </Grid>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
             <Style x:Key="sButtonAction" TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="Foreground" Value="Black" />
+                <Setter Property="Margin" Value="1" />
+            </Style>
+
+            <Style x:Key="sButtonActionText" TargetType="TextBlock">
+                <Setter Property="FontFamily" Value="Segoe UI" />
+                <Setter Property="FontSize" Value="14" />
+            </Style>
+
+            <Style x:Key="sButtonMap" TargetType="Button" BasedOn="{StaticResource sButtonDefault}">
+                <Setter Property="Width" Value="27"/>
+                <Setter Property="Margin" Value="1" />
             </Style>
 
             <Style x:Key="sMidiIndicator" TargetType="Ellipse">
@@ -51,12 +77,10 @@
 
             <Style x:Key="sMachineMidiIndicator" TargetType="Ellipse" BasedOn="{StaticResource sMidiIndicator}">
                 <Setter Property="Fill" Value="Green" />
-                <Setter Property="Margin" Value="5,1,1,1"/>
             </Style>
 
             <Style x:Key="sSlotMidiIndicator" TargetType="Ellipse" BasedOn="{StaticResource sMidiIndicator}">
                 <Setter Property="Fill" Value="Blue" />
-                <Setter Property="Margin" Value="1,1,5,1"/>
             </Style>
 
             <!-- Prevent treeview context menu items using the IsChecked state of the underlying property. -->
@@ -369,31 +393,12 @@
                         <CheckBox x:Name="chkRestoreOnLoad" Content="Restore on song load" IsChecked="{Binding RestoreOnSongLoad}" ToolTip="Automatically restore current slot content when song is loaded." />
                         <CheckBox x:Name="chkRestoreOnStop" Content="Restore on transport stop" IsChecked="{Binding RestoreOnStop}" ToolTip="Automatically restore current slot content when playback stops." />
                         <Separator />
-                        <Button x:Name="btnCapture" ToolTip="{StaticResource str_ttCaptureSelected}">
-                            <Button.InputBindings>
-                                <MouseBinding Command="{Binding CmdCapture}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding CmdMap}" CommandParameter="Capture" Gesture="RightClick" />
-                                <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Capture" Gesture="Ctrl+RightClick" />
-                            </Button.InputBindings>
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
-                                            <Setter Property="Foreground" Value="Gray" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.CaptureSelected}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Capture" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                        <!--***************************************************************************************-->
+                        <ItemsControl Style="{StaticResource sButtonPanel}">
+                            <Button Grid.Column="0" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMap}" CommandParameter="Capture"
+                                    ToolTip="{Binding MachineMidi.CaptureSelected}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -404,11 +409,29 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Capture selected</TextBlock>
-                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.CaptureSelected}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Capture" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                            <Button Grid.Column="1" x:Name="btnCapture" ToolTip="{StaticResource str_ttCaptureSelected}">
+                                <Button.InputBindings>
+                                    <MouseBinding Command="{Binding CmdCapture}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="Capture" Gesture="RightClick" />
+                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Capture" Gesture="Ctrl+RightClick" />
+                                </Button.InputBindings>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource sButtonActionText}" >Capture selected</TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMapSpecific}" CommandParameter="Capture"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip="{Binding SlotMidi.CaptureSelected}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -419,33 +442,15 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                            </Grid>
-                        </Button>
-                        <Button x:Name="btnCaptureMissing" ToolTip="{StaticResource str_ttCaptureMissing}">
-                            <Button.InputBindings>
-                                <MouseBinding Command="{Binding CmdCaptureMissing}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding CmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick" />
-                                <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="CaptureMissing" Gesture="Ctrl+RightClick" />
-                            </Button.InputBindings>
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CanCaptureMissing, UpdateSourceTrigger=PropertyChanged}" Value="false">
-                                            <Setter Property="Foreground" Value="Gray" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.CaptureMissing}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="CaptureMissing" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                        </ItemsControl>
+
+                        <!--***************************************************************************************-->
+                        <ItemsControl Style="{StaticResource sButtonPanel}">
+                            <Button Grid.Column="0" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMap}" CommandParameter="CaptureMissing"
+                                    ToolTip="{Binding MachineMidi.CaptureMissing}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -456,11 +461,29 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Capture missing</TextBlock>
-                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.CaptureMissing}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="CaptureMissing" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                            <Button Grid.Column="1" x:Name="btnCaptureMissing" ToolTip="{StaticResource str_ttCaptureMissing}">
+                                <Button.InputBindings>
+                                    <MouseBinding Command="{Binding CmdCaptureMissing}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="CaptureMissing" Gesture="RightClick" />
+                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="CaptureMissing" Gesture="Ctrl+RightClick" />
+                                </Button.InputBindings>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource sButtonActionText}">Capture missing</TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMapSpecific}" CommandParameter="CaptureMissing"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip="{Binding SlotMidi.CaptureMissing}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -471,34 +494,17 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                            </Grid>
-                        </Button>
+                            </Button>
+                        </ItemsControl>
+                        
                         <Separator />
-                        <Button x:Name="btnPurge" ToolTip="{StaticResource str_ttPurge}">
-                            <Button.InputBindings>
-                                <MouseBinding Command="{Binding CmdPurge}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding CmdMap}" CommandParameter="Purge" Gesture="RightClick" />
-                                <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Purge" Gesture="Ctrl+RightClick" />
-                            </Button.InputBindings>
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CanPurge, UpdateSourceTrigger=PropertyChanged}" Value="false">
-                                            <Setter Property="Foreground" Value="Gray" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.Purge}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Purge" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+
+                        <!--***************************************************************************************-->
+                        <ItemsControl Style="{StaticResource sButtonPanel}">
+                            <Button Grid.Column="0" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMap}" CommandParameter="Purge"
+                                    ToolTip="{Binding MachineMidi.Purge}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -509,11 +515,29 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Purge</TextBlock>
-                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.Purge}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Purge" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                            <Button Grid.Column="1" x:Name="btnPurge" ToolTip="{StaticResource str_ttPurge}">
+                                <Button.InputBindings>
+                                    <MouseBinding Command="{Binding CmdPurge}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="Purge" Gesture="RightClick" />
+                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Purge" Gesture="Ctrl+RightClick" />
+                                </Button.InputBindings>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource sButtonActionText}">Purge</TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMapSpecific}" CommandParameter="Purge"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip="{Binding SlotMidi.Purge}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -524,34 +548,15 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                            </Grid>
-                        </Button>
-                        <Button x:Name="btnClear" ToolTip="{StaticResource str_ttClear}">
-                            <Button.InputBindings>
-                                <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding CmdClearAll}" Gesture="Ctrl+Alt+LeftClick" />
-                                <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" Gesture="RightClick" />
-                                <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
-                            </Button.InputBindings>
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
-                                            <Setter Property="Foreground" Value="Gray" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.ClearAll}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                        </ItemsControl>
+
+                        <!--***************************************************************************************-->
+                        <ItemsControl Style="{StaticResource sButtonPanel}">
+                            <Button Grid.Column="0" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMap}" CommandParameter="Clear"
+                                    ToolTip="{Binding MachineMidi.ClearAll}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -562,11 +567,29 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Clear all</TextBlock>
-                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.ClearAll}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                            <Button Grid.Column="1" x:Name="btnClear" ToolTip="{StaticResource str_ttClear}">
+                                <Button.InputBindings>
+                                    <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" Gesture="RightClick" />
+                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
+                                </Button.InputBindings>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource sButtonActionText}">Clear all</TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMapSpecific}" CommandParameter="Clear"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip="{Binding SlotMidi.ClearAll}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -577,34 +600,15 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                            </Grid>
-                        </Button>
-                        <Button x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
-                            <Button.InputBindings>
-                                <MouseBinding Command="{Binding CmdClearSelected}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding CmdClearSelectedAll}" Gesture="Ctrl+Alt+LeftClick" />
-                                <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" Gesture="RightClick" />
-                                <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" Gesture="Ctrl+RightClick" />
-                            </Button.InputBindings>
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
-                                            <Setter Property="Foreground" Value="Gray" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.ClearSelected}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                        </ItemsControl>
+
+                        <!--***************************************************************************************-->
+                        <ItemsControl Style="{StaticResource sButtonPanel}">
+                            <Button Grid.Column="0" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMap}" CommandParameter="Clear"
+                                    ToolTip="{Binding MachineMidi.ClearSelected}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
@@ -615,11 +619,29 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Clear selected</TextBlock>
-                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.ClearSelected}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                            <Button Grid.Column="1" x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
+                                <Button.InputBindings>
+                                    <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" Gesture="RightClick" />
+                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
+                                </Button.InputBindings>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource sButtonActionText}">Clear selected</TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMapSpecific}" CommandParameter="Clear"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip="{Binding SlotMidi.ClearSelected}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
@@ -630,61 +652,61 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                            </Grid>
-                        </Button>
+                            </Button>
+                        </ItemsControl>
+
                         <Separator />
-                        <Button x:Name="btnRestore" ToolTip="{StaticResource str_ttRestore}">
-                            <Button.InputBindings>
-                                <MouseBinding Command="{Binding CmdRestore}" MouseAction="LeftClick" />
-                                <MouseBinding Command="{Binding CmdMap}" CommandParameter="Restore" Gesture="RightClick" />
-                                <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Restore" Gesture="Ctrl+RightClick" />
-                            </Button.InputBindings>
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
-                                            <Setter Property="Foreground" Value="Gray" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <Ellipse Grid.Column="0" ToolTip="{Binding MachineMidi.RestoreAll}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMap}" CommandParameter="Restore" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                        <!--***************************************************************************************-->
+                        <ItemsControl Style="{StaticResource sButtonPanel}">
+                            <Button Grid.Column="0" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMap}" CommandParameter="Restore"
+                                    ToolTip="{Binding MachineMidi.RestoreAll}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.RestoreAll, UpdateSourceTrigger=PropertyChanged}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.Restore, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Grid.Column="1" HorizontalAlignment="Center">Restore all</TextBlock>
-                                <Ellipse Grid.Column="2" ToolTip="{Binding SlotMidi.RestoreAll}">
-                                    <Ellipse.InputBindings>
-                                        <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Restore" MouseAction="LeftClick" />
-                                    </Ellipse.InputBindings>
+                            </Button>
+                            <Button Grid.Column="1" x:Name="btnRestore" ToolTip="{StaticResource str_ttRestore}">
+                                <Button.InputBindings>
+                                    <MouseBinding Command="{Binding CmdRestore}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="Restore" Gesture="RightClick" />
+                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Restore" Gesture="Ctrl+RightClick" />
+                                </Button.InputBindings>
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                                <Setter Property="Foreground" Value="Gray" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource sButtonActionText}">Restore all</TextBlock>
+                            </Button>
+                            <Button Grid.Column="2" Style="{StaticResource sButtonMap}"
+                                    Command="{Binding CmdMapSpecific}" CommandParameter="Restore"
+                                    HorizontalContentAlignment="Center"
+                                    ToolTip="{Binding SlotMidi.RestoreAll}">
+                                <Ellipse>
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.RestoreAll, UpdateSourceTrigger=PropertyChanged}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.Restore, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                            </Grid>
-                        </Button>
+                            </Button>
+                        </ItemsControl>
                     </StackPanel>
                 </Grid>
             </Grid>

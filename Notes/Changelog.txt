@@ -7,6 +7,8 @@
 	Midi event details now include CC value
 	Implemented sorting in datagrid
 	Added datagrid button to remove mapping 
+	Replaced midi indicators on action buttons with separate buttons
+		Was too easy to accidentally click the button when aiming for the indicator
 
 2023.04.16
 	Empty tooltips are now hidden
