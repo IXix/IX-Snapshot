@@ -18,10 +18,10 @@ namespace Snapshot
 {
     public partial class CMappingDialog : Window, INotifyPropertyChanged
     {
-        public CMappingDialog(CMachine owner, CMidiTargetInfo target, CMidiEventSettings settings, bool specific)
+        public CMappingDialog(CMachine owner, CMidiTargetInfo info)
         {
             _owner = owner;
-            _target = target;
+            _info = info;
 
             DataContext = this;
 
@@ -30,9 +30,22 @@ namespace Snapshot
             ShowBoolOption1 = false;
             BoolOption1Text = "Option1";
 
-            if (specific)
+            if (info.index < 0) // Machine
             {
-                switch (target.command)
+                switch (info.command)
+                {
+                    case "Capture":
+                        ShowBoolOption1 = true;
+                        BoolOption1Text = "Clear non-selected values";
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            else // Slot
+            {
+                switch (info.command)
                 {
                     case "Capture":
                         ShowSelectionCheck = true;
@@ -62,19 +75,6 @@ namespace Snapshot
                         break;
 
                     case "Restore":
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                switch (target.command)
-                {
-                    case "Capture":
-                        ShowBoolOption1 = true;
-                        BoolOption1Text = "Clear non-selected values";
                         break;
 
                     default:
@@ -114,17 +114,16 @@ namespace Snapshot
             }
             SecondaryValues.Add("Any");
 
-            Settings = settings;
-            _owner.MappingDialogSettings = Settings; // Blocks MIDI events
+            _owner.MappingDialogSettings = _info.settings; // Blocks MIDI events
 
             InitializeComponent();
 
-            string targetName = target.index < 0 ? _owner.Name : _owner.Slots[target.index].Name;
+            string targetName = info.index < 0 ? _owner.Name : _owner.Slots[info.index].Name;
 
-            Title = string.Format("{0}->{1}", targetName, target.command);
+            Title = info.Description;
         }
 
-        private readonly CMidiTargetInfo _target;
+        private readonly CMidiTargetInfo _info;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public virtual void OnPropertyChanged(string propertyName)
@@ -140,7 +139,7 @@ namespace Snapshot
 
         readonly CMachine _owner;
 
-        public CMidiEventSettings Settings { get; set; }
+        public CMidiEventSettings Settings => _info.settings;
 
         public bool ShowSelectionCheck { get; set; }
 
@@ -165,7 +164,7 @@ namespace Snapshot
         {
             // Check for conflicting mappings
             List<CMidiTargetInfo> conflicts = _owner.FindDuplicateMappings(Settings);
-            _ = conflicts.Remove(_target);
+            _ = conflicts.Remove(_info);
 
             if (conflicts.Count > 0)
             {

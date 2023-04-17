@@ -44,9 +44,9 @@ namespace Snapshot
         public string Purge => GetInfo("Purge");
         public string RestoreAll => GetInfo("Restore");
 
-        internal void Update(string command, CMidiEventSettings e)
+        internal void Update(CMidiTargetInfo info)
         {
-            m_info[command] = e.Description;
+            m_info[info.command] = info.EventDetails;
         }
     }
 }

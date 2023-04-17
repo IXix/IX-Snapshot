@@ -1,3 +1,12 @@
+Test *everything*
+
+Update docs
+	Selection memory for slot specific actions
+	Options for slot specific actions
+	MIDI tab
+	MIDI indicators on buttons
+	MIDI conflict warning
+
 Save/load selection seems broken
 	seems to only save checked state if slot has data or something.
 	same is true of smoothing data, not saved if no values stored
@@ -5,7 +14,6 @@ Save/load selection seems broken
 
 MIDI Mapping:
 	Provide more detail about clashes in warning message
-	Make items in DataGrid clickable to open mapping dialog 
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.

@@ -918,7 +918,11 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
-                                    <TextBlock Text="{Binding Description}" />
+                                    <TextBlock Text="{Binding Description}">
+                                        <TextBlock.InputBindings>
+                                            <MouseBinding Command="{Binding CmdEdit}" CommandParameter="Capture" MouseAction="LeftDoubleClick" />
+                                        </TextBlock.InputBindings>
+                                    </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
@@ -927,7 +931,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
-                                    <TextBlock Text="{Binding EventDetails}" />
+                                    <TextBlock Text="{Binding EventDetails, UpdateSourceTrigger=PropertyChanged}" />
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

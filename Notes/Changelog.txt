@@ -1,3 +1,7 @@
+2023.04.17
+	Doubleclick on item in datagrid now opens mapping dialog
+		Reworked a lot of stuff to make this happen. Everything needs testing again.
+
 2023.04.16
 	Empty tooltips are now hidden
 	Left-click on midi mapping indicators now opens mapping dialog

@@ -841,37 +841,6 @@ namespace Snapshot
             SlotB.Restore();
         }
 
-        internal CMidiAction CreateMidiAction(object target, string command, bool specific, CMidiEventSettings settings)
-        {
-            if (specific)
-            {
-                switch (command)
-                {
-                    case "Capture":
-                        return new CMidiActionSelectionBool(target, command, settings);
-
-                    case "CaptureMissing":
-                        return new CMidiActionSelectionBool(target, command, settings);
-
-                    case "ClearSelected":
-                        return new CMidiActionSelectionBool(target, command, settings);
-
-                    case "Clear":
-                        return new CMidiActionBool(target, command, settings);
-
-                    case "Purge":
-                        return new CMidiActionSelectionBool(target, command, settings);
-
-                    default:
-                        return new CMidiAction(target, command, settings);
-                }
-            }
-            else
-            {
-                return new CMidiAction(target, command, settings);
-            }
-        }
-
         internal List<CMidiTargetInfo> FindDuplicateMappings(CMidiEventSettings settings)
         {
             return MidiMap.Where(item => item.settings.CheckConflict(settings)).ToList();
@@ -904,43 +873,17 @@ namespace Snapshot
             }
         }
 
-        internal void MapCommand(string command, bool specific)
+        internal void MapCommand(CMidiTargetInfo info)
         {
-            string owner;
-            object target;
-            int index;
-
-            if (specific)
-            {
-                owner = CurrentSlot.Name;
-                index = CurrentSlot.Index;
-                target = CurrentSlot;
-            }
-            else
-            {
-                owner = Name;
-                target = this;
-                index = -1;
-            }
-
-            // Retrieve the mapping or use defaults
-            CMidiTargetInfo key;
-
+            CMidiEventSettings e = info.settings;
             UInt32? prevCode = null;
-            try
+            if(info.action != null)
             {
-                key = MidiMap.First(x => x.index == index && x.command == command);
-                prevCode = key.settings.Encode();
+                prevCode = e.Encode();
             }
-            catch (InvalidOperationException ex) // Not in collection
-            {
-                key = new CMidiTargetInfo(index, command, this);
-            }
-
-            CMidiEventSettings e = key.settings;
 
             // Show mapping dialog
-            _mappingDialog = new CMappingDialog(this, key, e, specific);
+            _mappingDialog = new CMappingDialog(this, info);
             bool? result = _mappingDialog.ShowDialog();
 
             bool removePrev = false;
@@ -950,9 +893,9 @@ namespace Snapshot
             {
                 if (e.Message > 0)
                 {
-                    if(prevCode == null) // New mapping
+                    if (prevCode == null) // New mapping
                     {
-                        MidiMap.Add(key);
+                        MidiMap.Add(info);
                     }
 
                     UInt32 code = e.Encode();
@@ -969,27 +912,28 @@ namespace Snapshot
                         e.Selection = Selection;
                     }
 
-                    key.action = CreateMidiAction(target, command, specific, e);
+                    info.SetAction();
+
                     if (_midiMapping.ContainsKey(code))
                     {
-                        _ = _midiMapping[code].Add(key.action);
+                        _ = _midiMapping[code].Add(info.action);
                     }
                     else
                     {
-                        _ = _midiMapping[code] = new HashSet<CMidiAction>() { key.action };
+                        _ = _midiMapping[code] = new HashSet<CMidiAction>() { info.action };
                     }
                 }
                 else // Undefined - remove mapping
                 {
-                    _ = MidiMap.Remove(key);
+                    _ = MidiMap.Remove(info);
                     removePrev = true;
                 }
 
-                if(removePrev && prevCode != null)
+                if (removePrev && prevCode != null)
                 {
                     if (_midiMapping.ContainsKey((UInt32)prevCode))
                     {
-                        _ = _midiMapping[(UInt32)prevCode].Remove(key.action);
+                        _ = _midiMapping[(UInt32)prevCode].Remove(info.action);
                         if (_midiMapping[(UInt32)prevCode].Count == 0)
                         {
                             _ = _midiMapping.Remove((UInt32)prevCode);
@@ -997,15 +941,16 @@ namespace Snapshot
                     }
                 }
 
-                if (specific) // Slot
+                if (info.index < 0) // Machine
                 {
-                    CurrentSlot.MidiInfo.Update(command, e);
-                    OnPropertyChanged("SlotMidi");
-                }
-                else // Machine
-                {
-                    MidiInfo.Update(command, e);
+                    MidiInfo.Update(info);
                     OnPropertyChanged("MachineMidi");
+                }
+                else // Slot
+                {
+                    CMachineSnapshot slot = info.target as CMachineSnapshot;
+                    slot.MidiInfo.Update(info);
+                    OnPropertyChanged("SlotMidi");
                 }
             }
 
@@ -1014,6 +959,24 @@ namespace Snapshot
             _mappingDialog = null;
 
             OnPropertyChanged("MidiMap");
+        }
+
+        internal void MapCommand(string command, bool specific)
+        {
+            int index = specific ? CurrentSlot.Index: -1;
+
+            // Retrieve the mapping or use defaults
+            CMidiTargetInfo key;
+            try
+            {
+                key = MidiMap.First(x => x.index == index && x.command == command);
+            }
+            catch (InvalidOperationException) // Not in collection
+            {
+                key = new CMidiTargetInfo(index, command, this);
+            }
+
+            MapCommand(key);
         }
 
         /* FILE STRUCTURE
@@ -1173,23 +1136,8 @@ namespace Snapshot
                 CMidiEventSettings e = info.settings;
                 e.ReadData(r);
 
-                // Restore mapping settings
-                object target;
-                bool specific;
-
-                if (slot < 0) // machine action
-                {
-                    target = this;
-                    specific = false;
-                }
-                else // snapshot action
-                {
-                    target = _slots[slot];
-                    specific = true;
-                }
-
                 // Restore settings
-                info.action = CreateMidiAction(target, command, specific, e);
+                info.SetAction();
                 if (MidiMap.Contains(info))
                     throw new Exception("MIDI mapping already exists"); // Shouldn't be possible
 
@@ -1205,13 +1153,13 @@ namespace Snapshot
                     _midiMapping[code] = new HashSet<CMidiAction>() { info.action };
                 }
 
-                if (specific) // Slot
+                if (slot > 0) // Slot
                 {
-                    _slots[slot].MidiInfo.Update(command, e);
+                    _slots[slot].MidiInfo.Update(info);
                 }
                 else // Machine
                 {
-                    MidiInfo.Update(command, e);
+                    MidiInfo.Update(info);
                 }
             }
 
@@ -1678,6 +1626,7 @@ namespace Snapshot
     {
         public readonly int index; // slot index or -1 for machine
         public readonly string command; // "Capture" etc.
+        public readonly object target;
 
         public CMidiAction action;
         public CMidiEventSettings settings;
@@ -1688,6 +1637,59 @@ namespace Snapshot
             command = cmd;
             action = null;
             settings = new CMidiEventSettings(owner);
+
+            if(index < 0)
+            {
+                target = owner;
+            }
+            else
+            {
+                target = owner.Slots[idx];
+            }
+
+
+            CmdEdit = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => { owner.MapCommand(this); },
+            };
+        }
+
+        internal void SetAction()
+        {
+            if (index < 0)
+            {
+                action = new CMidiAction(target, command, settings);
+            }
+            else
+            {
+                switch (command)
+                {
+                    case "Capture":
+                        action = new CMidiActionSelectionBool(target, command, settings);
+                        break;
+
+                    case "CaptureMissing":
+                        action = new CMidiActionSelectionBool(target, command, settings);
+                        break;
+
+                    case "ClearSelected":
+                        action = new CMidiActionSelectionBool(target, command, settings);
+                        break;
+
+                    case "Clear":
+                        action = new CMidiActionBool(target, command, settings);
+                        break;
+
+                    case "Purge":
+                        action = new CMidiActionSelectionBool(target, command, settings);
+                        break;
+
+                    default:
+                        action = new CMidiAction(target, command, settings);
+                        break;
+                }                
+            }
         }
 
         public override int GetHashCode()
@@ -1715,6 +1717,8 @@ namespace Snapshot
         }
 
         public string EventDetails => settings.Description;
+
+        public SimpleCommand CmdEdit { get; private set; }
     }
 
     public class CMidiEventSettings
