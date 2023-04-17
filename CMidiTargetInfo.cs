@@ -1,8 +1,9 @@
 ﻿using BuzzGUI.Common;
+using System.ComponentModel;
 
 namespace Snapshot
 {
-    public class CMidiTargetInfo
+    public class CMidiTargetInfo : INotifyPropertyChanged
     {
         public readonly int index; // slot index or -1 for machine
         public readonly string command; // "Capture" etc.
@@ -10,6 +11,12 @@ namespace Snapshot
 
         public CMidiAction action;
         public CMidiEventSettings settings;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void NotifyPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
 
         public CMidiTargetInfo(int idx, string cmd, CMachine owner)
         {
@@ -70,6 +77,8 @@ namespace Snapshot
                         break;
                 }
             }
+
+            NotifyPropertyChanged("EventDetails");
         }
 
         public override int GetHashCode()

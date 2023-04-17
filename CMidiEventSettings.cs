@@ -41,8 +41,9 @@ namespace Snapshot
                             Channel < 16 ? (Channel + 1).ToString() : "Any");
 
                     case 3: // Controller
-                        return string.Format("CC: {0}, Ch. {1}",
+                        return string.Format("CC: {0}, Val. {1}, Ch. {2}",
                             Primary < 128 ? (Primary + 1).ToString() : "Any",
+                            Secondary < 128 ? (Secondary + 1).ToString() : "Any",
                             Channel < 16 ? (Channel + 1).ToString() : "Any");
 
                     default:

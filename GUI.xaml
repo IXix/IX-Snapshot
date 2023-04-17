@@ -914,24 +914,28 @@
         <TabItem Header="MIDI">
             <DataGrid ItemsSource="{Binding MidiMap, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" AutoGenerateColumns="False" IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Target">
+                    <DataGridTemplateColumn Header="Target" Width="Auto">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
-                                    <TextBlock Text="{Binding Description}">
+                                    <TextBlock Text="{Binding Description}" Padding="2,1,9,1">
                                         <TextBlock.InputBindings>
-                                            <MouseBinding Command="{Binding CmdEdit}" CommandParameter="Capture" MouseAction="LeftDoubleClick" />
+                                            <MouseBinding Command="{Binding CmdEdit}" MouseAction="LeftDoubleClick" />
                                         </TextBlock.InputBindings>
                                     </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Event">
+                    <DataGridTemplateColumn Header="Event" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
-                                    <TextBlock Text="{Binding EventDetails, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Text="{Binding EventDetails, UpdateSourceTrigger=PropertyChanged}" Padding="2,1,9,1">
+                                        <TextBlock.InputBindings>
+                                            <MouseBinding Command="{Binding CmdEdit}" MouseAction="LeftDoubleClick" />
+                                        </TextBlock.InputBindings>
+                                    </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

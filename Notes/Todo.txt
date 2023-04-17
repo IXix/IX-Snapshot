@@ -13,7 +13,7 @@ Save/load selection seems broken
 	Would prefer selection to always be saved
 
 MIDI Mapping:
-	Mapping details in datagrid don't update on change
+	Datagrid sorting
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.
