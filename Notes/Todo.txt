@@ -11,6 +11,18 @@ Save/load selection seems broken
 	seems to only save checked state if slot has data or something.
 	same is true of smoothing data, not saved if no values stored
 	Would prefer selection to always be saved
+		Save selection separately and remove references to selection in current save code
+
+MIDI mapping
+	Context menu for selected cells might be nice:
+		Single row:
+			Edit
+			Remove
+		Multiple rows:
+			Remove
+
+Datagrid for slots on Info tab
+		
 
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.

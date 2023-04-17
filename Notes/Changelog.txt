@@ -6,6 +6,7 @@
 	Datagrid improvements
 	Midi event details now include CC value
 	Implemented sorting in datagrid
+	Added datagrid button to remove mapping 
 
 2023.04.16
 	Empty tooltips are now hidden

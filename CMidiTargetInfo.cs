@@ -38,7 +38,16 @@ namespace Snapshot
             CmdEdit = new SimpleCommand
             {
                 CanExecuteDelegate = x => true,
-                ExecuteDelegate = x => { owner.MapCommand(this); },
+                ExecuteDelegate = x => { owner.MapCommand(this); }
+            };
+            CmdRemove = new SimpleCommand
+            {
+                CanExecuteDelegate = x => true,
+                ExecuteDelegate = x => {
+                    owner.RemoveMapping(this);
+                    owner.OnPropertyChanged("MachineMidi");
+                    owner.OnPropertyChanged("SlotMidi");
+                }
             };
         }
 
@@ -108,5 +117,6 @@ namespace Snapshot
         public string EventDetails => settings.Description;
 
         public SimpleCommand CmdEdit { get; private set; }
+        public SimpleCommand CmdRemove { get; private set; }
     }
 }
