@@ -12,9 +12,6 @@ Save/load selection seems broken
 	same is true of smoothing data, not saved if no values stored
 	Would prefer selection to always be saved
 
-MIDI Mapping:
-	Datagrid sorting
-
 Undo/redo
 	Basic system already exists for when property dialog is cancelled. Wouldn't take much to adapt it.
 	

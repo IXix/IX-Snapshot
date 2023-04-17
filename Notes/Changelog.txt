@@ -5,7 +5,7 @@
 	Split CMidiTargetInfo and CMidiEventSettings into separate files
 	Datagrid improvements
 	Midi event details now include CC value
-	
+	Implemented sorting in datagrid
 
 2023.04.16
 	Empty tooltips are now hidden

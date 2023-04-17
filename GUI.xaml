@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              xmlns:local="clr-namespace:Snapshot" d:DataContext="{d:DesignInstance Type=local:CSnapshotMachineVM}"
+             xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
              d:DesignHeight="500" d:DesignWidth="500" Height="500" Loaded="Main_Loaded">
     <UserControl.Resources>
@@ -24,6 +25,15 @@
             <Image Source="resource/icon_select_right.png" x:Key="icon_select_right"/>
             <Image Source="resource/icon_select_stored.png" x:Key="icon_select_stored"/>
             <Image Source="resource/icon_set_active.png" x:Key="icon_set_active"/>
+
+            
+            <CollectionViewSource x:Key="cvsMidiMap" Source="{Binding MidiMap}">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="Description"/>
+                    <scm:SortDescription PropertyName="EventDetails" />
+                </CollectionViewSource.SortDescriptions>
+
+            </CollectionViewSource>
 
 
             <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
@@ -912,9 +922,9 @@
         </TabItem>
 
         <TabItem Header="MIDI">
-            <DataGrid ItemsSource="{Binding MidiMap, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid ItemsSource="{Binding Source={StaticResource cvsMidiMap}}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Target" Width="Auto">
+                    <DataGridTemplateColumn Header="Target" Width="Auto" CanUserSort="True" SortMemberPath="Description">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
@@ -927,7 +937,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Event" Width="*">
+                    <DataGridTemplateColumn Header="Event" Width="*" CanUserSort="True" SortMemberPath="EventDetails">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel >
