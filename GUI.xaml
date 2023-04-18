@@ -606,7 +606,7 @@
                         <!--***************************************************************************************-->
                         <ItemsControl Style="{StaticResource sButtonPanel}">
                             <Button Grid.Column="0" Style="{StaticResource sButtonMap}"
-                                    Command="{Binding CmdMap}" CommandParameter="Clear"
+                                    Command="{Binding CmdMap}" CommandParameter="ClearSelected"
                                     ToolTip="{Binding MachineMidi.ClearSelected}">
                                 <Ellipse>
                                     <Ellipse.Style>
@@ -623,8 +623,8 @@
                             <Button Grid.Column="1" x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
                                 <Button.InputBindings>
                                     <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
-                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" Gesture="RightClick" />
-                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
+                                    <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" Gesture="RightClick" />
+                                    <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" Gesture="Ctrl+RightClick" />
                                 </Button.InputBindings>
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
@@ -638,7 +638,7 @@
                                 <TextBlock Grid.Column="1" HorizontalAlignment="Center" Style="{StaticResource sButtonActionText}">Clear selected</TextBlock>
                             </Button>
                             <Button Grid.Column="2" Style="{StaticResource sButtonMap}"
-                                    Command="{Binding CmdMapSpecific}" CommandParameter="Clear"
+                                    Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected"
                                     HorizontalContentAlignment="Center"
                                     ToolTip="{Binding SlotMidi.ClearSelected}">
                                 <Ellipse>
@@ -665,7 +665,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sMachineMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MachineMidi.Restore, UpdateSourceTrigger=PropertyChanged}" Value="">
+                                                <DataTrigger Binding="{Binding MachineMidi.RestoreAll, UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -698,7 +698,7 @@
                                     <Ellipse.Style>
                                         <Style TargetType="Ellipse" BasedOn="{StaticResource sSlotMidiIndicator}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SlotMidi.Restore, UpdateSourceTrigger=PropertyChanged}" Value="">
+                                                <DataTrigger Binding="{Binding SlotMidi.RestoreAll , UpdateSourceTrigger=PropertyChanged}" Value="">
                                                     <Setter Property="Fill" Value="Gray" />
                                                 </DataTrigger>
                                             </Style.Triggers>

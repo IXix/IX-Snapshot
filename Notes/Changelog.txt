@@ -1,3 +1,7 @@
+2023.04.18
+	Fixed some copy/paste errors in the UI xaml
+	Clicking learn button again cancels learning
+
 2023.04.17
 	Doubleclick on item in datagrid now opens mapping dialog
 		Reworked a lot of stuff to make this happen. Everything needs testing again.

@@ -205,7 +205,7 @@ namespace Snapshot
 
         private void btnLearn_Click(object sender, RoutedEventArgs e)
         {
-            Learning = true;
+            Learning = !Learning;
         }
     }
 }
