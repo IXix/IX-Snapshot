@@ -69,6 +69,7 @@
     <Compile Include="CMidiEventSettings.cs" />
     <Compile Include="CMidiTargetInfo.cs" />
     <Compile Include="CParamChange.cs" />
+    <Compile Include="CPropertySelection.cs" />
     <Compile Include="CPropertyStateGroupVM.cs" />
     <Compile Include="CSnapshotMachineVM.cs" />
     <Compile Include="CTrackPropertyStateGroupVM.cs" />

@@ -15,8 +15,6 @@ namespace Snapshot
             Message = 0; // Undefined;
             Primary = 128; // Any
             Secondary = 128; // Any
-
-            Selection = new HashSet<CPropertyBase>();
         }
 
         private readonly CMachine m_owner;
@@ -63,7 +61,7 @@ namespace Snapshot
 
         public Byte Secondary { get; set; } // Velocity or value. 128 = undefined
 
-        public HashSet<CPropertyBase> Selection { get; set; }
+        public CPropertySelection Selection { get; set; }
 
         public bool StoreSelection { get; set; }
 
@@ -87,26 +85,10 @@ namespace Snapshot
             {
                 StoreSelection = r.ReadBoolean();
                 BoolOption1 = r.ReadBoolean();
-                Selection = new HashSet<CPropertyBase>();
-
-                UInt32 nMachines = r.ReadUInt32();
-                for (UInt32 i = 0; i < nMachines; i++)
+                if(StoreSelection)
                 {
-                    string macName = r.ReadString();
-                    string dllName = r.ReadString();
-
-                    // Should be one and only one state matching both name and dllname. Exception if not.
-                    CMachineState s = m_owner.States.Single(x => x.Machine.Name == macName && x.Machine.DLL.Name == dllName);
-
-                    UInt32 nProperties = r.ReadUInt32();
-                    for (UInt32 ip = 0; ip < nProperties; ip++)
-                    {
-                        CPropertyBase p = CPropertyBase.FindPropertyFromSavedInfo(r, s);
-                        if (p != null)
-                        {
-                            Selection.Add(p);
-                        }
-                    }
+                    Selection = new CPropertySelection(m_owner, false);
+                    Selection.ReadData(r);
                 }
             }
         }
@@ -121,38 +103,9 @@ namespace Snapshot
             // New in file version 4
             w.Write(StoreSelection);
             w.Write(BoolOption1);
-
-            // Build list of machines and properties
-            Dictionary<CMachineState, HashSet<CPropertyBase>> savedata = new Dictionary<CMachineState, HashSet<CPropertyBase>>();
-            foreach (CPropertyBase p in Selection)
+            if(Selection != null)
             {
-                // TEMP TEST
-                if (p is CMachineState || p is CPropertyStateGroup || p is CTrackPropertyStateGroup)
-                {
-                    throw new Exception("Group!");
-                }
-
-                if (savedata.ContainsKey(p.ParentMachine))
-                {
-                    savedata[p.ParentMachine].Add(p);
-                }
-                else
-                {
-                    savedata[p.ParentMachine] = new HashSet<CPropertyBase>() { p };
-                }
-            }
-
-            // Write structured data
-            w.Write(savedata.Count);
-            foreach (CMachineState s in savedata.Keys)
-            {
-                w.Write(s.Machine.Name);
-                w.Write(s.Machine.DLL.Name);
-                w.Write(savedata[s].Count);
-                foreach (CPropertyBase p in savedata[s])
-                {
-                    p.WritePropertyInfo(w);
-                }
+                Selection.WriteData(w);
             }
         }
 
@@ -192,7 +145,7 @@ namespace Snapshot
             Primary = 128; // Any
             Secondary = 128; // Any
 
-            Selection = new HashSet<CPropertyBase>();
+            Selection = null;
 
             StoreSelection = false;
             BoolOption1 = false;

@@ -2,6 +2,8 @@ Test *everything*
 
 Datagrid for slots on Info tab
 
+Check enable/disable conditions of the Clear buttons. Possible copy/paste binding error?
+
 Update docs
 	Selection memory for slot specific actions
 	Options for slot specific actions
@@ -14,11 +16,11 @@ Selection
 		Midi actions have a selection or use the active selection (as now)
 		Active selection belongs to machine or active slot if "Selection follows slot" is on
 			Requires addition of selection to CMachineSnapshot and code to switch main Selection between machine and slot levels
-	Save/load selection seems broken
-		seems to only save checked state if slot has data or something.
-		same is true of smoothing data, not saved if no values stored
-		Would prefer selection to always be saved
-			Save selection separately and remove references to selection in current save code
+		Manager selection remains independent for now
+	Main/slot selection is loaded but tree doesn't show it until something else causes a refresh
+	Smoothing doesn't appear to be saved unless property state is stored
+		Didn't think that was the case looking at the save code but must be missing something
+		Probably best to save the smoothing info separately as with selection
 
 MIDI mapping
 	Context menu for selected cells might be nice:

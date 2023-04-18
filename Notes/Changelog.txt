@@ -1,6 +1,17 @@
 2023.04.18
 	Fixed some copy/paste errors in the UI xaml
 	Clicking learn button again cancels learning
+	Removed CMachineSnapshot copy constructor
+		Doesn't seem to be used anywhere.
+	Added CPropertySelection
+	Converted CMachine and CMidiEventSettings selection data to CPropertySelection
+	Added CMachineSnapshot.Selection
+	Midi event selection can now be null
+	Capture etc. methods that take a HashSet<CPropertyBase> fall back to CMachine.Selection if argument is null
+	CMachine.Selection returns CurrentSlot.Selection if 'SelectionFollowsSlot' is true
+	Adjusted save/load code to use CPropertySelection where necessary
+	Implemented save/load of main and manager selections
+
 
 2023.04.17
 	Doubleclick on item in datagrid now opens mapping dialog

@@ -95,7 +95,7 @@ namespace Snapshot
 
         public override void Trigger()
         {
-            m_action(m_settings.Selection, m_settings.BoolOption1);
+            m_action(m_settings.Selection.SelectedProperties, m_settings.BoolOption1);
         }
     }
 }

@@ -197,7 +197,12 @@ namespace Snapshot
                 if (_selectionFollowsSlot != value)
                 {
                     _selectionFollowsSlot = value;
+                    foreach(CPropertyBase p in AllProperties)
+                    {
+                        p.Checked = Selection.Contains(p);
+                    }
                     OnPropertyChanged("SelectionFollowsSlot");
+                    OnPropertyChanged("Selection");
                 }
             }
         }
@@ -339,8 +344,8 @@ namespace Snapshot
         {
             this.host = host;
             timer = new Stopwatch();
-            m_selection = new HashSet<CPropertyBase>();
-            m_selectionM = new HashSet<CPropertyBase>();
+            m_selection = new CPropertySelection(this, true);
+            m_selectionM = new CPropertySelection(this, true);
 
             // Build note list if necessary
             if (NoteNames[0] == null)
@@ -732,16 +737,16 @@ namespace Snapshot
             }
         }
 
-        private HashSet<CPropertyBase> m_selection;
+        private CPropertySelection m_selection;
         public HashSet<CPropertyBase> Selection
         {
-            get => m_selection;
+            get => _selectionFollowsSlot ? CurrentSlot.Selection : m_selection.SelectedProperties;
         }
 
-        private HashSet<CPropertyBase> m_selectionM;
+        private CPropertySelection m_selectionM;
         public HashSet<CPropertyBase> SelectionM
         {
-            get => m_selectionM;
+            get => m_selectionM.SelectedProperties;
         }
 
         public void CaptureA()
@@ -916,11 +921,11 @@ namespace Snapshot
 
                     if (e.StoreSelection)
                     {
-                        e.Selection = new HashSet<CPropertyBase>(Selection);
+                        e.Selection = new CPropertySelection(this, Selection);
                     }
                     else
                     {
-                        e.Selection = Selection;
+                        e.Selection = null;
                     }
 
                     info.SetAction();
@@ -1028,6 +1033,10 @@ namespace Snapshot
             w.Write(SelectionFollowsSlot); // new in v2
             w.Write(ConfirmClear);         // ^^
 
+            // Selection
+            m_selection.WriteData(w);
+            m_selectionM.WriteData(w);
+
             // Save slot data
             for (int i = 0; i < 128; i++)
             {
@@ -1074,8 +1083,8 @@ namespace Snapshot
                 {
                     List<CMachineSnapshot> slots = _slots.Where(x => x.ContainsProperty(ps)).ToList();
 
-                    // Save any that are stored, checked or have non-default smoothing settings
-                    if (slots.Count() > 0 || ps.Checked == true || ps.HasSmoothing)
+                    // Save any that are stored or have non-default smoothing settings
+                    if (slots.Count() > 0 || ps.HasSmoothing)
                     {
                         saveProperties[ps] = slots;
                     }
@@ -1087,8 +1096,6 @@ namespace Snapshot
                     List<CMachineSnapshot> slots = item.Value;
 
                     p.WritePropertyInfo(w);
-
-                    w.Write(p.Checked?? false);
 
                     // New in file version 3
                     p.WriteSmoothingInfo(w);
@@ -1126,6 +1133,13 @@ namespace Snapshot
             {
                 SelectionFollowsSlot = r.ReadBoolean();
                 ConfirmClear = r.ReadBoolean();
+            }
+
+            if(_loadedState.version >= 4)
+            {
+                // Selection
+                m_selection.ReadData(r);
+                m_selectionM.ReadData(r);
             }
 
             // Slot data (CMachineSnapshot.WriteData() x 128)
@@ -1210,15 +1224,15 @@ namespace Snapshot
 
                             // Should be one and only one property matching name and track. Exception if not.
                             ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
+
+                            ps.Checked = r.ReadBoolean(); //Property selected
                         }
                         else
                         {
                             ps = CPropertyBase.FindPropertyFromSavedInfo(r, s);
                         }
 
-                        ps.Checked = r.ReadBoolean(); //Property selected
-
-                        if(_loadedState.version >= 3)
+                        if(_loadedState.version == 3)
                         {
                             ps.ReadSmoothingInfo(r); // Property smoothing. New in file version 3
                         }
@@ -1610,9 +1624,9 @@ namespace Snapshot
 
             if (_selectionFollowsSlot)
             {
-                foreach(IPropertyState s in AllProperties)
+                foreach (CPropertyBase p in AllProperties)
                 {
-                    s.Checked = s.GotValue;
+                    p.Checked = Selection.Contains(p);
                 }
             }
 

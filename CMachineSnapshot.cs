@@ -14,6 +14,7 @@ namespace Snapshot
         public CMachineSnapshot(CMachine owner, int index)
         {
             m_owner = owner;
+            m_selection = new CPropertySelection(owner, true);
             Index = index;
             Name = string.Format("Slot {0}", Index);
             Notes = "";
@@ -22,17 +23,6 @@ namespace Snapshot
             DataValues = new Dictionary<CDataState, byte[]>();
             StoredProperties = new HashSet<CPropertyBase>();
             MidiInfo = new CMidiBindingInfo();
-        }
-
-        public CMachineSnapshot(CMachineSnapshot src)
-        {
-            m_owner = src.m_owner;
-            Name = src.Name + " copy";
-            Index = src.Index;
-            AttributeValues = new Dictionary<CAttributeState, int>(src.AttributeValues);
-            ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>(src.ParameterValues);
-            DataValues = new Dictionary<CDataState, byte[]>(src.DataValues);
-            StoredProperties = new HashSet<CPropertyBase>(src.StoredProperties);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -50,6 +40,9 @@ namespace Snapshot
         public int Index { get; private set; }
 
         public CMidiBindingInfo MidiInfo;
+
+        private readonly CPropertySelection m_selection;
+        internal HashSet<CPropertyBase> Selection => m_selection.SelectedProperties;
 
         private string _name;
         public string Name
@@ -421,6 +414,11 @@ namespace Snapshot
                 Clear(false);
             }
 
+            if(targets == null)
+            {
+                targets = m_owner.Selection;
+            }
+
             foreach (IPropertyState p in targets)
             {
                 switch (p.GetType().Name)
@@ -471,6 +469,11 @@ namespace Snapshot
         // Dummy bool is to avoid having a separate CMidiAction subclass just for this method
         public void CaptureMissing(HashSet<CPropertyBase> targets, bool dummy = false)
         {
+            if (targets == null)
+            {
+                targets = m_owner.Selection;
+            }
+
             HashSet<CPropertyBase> missing = targets.Where(x => ContainsProperty(x) == false).ToHashSet();
             Capture(missing, false);
         }
@@ -564,6 +567,11 @@ namespace Snapshot
 
         public void Purge(HashSet<CPropertyBase> selection, bool confirm)
         {
+            if (selection == null)
+            {
+                selection = m_owner.Selection;
+            }
+
             HashSet<CPropertyBase> removers = StoredProperties.Where(x => x.Active == false || selection.Contains(x) == false).ToHashSet();
 
             if(removers.Count == 0)
@@ -631,6 +639,11 @@ namespace Snapshot
 
         public void Remove(HashSet<CPropertyBase> targets)
         {
+            if (targets == null)
+            {
+                targets = m_owner.Selection;
+            }
+
             foreach (IPropertyState p in targets)
             {
                 switch (p.GetType().Name)
@@ -765,6 +778,7 @@ namespace Snapshot
         {
             w.Write(Name);
             w.Write(Notes);
+            m_selection.WriteData(w);
         }
 
         public void ReadData(BinaryReader r)
@@ -776,6 +790,7 @@ namespace Snapshot
             if(file_version >= 3)
             {
                 Notes = r.ReadString();
+                m_selection.ReadData(r);
             }
         }
 
