@@ -60,6 +60,8 @@ namespace Snapshot
 
         public bool HasData => StoredProperties.Count() > 0;
 
+        public bool CanPurge => HasData && RedundantCount > 0;
+
         public bool ContainsProperty(IPropertyState p)
         {
             return StoredProperties.Contains(p);

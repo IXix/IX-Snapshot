@@ -441,8 +441,10 @@ namespace Snapshot
                     NotifyPropertyChanged("CanCaptureMissing");
                     NotifyPropertyChanged("CanPurge");
                     NotifyPropertyChanged("SelectionInfo");
+
                     foreach(CMachineStateVM s in States)
                     {
+                        s.UpdateTreeCheck();
                         if (s.AttributeStates != null)
                         {
                             s.AttributeStates.UpdateTreeCheck();
@@ -486,6 +488,7 @@ namespace Snapshot
 
                 case "State":
                     CurrentSlot.OnPropertyChanged("HasData");
+                    
                     foreach (CMachineStateVM s in States)
                     {
                         s.RefreshState(true);
@@ -502,6 +505,7 @@ namespace Snapshot
                     }
 
                     NotifyPropertyChanged("Notes");
+                    NotifyPropertyChanged("CanPurge");
                     break;
 
                 case "Names":
@@ -515,6 +519,7 @@ namespace Snapshot
                     {
                         NotifyPropertyChanged("CurrentSlot");
                         NotifyPropertyChanged("Notes");
+                        NotifyPropertyChanged("CanPurge");
                         NotifyPropertyChanged("SlotMidi");
                         foreach (CMachineStateVM s in States)
                         {
@@ -972,7 +977,7 @@ namespace Snapshot
 
         public bool CanCaptureMissing => Owner.MissingCount > 0;
 
-        public bool CanPurge => Owner.RedundantCount > 0;
+        public bool CanPurge => CurrentSlot.CanPurge;
 
         #endregion Properties
     }

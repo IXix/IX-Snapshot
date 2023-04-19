@@ -55,7 +55,7 @@ namespace Snapshot
         }
     };
 
-    // For methods with a single argument of type HashSet<CPropertyBase>
+    // For methods with a single argument of type bool
     class CMidiActionBool : CMidiAction
     {
         protected new Action<bool> m_action;

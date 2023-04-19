@@ -30,20 +30,7 @@ namespace Snapshot
             ShowBoolOption1 = false;
             BoolOption1Text = "Option1";
 
-            if (info.index < 0) // Machine
-            {
-                switch (info.command)
-                {
-                    case "Capture":
-                        ShowBoolOption1 = true;
-                        BoolOption1Text = "Clear non-selected values";
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            else // Slot
+            if (info.index > -1) // Slot
             {
                 switch (info.command)
                 {
@@ -81,6 +68,16 @@ namespace Snapshot
                         break;
                 }
             }
+            /*
+            else // Machine
+            {
+                switch (info.command)
+                {
+                    default:
+                        break;
+                }
+            }
+            */
 
             TypeValues = new List<string>
             {

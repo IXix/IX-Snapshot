@@ -197,10 +197,9 @@ namespace Snapshot
                 if (_selectionFollowsSlot != value)
                 {
                     _selectionFollowsSlot = value;
-                    foreach(CPropertyBase p in AllProperties)
-                    {
-                        p.Checked = Selection.Contains(p);
-                    }
+
+                    PushSelection();
+
                     OnPropertyChanged("SelectionFollowsSlot");
                     OnPropertyChanged("Selection");
                 }
@@ -618,6 +617,15 @@ namespace Snapshot
             paramChanges.Add(new CParamChange(machine, param, track, value, duration, (int) shape));
         }
 
+        public void PushSelection()
+        {
+            foreach (CPropertyBase p in AllProperties)
+            {
+                p.Checked = Selection.Contains(p);
+            }
+            OnPropertyChanged("Selection");
+        }
+
         public void SelectAll()
         {
             foreach (CPropertyBase s in AllProperties)
@@ -652,6 +660,15 @@ namespace Snapshot
                 s.Checked = !s.Checked;
             }
             OnPropertyChanged("Selection");
+        }
+
+        public void PushSelectionM()
+        {
+            foreach (CPropertyBase p in AllProperties)
+            {
+                p.Checked_M = SelectionM.Contains(p);
+            }
+            OnPropertyChanged("SelectionM");
         }
 
         public void SelectAll_M()
@@ -1252,6 +1269,9 @@ namespace Snapshot
                 }
             }
 
+            PushSelection();
+            PushSelectionM();
+
             CurrentSlot.OnPropertyChanged("HasData");
             SlotA.OnPropertyChanged("HasData");
             SlotB.OnPropertyChanged("HasData");
@@ -1624,10 +1644,7 @@ namespace Snapshot
 
             if (_selectionFollowsSlot)
             {
-                foreach (CPropertyBase p in AllProperties)
-                {
-                    p.Checked = Selection.Contains(p);
-                }
+                PushSelection();
             }
 
             OnPropertyChanged("Slot");

@@ -15,7 +15,7 @@ Selection
 		Active selection belongs to machine or active slot if "Selection follows slot" is on
 			Requires addition of selection to CMachineSnapshot and code to switch main Selection between machine and slot levels
 		Manager selection remains independent for now
-	Main/slot selection is loaded but tree doesn't show it until something else causes a refresh
+
 	Smoothing doesn't appear to be saved unless property state is stored
 		Didn't think that was the case looking at the save code but must be missing something
 		Probably best to save the smoothing info separately as with selection

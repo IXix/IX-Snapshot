@@ -622,7 +622,7 @@
                             </Button>
                             <Button Grid.Column="1" x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
                                 <Button.InputBindings>
-                                    <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdClearSelected}" MouseAction="LeftClick" />
                                     <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" Gesture="RightClick" />
                                     <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" Gesture="Ctrl+RightClick" />
                                 </Button.InputBindings>

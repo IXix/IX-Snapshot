@@ -1,5 +1,8 @@
 2023.04.19
 	Fixed various button state bindings (copy/paste errors)
+	Fixed various minor bugs
+	Removed clear option from machine Capture mapping dialog
+		Wasn't used in code. Might add a "Clear prior to capture" option to the main UI
 
 2023.04.18
 	Fixed some copy/paste errors in the UI xaml
