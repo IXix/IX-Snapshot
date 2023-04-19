@@ -2,8 +2,6 @@ Test *everything*
 
 Datagrid for slots on Info tab
 
-Check enable/disable conditions of the Clear buttons. Possible copy/paste binding error?
-
 Update docs
 	Selection memory for slot specific actions
 	Options for slot specific actions

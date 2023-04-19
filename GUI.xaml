@@ -525,7 +525,7 @@
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <DataTrigger Binding="{Binding CanPurge, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                                 <Setter Property="Foreground" Value="Gray" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -577,7 +577,7 @@
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                                 <Setter Property="Foreground" Value="Gray" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -629,7 +629,7 @@
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                                 <Setter Property="Foreground" Value="Gray" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -682,7 +682,7 @@
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource sButtonAction}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding GotSelection, UpdateSourceTrigger=PropertyChanged}" Value="false">
+                                            <DataTrigger Binding="{Binding CurrentSlot.HasData, UpdateSourceTrigger=PropertyChanged}" Value="false">
                                                 <Setter Property="Foreground" Value="Gray" />
                                             </DataTrigger>
                                         </Style.Triggers>

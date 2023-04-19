@@ -1,3 +1,6 @@
+2023.04.19
+	Fixed various button state bindings (copy/paste errors)
+
 2023.04.18
 	Fixed some copy/paste errors in the UI xaml
 	Clicking learn button again cancels learning
