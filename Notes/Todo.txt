@@ -1,5 +1,37 @@
 Test *everything*
 
+Test/debug save/load code
+	Midi mapping
+		Should be okay but check anyway
+	MachineState
+		Smoothing
+		Global Group
+			Smoothing
+			Params
+				Smoothing
+				Stored values
+				Selection
+					Main
+					Manager
+					Slot
+		Track Group
+			Smoothing
+			Param Groups
+				Smoothing
+				Params
+					Smoothing
+					Stored values
+					Selection
+						Main
+						Manager
+						Slot
+		Attributes
+			Stored values
+		Data
+			Stored values
+
+	Update file format in comments, old versions too.
+
 Datagrid for slots on Info tab
 
 Update docs
@@ -9,16 +41,6 @@ Update docs
 	MIDI indicators on buttons
 	MIDI conflict warning
 
-Selection
-	Change selection as follows:
-		Midi actions have a selection or use the active selection (as now)
-		Active selection belongs to machine or active slot if "Selection follows slot" is on
-			Requires addition of selection to CMachineSnapshot and code to switch main Selection between machine and slot levels
-		Manager selection remains independent for now
-
-	Smoothing doesn't appear to be saved unless property state is stored
-		Didn't think that was the case looking at the save code but must be missing something
-		Probably best to save the smoothing info separately as with selection
 
 MIDI mapping
 	Context menu for selected cells might be nice:

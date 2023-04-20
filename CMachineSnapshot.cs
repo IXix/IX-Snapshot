@@ -72,6 +72,11 @@ namespace Snapshot
             return StoredProperties.Count(x => x.ParentMachine == s) > 0;
         }
 
+        public bool SelectionContainsMachine(CMachineState s)
+        {
+            return m_selection.SelectedProperties.Count(x => x.ParentMachine == s) > 0;
+        }
+
         public void SetPropertyValue(CPropertyBase p, int? value)
         {
             // null == clear
@@ -79,14 +84,12 @@ namespace Snapshot
             {
                 if (StoredProperties.Contains(p))
                 {
-                    CAttributeState ak = p as CAttributeState;
-                    if (ak != null)
+                    if (p is CAttributeState ak)
                     {
                         AttributeValues.Remove(ak);
                     }
 
-                    CParameterState pk = p as CParameterState;
-                    if (pk != null)
+                    if (p is CParameterState pk)
                     {
                         ParameterValues.Remove(pk);
                     }
@@ -725,7 +728,7 @@ namespace Snapshot
             }
         }
 
-        public void ReadProperty(CPropertyBase p, BinaryReader r)
+        public void ReadPropertyValue(CPropertyBase p, BinaryReader r)
         {
             Type t = p.GetType();
             switch (t.FullName)
@@ -749,7 +752,7 @@ namespace Snapshot
             _ = StoredProperties.Add(p);
         }
 
-        public void WriteProperty(CPropertyBase p, BinaryWriter w)
+        public void WritePropertyValue(CPropertyBase p, BinaryWriter w)
         {
             if (ContainsProperty(p) && p.Active)
             {
@@ -780,7 +783,6 @@ namespace Snapshot
         {
             w.Write(Name);
             w.Write(Notes);
-            m_selection.WriteData(w);
         }
 
         public void ReadData(BinaryReader r)
@@ -792,7 +794,6 @@ namespace Snapshot
             if(file_version >= 3)
             {
                 Notes = r.ReadString();
-                m_selection.ReadData(r);
             }
         }
 

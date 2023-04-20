@@ -297,14 +297,14 @@ namespace Snapshot
             PropertyStateChanged?.Invoke(this, args);
         }
 
-        public void WriteSmoothingInfo(BinaryWriter w)
+        public virtual void WriteSmoothingInfo(BinaryWriter w)
         {
             w.Write((Int32)(SmoothingCount ?? -1));
             w.Write((Int32)(SmoothingUnits ?? -1));
             w.Write((Int32)(SmoothingShape ?? -1));
         }
 
-        public void ReadSmoothingInfo(BinaryReader r)
+        public virtual void ReadSmoothingInfo(BinaryReader r)
         {
             SmoothingCount = r.ReadInt32();
             SmoothingUnits = r.ReadInt32();
@@ -313,43 +313,46 @@ namespace Snapshot
 
         public virtual void WritePropertyInfo(BinaryWriter w)
         {
-            throw new Exception("Unexpected call to CPropertyBase.WritePropertyInfo()");
+            throw new Exception("Unexpected call to WritePropertyInfo!");
         }
 
-        public static CPropertyBase FindPropertyFromSavedInfo(BinaryReader r, CMachineState s)
+        public void WritePropertyData(BinaryWriter w)
         {
-            CPropertyBase p = null;
+            w.Write(Checked ?? false);
+            w.Write(Checked_M ?? false);
+            WriteSmoothingInfo(w);
 
-            Byte type = r.ReadByte();
-            switch(type)
+            // Write slot specific data
+            List<CMachineSnapshot> slots = Owner.Slots.Where(x => x.ContainsProperty(this) || x.Selection.Contains(this)).ToList();
+            w.Write((Int32)slots.Count());
+            foreach (CMachineSnapshot slot in slots)
             {
-                case 0: // Attribute
-                    string name = r.ReadString();
-                    p = s.AttributeStates.ChildProperties.Single(x => x.Name == name);
-                    break;
-
-                case 1: // Parameter
-                    Byte group = r.ReadByte();
-                    Int32 idx = r.ReadInt32();
-                    Int32? track = null;
-                    if (group == (Byte) ParameterGroupType.Track)
-                    {
-                        track = r.ReadInt32();
-                    }
-
-                    IParameter param = s.Machine.ParameterGroups[group].Parameters[idx];
-                    p = s.AllProperties.Single(x => x is CParameterState && (x as CParameterState).Parameter == param && x.Track == track);
-                    break;
-
-                case 2: // Data
-                    p = s.DataState;
-                    break;
-
-                default:
-                    throw new Exception("Unexpected type in CPropertyBase.ReadPropertyInfo");
+                w.Write((Int32)slot.Index);
+                slot.WritePropertyValue(this, w);
+                w.Write(slot.Selection.Contains(this));
             }
+        }
 
-            return p;
+        public void ReadPropertyData(BinaryReader r)
+        {
+            // Read data
+            Checked = r.ReadBoolean();
+            Checked_M = r.ReadBoolean();
+            ReadSmoothingInfo(r);
+
+            // Read stored values
+            Int32 n = r.ReadInt32(); // number of slots containing the property
+            for (Int32 i = 0; i < n; i++)
+            {
+                Int32 idx = r.ReadInt32();
+                CMachineSnapshot slot = Owner.Slots[idx];
+                slot.ReadPropertyValue(this, r);
+                bool selected = r.ReadBoolean();
+                if (selected)
+                {
+                    slot.Selection.Add(this);
+                }
+            }
         }
     }
 
@@ -388,7 +391,7 @@ namespace Snapshot
 
         public override void WritePropertyInfo(BinaryWriter w)
         {
-            w.Write((Byte)1); // Property type 1 == Parameter
+            w.Write((Byte)1); // Type 1 == param
             w.Write((Byte) Parameter.Group.Type);
             w.Write((Int32)Parameter.IndexInGroup);
             if(Parameter.Group.Type == ParameterGroupType.Track)
@@ -419,9 +422,19 @@ namespace Snapshot
 
         public override int? CurrentValue => Attribute.Value;
 
+        public override void WriteSmoothingInfo(BinaryWriter w)
+        {
+            // Can't be smoothed
+        }
+
+        public override void ReadSmoothingInfo(BinaryReader r)
+        {
+            // Can't be smoothed
+        }
+
         public override void WritePropertyInfo(BinaryWriter w)
         {
-            w.Write((Byte)0); // Property type 0 == Attribute
+            w.Write((Byte)0); // Type 0 == Attribute
             w.Write(Attribute.Name);
         }
     }
@@ -479,9 +492,19 @@ namespace Snapshot
             }));
         }
 
+        public override void WriteSmoothingInfo(BinaryWriter w)
+        {
+            // Can't be smoothed
+        }
+
+        public override void ReadSmoothingInfo(BinaryReader r)
+        {
+            // Can't be smoothed
+        }
+
         public override void WritePropertyInfo(BinaryWriter w)
         {
-            w.Write((Byte)2); // Property type 2 == Data
+            w.Write((Byte)2); // Type 2 == Data
         }
     }
 
@@ -618,8 +641,7 @@ namespace Snapshot
                 }
             }
 
-            AttributeStates = new CPropertyStateGroup(owner, this, this, "Attributes");
-            AttributeStates.AllowSmoothing = false;
+            AttributeStates = new CPropertyStateGroup(owner, this, this, "Attributes") { AllowSmoothing = false };
             foreach (IAttribute a in Machine.Attributes)
             {
                 CAttributeState ats = new CAttributeState(owner, AttributeStates, this, a);
@@ -754,6 +776,64 @@ namespace Snapshot
             if(_trackCount > _highestTrackCount)
             {
                 _highestTrackCount = _trackCount;
+            }
+        }
+
+        public CPropertyBase FindPropertyFromSavedInfo(BinaryReader r)
+        {
+            // Read type specific info and find the correct property
+            CPropertyBase p = null;
+            Byte type = r.ReadByte();
+            switch (type)
+            {
+                case 0: // Attribute
+                    string name = r.ReadString();
+                    p = AttributeStates.ChildProperties.Single(x => x.Name == name);
+                    break;
+
+                case 1: // Parameter
+                    Byte group = r.ReadByte();
+                    Int32 idx = r.ReadInt32();
+                    Int32? track = null;
+                    if (group == (Byte)ParameterGroupType.Track)
+                    {
+                        track = r.ReadInt32();
+                    }
+
+                    IParameter param = Machine.ParameterGroups[group].Parameters[idx];
+                    p = AllProperties.Single(x => x is CParameterState && (x as CParameterState).Parameter == param && x.Track == track);
+                    break;
+
+                case 2: // Data
+                    p = DataState;
+                    break;
+
+                default:
+                    throw new Exception("Unexpected type in CMachineState.FindPropertyFromSavedInfo()");
+            }
+
+            return p;
+        }
+
+        public override void WriteSmoothingInfo(BinaryWriter w)
+        {
+            base.WriteSmoothingInfo(w); // Machine
+            GlobalStates.WriteSmoothingInfo(w); // Global group
+            TrackStates.WriteSmoothingInfo(w); // Track group
+            foreach (CPropertyBase pg in TrackStates.ChildProperties)
+            {
+                pg.WriteSmoothingInfo(w); // Track param group
+            }
+        }
+
+        public override void ReadSmoothingInfo(BinaryReader r)
+        {
+            base.ReadSmoothingInfo(r);
+            GlobalStates.ReadSmoothingInfo(r); // Global group
+            TrackStates.ReadSmoothingInfo(r); // Track group
+            foreach (CPropertyBase pg in TrackStates.ChildProperties)
+            {
+                pg.ReadSmoothingInfo(r); // Track param group
             }
         }
 

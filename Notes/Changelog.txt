@@ -1,3 +1,6 @@
+2023.04.20
+	Reworked save/load code
+
 2023.04.19
 	Fixed various button state bindings (copy/paste errors)
 	Fixed various minor bugs

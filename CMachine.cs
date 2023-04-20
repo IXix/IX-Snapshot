@@ -754,13 +754,13 @@ namespace Snapshot
             }
         }
 
-        private CPropertySelection m_selection;
+        private readonly CPropertySelection m_selection;
         public HashSet<CPropertyBase> Selection
         {
             get => _selectionFollowsSlot ? CurrentSlot.Selection : m_selection.SelectedProperties;
         }
 
-        private CPropertySelection m_selectionM;
+        private readonly CPropertySelection m_selectionM;
         public HashSet<CPropertyBase> SelectionM
         {
             get => m_selectionM.SelectedProperties;
@@ -1050,10 +1050,6 @@ namespace Snapshot
             w.Write(SelectionFollowsSlot); // new in v2
             w.Write(ConfirmClear);         // ^^
 
-            // Selection
-            m_selection.WriteData(w);
-            m_selectionM.WriteData(w);
-
             // Save slot data
             for (int i = 0; i < 128; i++)
             {
@@ -1069,60 +1065,61 @@ namespace Snapshot
                 info.settings.WriteData(w);
             }
 
-            // Build a list of states to save by finding which are referred to by snapshots
-            List<CMachineState> saveStates = new List<CMachineState>();
-            foreach (CMachineState s in States.Where(x => x.Active))
+            // Build a set of properties that need saving.
+            // Any that are selected somewhere, have non-inherited smoothing or stored in a slot.
+            HashSet<CPropertyBase> propertySet = new HashSet<CPropertyBase>();
+            propertySet.UnionWith(m_selection.SelectedProperties);
+            propertySet.UnionWith(m_selectionM.SelectedProperties);
+            foreach (CMachineSnapshot slot in _slots)
             {
-                if (_slots.Exists(x => x.ContainsMachine(s)) || s.HasSmoothing)
+                propertySet.UnionWith(slot.Selection);
+                propertySet.UnionWith(slot.StoredProperties);
+            }
+            propertySet.UnionWith(AllProperties.Where(x => x.HasSmoothing));
+
+            // Separate into dictionary of machines and their properties
+            Dictionary<CMachineState, HashSet<CPropertyBase>> saveStates = new Dictionary<CMachineState, HashSet<CPropertyBase>>();
+
+            // Need to account for non-property smoothing. Stuff these in first to keep things simple
+            foreach(CMachineState s in States.Where(x => x.HasSmoothing || x.ChildHasSmoothing))
+            {
+                saveStates[s] = new HashSet<CPropertyBase>();
+            }
+
+            // Associate machine states and their properties in the dictionary
+            foreach (CPropertyBase p in propertySet)
+            {
+                if (p is CMachineState || p is CPropertyStateGroup || p is CTrackPropertyStateGroup)
                 {
-                    saveStates.Add(s);
+                    throw new Exception("Group!"); // shouldn't happen
+                }
+
+                if (saveStates.ContainsKey(p.ParentMachine))
+                {
+                    _ = saveStates[p.ParentMachine].Add(p);
+                }
+                else
+                {
+                    saveStates[p.ParentMachine] = new HashSet<CPropertyBase>() { p };
                 }
             }
-            w.Write((Int32)saveStates.Count());
-            foreach (CMachineState s in saveStates)
+
+            // Write structured data
+            w.Write(saveStates.Count);
+            foreach (CMachineState s in saveStates.Keys)
             {
                 w.Write(s.Machine.Name);
                 w.Write(s.Machine.DLL.Name);
 
-                // Machine/Group smoothing - New in file version 3
-                s.WriteSmoothingInfo(w); // Machine
-                s.GlobalStates.WriteSmoothingInfo(w); // Global group
-                s.TrackStates.WriteSmoothingInfo(w); // Track group
-                foreach(CPropertyBase pg in s.TrackStates.ChildProperties) // Track param groups
+                // Non-property smoothing
+                s.WriteSmoothingInfo(w);
+
+                // Properties and their values
+                w.Write(saveStates[s].Count);
+                foreach (CPropertyBase p in saveStates[s])
                 {
-                    pg.WriteSmoothingInfo(w);
-                }
-                // end Machine/Group smoothing
-
-                // Build a dictionary of properties to save and the snapshots they're referenced by
-                Dictionary<CPropertyBase, List<CMachineSnapshot>> saveProperties = new Dictionary<CPropertyBase, List<CMachineSnapshot>>();
-                foreach (CPropertyBase ps in s.AllProperties)
-                {
-                    List<CMachineSnapshot> slots = _slots.Where(x => x.ContainsProperty(ps)).ToList();
-
-                    // Save any that are stored or have non-default smoothing settings
-                    if (slots.Count() > 0 || ps.HasSmoothing)
-                    {
-                        saveProperties[ps] = slots;
-                    }
-                }
-                w.Write((Int32)saveProperties.Count());
-                foreach (KeyValuePair<CPropertyBase, List<CMachineSnapshot>> item in saveProperties)
-                {
-                    CPropertyBase p = item.Key;
-                    List<CMachineSnapshot> slots = item.Value;
-
-                    p.WritePropertyInfo(w);
-
-                    // New in file version 3
-                    p.WriteSmoothingInfo(w);
-
-                    w.Write((Int32)slots.Count());
-                    foreach (CMachineSnapshot snapshot in slots)
-                    {
-                        w.Write((Int32)snapshot.Index);
-                        snapshot.WriteProperty(p, w);
-                    }
+                    p.WritePropertyInfo(w); // Info to retrieve the correct property
+                    p.WritePropertyData(w); // Actual data
                 }
             }
 
@@ -1131,6 +1128,151 @@ namespace Snapshot
             return data;
         }
 
+        // Legacy load code for file version <= 3
+        private void RestoreLoadedData3()
+        {
+            if (_loadedState == null) return;
+
+            MemoryStream stream = new MemoryStream(_loadedState.data);
+            BinaryReader r = new BinaryReader(stream);
+
+            // Options
+            SelectNewMachines = r.ReadBoolean();
+            CaptureOnSlotChange = r.ReadBoolean();
+            RestoreOnSlotChange = r.ReadBoolean();
+            RestoreOnSongLoad = r.ReadBoolean();
+            RestoreOnStop = r.ReadBoolean();
+            if (_loadedState.version >= 2) // New in file v2
+            {
+                SelectionFollowsSlot = r.ReadBoolean();
+                ConfirmClear = r.ReadBoolean();
+            }
+
+            // Slot data (CMachineSnapshot.WriteData() x 128)
+            for (int i = 0; i < 128; i++)
+            {
+                _slots[i].ReadData(r);
+            }
+
+            // MIDI map
+            Int32 numMappings = r.ReadInt32();
+            for (int n = 0; n < numMappings; n++)
+            {
+                string command = r.ReadString();
+                int slot = r.ReadInt32();
+
+                CMidiTargetInfo info = new CMidiTargetInfo(slot, command, this);
+                CMidiEventSettings e = info.settings;
+                e.ReadData(r);
+
+                // Restore settings
+                info.SetAction();
+                if (MidiMap.Contains(info))
+                {
+                    // New system won't allow duplicates but old system might have.
+                    // Discard if we hit one.
+                    continue;
+                }
+
+                MidiMap.Add(info);
+
+                var code = e.Encode();
+                if (_midiMapping.ContainsKey(code))
+                {
+                    _midiMapping[code].Add(info.action); // mapping
+                }
+                else
+                {
+                    _midiMapping[code] = new HashSet<CMidiAction>() { info.action };
+                }
+
+                if (slot < 0) // Machine
+                {
+                    MidiInfo.Update(info);
+                }
+                else // Slot
+                {
+                    _slots[slot].MidiInfo.Update(info);
+                }
+            }
+
+            // number of saved states
+            Int32 numStates = r.ReadInt32();
+            for (int n = 0; n < numStates; n++)
+            {
+                string name = r.ReadString(); // State name
+                string dllname = r.ReadString(); // Machine DLL name
+                try
+                {
+                    // Should be one and only one state matching both name and dllname. Exception if not.
+                    CMachineState s = States.Single(x => x.Machine.Name == name && x.Machine.DLL.Name == dllname);
+
+                    if (_loadedState.version >= 3)
+                    {
+                        // Machine/Group smoothing - New in file version 3
+                        s.SmoothingCount = r.ReadInt32(); // Machine
+                        s.SmoothingUnits = r.ReadInt32(); // ^^
+                        s.SmoothingShape = r.ReadInt32(); // ^^
+
+                        s.GlobalStates.SmoothingCount = r.ReadInt32(); // Global group
+                        s.GlobalStates.SmoothingUnits = r.ReadInt32(); // ^^
+                        s.GlobalStates.SmoothingShape = r.ReadInt32(); // ^^
+
+                        s.TrackStates.SmoothingCount = r.ReadInt32(); // Track group
+                        s.TrackStates.SmoothingUnits = r.ReadInt32(); // ^^
+                        s.TrackStates.SmoothingShape = r.ReadInt32(); // ^^
+                        foreach (CPropertyBase pg in s.TrackStates.ChildProperties)
+                        {
+                            pg.SmoothingCount = r.ReadInt32(); // Track param group
+                            pg.SmoothingUnits = r.ReadInt32(); // ^^
+                            pg.SmoothingShape = r.ReadInt32(); // ^^
+                        }
+                    }
+
+                    Int32 count = r.ReadInt32(); // number of properties saved
+                    for (Int32 i = 0; i < count; i++)
+                    {
+                        name = r.ReadString(); // Property name
+                        int? track = r.ReadInt32(); // Property track (-1 if null)
+                        if (track < 0) track = null;
+
+                        // Should be one and only one property matching name and track. Exception if not.
+                        CPropertyBase ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
+
+                        ps.Checked = r.ReadBoolean(); //Property selected
+
+                        if (_loadedState.version >= 3)
+                        {
+                            ps.SmoothingCount = r.ReadInt32(); // New in file version 3
+                            ps.SmoothingUnits = r.ReadInt32(); // ^^
+                            ps.SmoothingShape = r.ReadInt32(); // ^^
+                        }
+
+                        Int32 numslots = r.ReadInt32(); // number of saved snapshot values
+                        for (int j = 0; j < numslots; j++)
+                        {
+                            Int32 slot = r.ReadInt32(); // snapshot index
+                            _slots[slot].ReadPropertyValue(ps, r); // Snapshot data (CMachineSnapshot.WriteProperty())
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                    return;
+                }
+            }
+
+            CurrentSlot.OnPropertyChanged("HasData");
+            SlotA.OnPropertyChanged("HasData");
+            SlotB.OnPropertyChanged("HasData");
+
+            OnPropertyChanged("CurrentSlot");
+            OnPropertyChanged("State");
+            OnPropertyChanged("Selection");
+        }
+
+        // Load code for file version 4 (and hopefully upwards)
         private void RestoreLoadedData()
         {
             if (_loadedState == null) return;
@@ -1150,13 +1292,6 @@ namespace Snapshot
             {
                 SelectionFollowsSlot = r.ReadBoolean();
                 ConfirmClear = r.ReadBoolean();
-            }
-
-            if(_loadedState.version >= 4)
-            {
-                // Selection
-                m_selection.ReadData(r);
-                m_selectionM.ReadData(r);
             }
 
             // Slot data (CMachineSnapshot.WriteData() x 128)
@@ -1203,8 +1338,8 @@ namespace Snapshot
                 }
             }
 
-            // number of saved states
-            Int32 numStates = r.ReadInt32();
+            // Read dat
+            Int32 numStates = r.ReadInt32(); // number of saved states
             for (int n = 0; n < numStates; n++)
             {
                 string name = r.ReadString(); // State name
@@ -1214,52 +1349,17 @@ namespace Snapshot
                     // Should be one and only one state matching both name and dllname. Exception if not.
                     CMachineState s = States.Single(x => x.Machine.Name == name && x.Machine.DLL.Name == dllname);
 
-                    if(_loadedState.version >= 3)
-                    {
-                        // Machine/Group smoothing - New in file version 3
-                        s.ReadSmoothingInfo(r); // Machine
-                        s.GlobalStates.ReadSmoothingInfo(r); // Global group
-                        s.TrackStates.ReadSmoothingInfo(r); // Track group
-                        foreach (CPropertyBase pg in s.TrackStates.ChildProperties) // Track param groups
-                        {
-                            pg.ReadSmoothingInfo(r); 
-                        }
-                    }
+                    // Machine/Group smoothing
+                    s.ReadSmoothingInfo(r);
 
+                    // Properties and their values
                     Int32 count = r.ReadInt32(); // number of properties saved
+                    CPropertyBase TEMPPREV = null;
                     for (Int32 i = 0; i < count; i++)
                     {
-                        CPropertyBase ps;
-
-                        if(LoadVersion < 4)
-                        {
-                            // Keeping this for backwards compatibility
-                            // Had to change save/load of properties because param names aren't necessarily unique
-                            name = r.ReadString(); // Property name
-                            int? track = r.ReadInt32(); // Property track (-1 if null)
-                            if (track < 0) track = null;
-
-                            // Should be one and only one property matching name and track. Exception if not.
-                            ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
-
-                            ps.Checked = r.ReadBoolean(); //Property selected
-                        }
-                        else
-                        {
-                            ps = CPropertyBase.FindPropertyFromSavedInfo(r, s);
-                        }
-
-                        if(_loadedState.version == 3)
-                        {
-                            ps.ReadSmoothingInfo(r); // Property smoothing. New in file version 3
-                        }
-
-                        Int32 numslots = r.ReadInt32(); // number of saved snapshot values
-                        for (int j = 0; j < numslots; j++)
-                        {
-                            Int32 slot = r.ReadInt32(); // snapshot index
-                            _slots[slot].ReadProperty(ps, r); // Snapshot data (CMachineSnapshot.WriteProperty())
-                        }
+                        CPropertyBase p = s.FindPropertyFromSavedInfo(r); // Find the property
+                        p.ReadPropertyData(r); // Restore data
+                        TEMPPREV = p;
                     }
                 }
                 catch (Exception e)
@@ -1268,9 +1368,6 @@ namespace Snapshot
                     return;
                 }
             }
-
-            PushSelection();
-            PushSelectionM();
 
             CurrentSlot.OnPropertyChanged("HasData");
             SlotA.OnPropertyChanged("HasData");
@@ -1285,7 +1382,14 @@ namespace Snapshot
         // Called after song load or template drop
         public void ImportFinished(IDictionary<string, string> machineNameMap)
         {
-            RestoreLoadedData();
+            if (_loadedState.version >= 4)
+            {
+                RestoreLoadedData();
+            }
+            else
+            {
+                RestoreLoadedData3(); // Legacy code for file version 3 and below
+            }
 
             loading = false;
 

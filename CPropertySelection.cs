@@ -49,7 +49,7 @@ namespace Snapshot
                     UInt32 nProperties = r.ReadUInt32();
                     for (UInt32 ip = 0; ip < nProperties; ip++)
                     {
-                        CPropertyBase p = CPropertyBase.FindPropertyFromSavedInfo(r, s);
+                        CPropertyBase p = s.FindPropertyFromSavedInfo(r);
                         if (p != null)
                         {
                             _ = m_selection.Add(p);
@@ -58,7 +58,6 @@ namespace Snapshot
                 }
             }
         }
-
 
         public void WriteData(BinaryWriter w)
         {
