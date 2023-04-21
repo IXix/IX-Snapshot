@@ -2,6 +2,7 @@
 	Fixed ommision of AttributeStates in CMachneState.ChildProperties collection
 	Fixed property save/load bug
 	Fixed clash between main and slot selection on load
+	CMachineStateVM now notices child property events
 
 2023.04.20
 	Reworked save/load code

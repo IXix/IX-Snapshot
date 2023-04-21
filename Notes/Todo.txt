@@ -1,7 +1,5 @@
 Test *everything*
 
-MachineState doesn't show child smoothing clouring in UI
-
 CPropertyBase has two lots of property changed style code, a bit sucky and confusing.
 	Consolidate into a single INotifyPropertyChanged style system so it's like everything else
 		This is part of a wider problem that the whole system of UI notification is confused and messy
@@ -24,6 +22,7 @@ Datagrid for slots on Info tab
 
 Update docs
 	Selection memory for slot specific actions
+	Changes to "Selection follows slot" behaviour
 	Options for slot specific actions
 	MIDI tab
 	MIDI indicators on buttons
