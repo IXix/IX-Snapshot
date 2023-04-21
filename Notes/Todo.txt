@@ -1,34 +1,49 @@
 Test *everything*
 
+MachineState doesn't show child smoothing clouring in UI
+
+CPropertyBase has two lots of property changed style code, a bit sucky and confusing.
+	Consolidate into a single INotifyPropertyChanged style system so it's like everything else
+		This is part of a wider problem that the whole system of UI notification is confused and messy
+		Really need to scrap it all and start again with improved knowledge and understanding
+
 Test/debug save/load code
 	Midi mapping
 		Should be okay but check anyway
 	MachineState
 		Smoothing
 		Global Group
-			Smoothing
+			Smoothing - ok
 			Params
-				Smoothing
-				Stored values
+				Smoothing - ok
+				Stored values - ok
 				Selection
-					Main
+					Main -ok
 					Manager
 					Slot
 		Track Group
-			Smoothing
+			Smoothing - ok
 			Param Groups
-				Smoothing
+				Smoothing - ok
 				Params
-					Smoothing
-					Stored values
+					Smoothing -ok
+					Stored values - ok
 					Selection
-						Main
+						Main - ok
 						Manager
 						Slot
 		Attributes
-			Stored values
+			Stored values - ok
+			Selection
+				Main - ok
+				Manager
+				Slot
 		Data
 			Stored values
+			Selection
+				Main
+				Manager
+				Slot
 
 	Update file format in comments, old versions too.
 

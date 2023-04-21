@@ -27,6 +27,8 @@ namespace Snapshot
         public IPropertyState Property { get; set; }
         public bool GotValue { get; set; }
         public int Size { get; set; }
+        public bool HasSmoothing { get; set; }
+        public bool ChildHasSmoothing { get; set; }
     }
 
     public interface INamed
@@ -220,6 +222,8 @@ namespace Snapshot
                 if (value < 0)
                     value = null;
                 m_smoothingCount = value;
+
+                OnPropertyStateChanged();
             }
         }
 
@@ -232,6 +236,8 @@ namespace Snapshot
                 if (value < 0)
                     value = null;
                 m_smoothingUnits = value;
+
+                OnPropertyStateChanged();
             }
         }
 
@@ -244,6 +250,8 @@ namespace Snapshot
                 if (value < 0)
                     value = null;
                 m_smoothingShape = value;
+
+                OnPropertyStateChanged();
             }
         }
 
@@ -292,7 +300,9 @@ namespace Snapshot
             {
                 Property = this,
                 GotValue = GotValue,
-                Size = Size
+                Size = Size,
+                HasSmoothing = HasSmoothing,
+                ChildHasSmoothing = ChildHasSmoothing
             };
             PropertyStateChanged?.Invoke(this, args);
         }
@@ -353,6 +363,8 @@ namespace Snapshot
                     slot.Selection.Add(this);
                 }
             }
+
+            OnPropertyStateChanged();
         }
     }
 
@@ -642,6 +654,7 @@ namespace Snapshot
             }
 
             AttributeStates = new CPropertyStateGroup(owner, this, this, "Attributes") { AllowSmoothing = false };
+            ChildProperties.Add(AttributeStates);
             foreach (IAttribute a in Machine.Attributes)
             {
                 CAttributeState ats = new CAttributeState(owner, AttributeStates, this, a);

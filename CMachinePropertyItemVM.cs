@@ -170,6 +170,8 @@ namespace Snapshot
             NotifyPropertyChanged("DisplayName");
             NotifyPropertyChanged("StoredValue");
             NotifyPropertyChanged("StoredValueDescription");
+            NotifyPropertyChanged("HasSmoothing");
+            NotifyPropertyChanged("ChildHasSmoothing");
         }
 
         // This signals the UI to update when the tree changes from code eg. the select buttons

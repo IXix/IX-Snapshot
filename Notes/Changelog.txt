@@ -1,3 +1,7 @@
+2023.04.21
+	Fixed ommision of AttributeStates in CMachneState.ChildProperties collection
+	Fixed property save/load bug
+
 2023.04.20
 	Reworked save/load code
 

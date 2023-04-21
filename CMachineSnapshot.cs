@@ -730,32 +730,38 @@ namespace Snapshot
 
         public void ReadPropertyValue(CPropertyBase p, BinaryReader r)
         {
-            Type t = p.GetType();
-            switch (t.FullName)
+            bool loadValue = r.ReadBoolean();
+            if (loadValue)
             {
-                case "Snapshot.CDataState":
-                    Int32 l = r.ReadInt32();
-                    DataValues[p as Snapshot.CDataState] = r.ReadBytes(l);
-                    break;
+                Type t = p.GetType();
+                switch (t.FullName)
+                {
+                    case "Snapshot.CDataState":
+                        Int32 l = r.ReadInt32();
+                        DataValues[p as Snapshot.CDataState] = r.ReadBytes(l);
+                        break;
 
-                case "Snapshot.CAttributeState":
-                    AttributeValues[p as Snapshot.CAttributeState] = r.ReadInt32();
-                    break;
+                    case "Snapshot.CAttributeState":
+                        AttributeValues[p as Snapshot.CAttributeState] = r.ReadInt32();
+                        break;
 
-                case "Snapshot.CParameterState":
-                    ParameterValues[p as Snapshot.CParameterState] = new Tuple<int, int>(p.Track ?? -1, r.ReadInt32());
-                    break;
+                    case "Snapshot.CParameterState":
+                        ParameterValues[p as Snapshot.CParameterState] = new Tuple<int, int>(p.Track ?? -1, r.ReadInt32());
+                        break;
 
-                default:
-                    throw new Exception("Unknown property type.");
+                    default:
+                        throw new Exception("Unknown property type.");
+                }
+                _ = StoredProperties.Add(p);
             }
-            _ = StoredProperties.Add(p);
         }
 
         public void WritePropertyValue(CPropertyBase p, BinaryWriter w)
         {
             if (ContainsProperty(p) && p.Active)
             {
+                w.Write(true);
+
                 Type t = p.GetType();
                 switch (t.FullName)
                 {
@@ -776,6 +782,10 @@ namespace Snapshot
                     default:
                         throw new Exception("Unknown property type.");
                 }
+            }
+            else
+            {
+                w.Write(false);
             }
         }
 
