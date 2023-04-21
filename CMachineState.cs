@@ -328,8 +328,8 @@ namespace Snapshot
 
         public void WritePropertyData(BinaryWriter w)
         {
-            w.Write(Checked ?? false);
-            w.Write(Checked_M ?? false);
+            w.Write(Owner.m_selection.SelectedProperties.Contains(this)); // Can't use Selection, it may point to CurrentSlot.Selection
+            w.Write(Owner.m_selectionM.SelectedProperties.Contains(this));// SelectionM would be okay but just in case..
             WriteSmoothingInfo(w);
 
             // Write slot specific data
@@ -339,15 +339,21 @@ namespace Snapshot
             {
                 w.Write((Int32)slot.Index);
                 slot.WritePropertyValue(this, w);
-                w.Write(slot.Selection.Contains(this));
+                w.Write(slot.Selection.Contains(this)); // slot Selection is just the slot's own hashset
             }
         }
 
         public void ReadPropertyData(BinaryReader r)
         {
             // Read data
-            Checked = r.ReadBoolean();
+            bool selMain = r.ReadBoolean();
+            if(selMain)
+            {
+                Owner.m_selection.SelectedProperties.Add(this);
+            }
+
             Checked_M = r.ReadBoolean();
+
             ReadSmoothingInfo(r);
 
             // Read stored values
@@ -357,8 +363,8 @@ namespace Snapshot
                 Int32 idx = r.ReadInt32();
                 CMachineSnapshot slot = Owner.Slots[idx];
                 slot.ReadPropertyValue(this, r);
-                bool selected = r.ReadBoolean();
-                if (selected)
+                bool selSlot = r.ReadBoolean();
+                if (selSlot)
                 {
                     slot.Selection.Add(this);
                 }

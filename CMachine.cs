@@ -754,13 +754,13 @@ namespace Snapshot
             }
         }
 
-        private readonly CPropertySelection m_selection;
+        internal readonly CPropertySelection m_selection;
         public HashSet<CPropertyBase> Selection
         {
             get => _selectionFollowsSlot ? CurrentSlot.Selection : m_selection.SelectedProperties;
         }
 
-        private readonly CPropertySelection m_selectionM;
+        internal readonly CPropertySelection m_selectionM;
         public HashSet<CPropertyBase> SelectionM
         {
             get => m_selectionM.SelectedProperties;
@@ -1263,6 +1263,9 @@ namespace Snapshot
                 }
             }
 
+            PushSelection();
+            PushSelectionM();
+
             CurrentSlot.OnPropertyChanged("HasData");
             SlotA.OnPropertyChanged("HasData");
             SlotB.OnPropertyChanged("HasData");
@@ -1338,7 +1341,7 @@ namespace Snapshot
                 }
             }
 
-            // Read dat
+            // Read data
             Int32 numStates = r.ReadInt32(); // number of saved states
             for (int n = 0; n < numStates; n++)
             {
@@ -1368,6 +1371,9 @@ namespace Snapshot
                     return;
                 }
             }
+
+            PushSelection();
+            PushSelectionM();
 
             CurrentSlot.OnPropertyChanged("HasData");
             SlotA.OnPropertyChanged("HasData");

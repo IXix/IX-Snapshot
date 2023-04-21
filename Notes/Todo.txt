@@ -11,33 +11,6 @@ Test/debug save/load code
 	Midi mapping
 		Should be okay but check anyway
 	MachineState
-		Smoothing
-		Global Group
-			Smoothing - ok
-			Params
-				Smoothing - ok
-				Stored values - ok
-				Selection
-					Main -ok
-					Manager
-					Slot
-		Track Group
-			Smoothing - ok
-			Param Groups
-				Smoothing - ok
-				Params
-					Smoothing -ok
-					Stored values - ok
-					Selection
-						Main - ok
-						Manager
-						Slot
-		Attributes
-			Stored values - ok
-			Selection
-				Main - ok
-				Manager
-				Slot
 		Data
 			Stored values
 			Selection
