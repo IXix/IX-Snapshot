@@ -9,6 +9,9 @@ Test/debug save/load code
 	Midi mapping
 		Should be okay but check anyway
 
+	Check that data for properties with duplicate names is restored in the correct order
+		Use 1.3 to save a test bmx with ascending values for the duplicates of Infector
+
 
 	Update file format in comments, old versions too.
 

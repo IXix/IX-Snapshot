@@ -1,5 +1,9 @@
 2023.04.24
 	Prevented saving of redundant (purgable) data
+	Avoid losing all saved data when loading old files and state has duplicate properties (eg. Infector)
+	Fixed loading of v3 files with duplicate property names
+		Fixed as in "doesn't throw an exception".
+		Need to check values are restored in the correct order.
 
 2023.04.21
 	Fixed ommision of AttributeStates in CMachneState.ChildProperties collection

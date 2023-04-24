@@ -730,7 +730,13 @@ namespace Snapshot
 
         public void ReadPropertyValue(CPropertyBase p, BinaryReader r)
         {
-            bool loadValue = r.ReadBoolean();
+            // File version 3 always stored data. Version 4 might not .
+            bool loadValue = true;
+            if (m_owner.LoadVersion >= 4)
+            {
+                loadValue = r.ReadBoolean();
+            }
+
             if (loadValue)
             {
                 Type t = p.GetType();
