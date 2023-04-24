@@ -1,3 +1,6 @@
+2023.04.24
+	Prevented saving of redundant (purgable) data
+
 2023.04.21
 	Fixed ommision of AttributeStates in CMachneState.ChildProperties collection
 	Fixed property save/load bug

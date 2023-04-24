@@ -1077,6 +1077,8 @@ namespace Snapshot
             }
             propertySet.UnionWith(AllProperties.Where(x => x.HasSmoothing));
 
+            propertySet.RemoveWhere(x => x.Active == false); // Avoid saving redundant states
+
             // Separate into dictionary of machines and their properties
             Dictionary<CMachineState, HashSet<CPropertyBase>> saveStates = new Dictionary<CMachineState, HashSet<CPropertyBase>>();
 

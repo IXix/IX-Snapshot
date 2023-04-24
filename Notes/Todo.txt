@@ -8,13 +8,7 @@ CPropertyBase has two lots of property changed style code, a bit sucky and confu
 Test/debug save/load code
 	Midi mapping
 		Should be okay but check anyway
-	MachineState
-		Data
-			Stored values
-			Selection
-				Main
-				Manager
-				Slot
+
 
 	Update file format in comments, old versions too.
 
