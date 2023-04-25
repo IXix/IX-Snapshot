@@ -22,7 +22,7 @@ namespace Snapshot
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
-    [MachineDecl(Name = "IX Snapshot 1.3c", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
+    [MachineDecl(Name = "IX Snapshot 1.3d", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         private readonly IBuzzMachineHost host;
@@ -1118,6 +1118,22 @@ namespace Snapshot
                         }
                     }
 
+                    // Prior to file version 4 we assumed property names were unique.
+                    // but this is not the case (see FSM Infector)
+                    // To load saved data properly we need a dictionary of properties using name as the key
+                    Dictionary<string, List<CPropertyBase>> properties = new Dictionary<string, List<CPropertyBase>>();
+                    foreach (CPropertyBase p in s.AllProperties)
+                    {
+                        if (properties.ContainsKey(p.Name))
+                        {
+                            properties[p.Name].Add(p);
+                        }
+                        else
+                        {
+                            properties[p.Name] = new List<CPropertyBase>() { p };
+                        }
+                    }
+
                     Int32 count = r.ReadInt32(); // number of properties saved
                     for (Int32 i = 0; i < count; i++)
                     {
@@ -1125,8 +1141,7 @@ namespace Snapshot
                         int? track = r.ReadInt32(); // Property track (-1 if null)
                         if (track < 0) track = null;
 
-                        // Should be one and only one property matching name and track. Exception if not.
-                        CPropertyBase ps = s.AllProperties.Single(x => x.Name == name && x.Track == track);
+                        CPropertyBase ps = properties[name].First(x => x.Track == track);
 
                         ps.Checked = r.ReadBoolean(); //Property selected
 
@@ -1143,6 +1158,9 @@ namespace Snapshot
                             Int32 slot = r.ReadInt32(); // snapshot index
                             _slots[slot].ReadProperty(ps, r); // Snapshot data (CMachineSnapshot.WriteProperty())
                         }
+
+                        // Remove this property from the dictionary
+                        properties[name].Remove(ps);
                     }
                 }
                 catch (Exception e)
