@@ -1,3 +1,6 @@
+2023.04.25
+	Initial stab at a datagrid for the info tab
+
 2023.04.24
 	Prevented saving of redundant (purgable) data
 	Avoid losing all saved data when loading old files and state has duplicate properties (eg. Infector)

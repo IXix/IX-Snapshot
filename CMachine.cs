@@ -22,7 +22,7 @@ namespace Snapshot
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
-    [MachineDecl(Name = "IX Snapshot 1.3c", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
+    [MachineDecl(Name = "IX Snapshot 1.4", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         private readonly IBuzzMachineHost host;
@@ -47,8 +47,8 @@ namespace Snapshot
         internal List<CParamChange> paramChanges;
         internal List<CAttribChange> attribChanges;
 
-        private readonly List<CMachineSnapshot> _slots;
-        public List<CMachineSnapshot> Slots => _slots;
+        private readonly ObservableCollection<CMachineSnapshot> _slots;
+        public ObservableCollection<CMachineSnapshot> Slots => _slots;
 
         public CMachineSnapshot CurrentSlot => _slots[_slot];
 
@@ -370,7 +370,7 @@ namespace Snapshot
             paramChanges = new List<CParamChange>();
             attribChanges = new List<CAttribChange>();
 
-            _slots = new List<CMachineSnapshot>();
+            _slots = new ObservableCollection<CMachineSnapshot>();
             _slot = _slotA = 0;
             _slotB = 1;
             for (int i = 0; i < 128; i++)
@@ -1254,7 +1254,6 @@ namespace Snapshot
                         int? track = r.ReadInt32(); // Property track (-1 if null)
                         if (track < 0) track = null;
 
-                        //CPropertyBase ps = s.AllProperties.First(x => x.Name == name && x.Track == track);
                         CPropertyBase ps = properties[name].First(x => x.Track == track);
 
                         ps.Checked = r.ReadBoolean(); //Property selected
@@ -1724,7 +1723,7 @@ namespace Snapshot
 
         internal void ClearSelected()
         {
-            string msg = string.Format("Discard {0} stored properties from {1}?", CurrentSlot.SelectedCount, CurrentSlot.Name);
+            string msg = string.Format("Discard {0} stored properties from {1}?", Selection.Count, CurrentSlot.Name);
             if (Confirm("Confirm clear", msg))
             {
                 CurrentSlot.Remove(Selection);
@@ -1734,7 +1733,7 @@ namespace Snapshot
 
         internal void ClearSelectedAll()
         {
-            string msg = string.Format("Discard {0} selected properties from all slots? Are you sure?", CurrentSlot.SelectedCount);
+            string msg = string.Format("Discard {0} selected properties from all slots? Are you sure?", Selection.Count);
             if (Confirm("Confirm clear", msg, true))
             {
                 HashSet<CPropertyBase> sel = Selection;

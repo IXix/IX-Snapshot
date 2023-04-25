@@ -237,8 +237,8 @@ namespace Snapshot
         public int StoredCount => StoredProperties.Count;
 
         // How many stored properties are selected
-        public int SelectedCount => StoredProperties.Count(x => x.Checked == true);
-        public int SelectedCount_M => StoredProperties.Count(x => x.Checked_M == true);
+        public int SelectedCount => Selection.Count;
+        public int SelectedCount_M => m_owner.SelectionM.Count;
 
         // How many properties are stored that aren't selected
         public int RedundantCount => StoredProperties.Count(x => x.Active && x.Checked == false);

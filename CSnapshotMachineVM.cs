@@ -930,7 +930,7 @@ namespace Snapshot
             get => Owner.SlotNameB;
             set => Owner.SlotNameB = value;
         }
-        public List<CMachineSnapshot> Slots
+        public ObservableCollection<CMachineSnapshot> Slots
         {
             get => Owner.Slots;
         }
