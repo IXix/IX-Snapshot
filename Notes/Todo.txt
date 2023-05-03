@@ -1,7 +1,7 @@
 Test *everything*
 
 Info tab
-	Checkbox to hide empty slots
+	Update grid on capture etc.
 	Make name and notes editable
 	Add MIDI info
 

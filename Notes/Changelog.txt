@@ -1,3 +1,6 @@
+2023.05.03
+	Added checkbox to hide empty slots in datagrid
+
 2023.04.25
 	Initial stab at a datagrid for the info tab
 

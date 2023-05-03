@@ -26,7 +26,7 @@
             <Image Source="resource/icon_select_stored.png" x:Key="icon_select_stored"/>
             <Image Source="resource/icon_set_active.png" x:Key="icon_set_active"/>
 
-            
+
             <CollectionViewSource x:Key="cvsMidiMap" Source="{Binding MidiMap}">
                 <CollectionViewSource.SortDescriptions>
                     <scm:SortDescription PropertyName="Description"/>
@@ -44,7 +44,7 @@
                     <scm:SortDescription PropertyName="Notes" />
                 </CollectionViewSource.SortDescriptions>
             </CollectionViewSource>
-            
+
             <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
             <!-- Named styles -->
 
@@ -505,7 +505,7 @@
                                 </Ellipse>
                             </Button>
                         </ItemsControl>
-                        
+
                         <Separator />
 
                         <!--***************************************************************************************-->
@@ -992,69 +992,89 @@
 
 
         <TabItem Header="Info">
-            <DataGrid ItemsSource="{Binding Source={StaticResource cvsSlots}}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="#" Width="Auto" CanUserSort="True" SortMemberPath="Index">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel >
-                                    <TextBlock Text="{Binding Index}" Padding="2,1,2,1" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    
-                    <DataGridTemplateColumn Header="Name" Width="Auto" CanUserSort="True" SortMemberPath="Name">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel >
-                                    <TextBlock Text="{Binding Name}" Padding="2,1,2,1" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DataGrid ItemsSource="{Binding Source={StaticResource cvsSlots}}" AutoGenerateColumns="False" CanUserAddRows="False" >
+                    <DataGrid.RowStyle>
+                        <Style TargetType="{x:Type DataGridRow}">
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding HasData}" Value="False" />
+                                        <Condition Binding="{Binding ElementName=chkHideRows, Path=IsChecked}" Value="True" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="#" Width="Auto" CanUserSort="True" SortMemberPath="Index">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Index}" Padding="2,1,2,1" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="Size" Width="Auto" CanUserSort="True" SortMemberPath="Size">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel >
-                                    <TextBlock Text="{Binding Size}" Padding="2,1,2,1" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Name" Width="Auto" CanUserSort="True" SortMemberPath="Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Name}" Padding="2,1,2,1" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="Selected" Width="Auto" CanUserSort="True" SortMemberPath="SelectedCount">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel >
-                                    <TextBlock Text="{Binding SelectedCount}" Padding="2,1,2,1" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    
-                    <DataGridTemplateColumn Header="Stored" Width="Auto" CanUserSort="True" SortMemberPath="StoredCount">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel >
-                                    <TextBlock Text="{Binding StoredCount}" Padding="2,1,2,1" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Size" Width="Auto" CanUserSort="True" SortMemberPath="Size">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Size}" Padding="2,1,2,1" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="Notes" Width="*" CanUserSort="True" SortMemberPath="Notes">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel >
-                                    <TextBlock Text="{Binding Notes}" Padding="2,1,2,1" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                        <DataGridTemplateColumn Header="Selected" Width="Auto" CanUserSort="True" SortMemberPath="SelectedCount">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding SelectedCount}" Padding="2,1,2,1" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Stored" Width="Auto" CanUserSort="True" SortMemberPath="StoredCount">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding StoredCount}" Padding="2,1,2,1" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Notes" Width="*" CanUserSort="True" SortMemberPath="Notes">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding Notes}" Padding="2,1,2,1" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <CheckBox Grid.Row="1" x:Name="chkHideRows" IsChecked="True" Content="Hide empty slots" />
+            </Grid>
         </TabItem>
     </TabControl>
 </UserControl>
