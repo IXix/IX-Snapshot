@@ -23,30 +23,41 @@ namespace Snapshot
         {
             get
             {
+                string desc = "";
                 switch (Message)
                 {
                     case 0: // Undefined
-                        return "";
+                        break;
 
                     case 1: // Note-on
-                        return string.Format("Note: {0}, Ch. {1}",
+                        desc = string.Format("Note: {0}, Ch. {1}",
                             Primary < 128 ? CMachine.NoteNames[Primary] : "Any",
                             Channel < 16 ? (Channel + 1).ToString() : "Any");
+                        break;
 
                     case 2: // Note-off
-                        return string.Format("Note-off: {0}, Ch. {1}",
+                        desc = string.Format("Note-off: {0}, Ch. {1}",
                             Primary < 128 ? CMachine.NoteNames[Primary] : "Any",
                             Channel < 16 ? (Channel + 1).ToString() : "Any");
+                        break;
 
                     case 3: // Controller
-                        return string.Format("CC: {0}, Val. {1}, Ch. {2}",
+                        desc = string.Format("CC: {0}, Val. {1}, Ch. {2}",
                             Primary < 128 ? (Primary + 1).ToString() : "Any",
                             Secondary < 128 ? (Secondary + 1).ToString() : "Any",
                             Channel < 16 ? (Channel + 1).ToString() : "Any");
+                        break;
 
                     default:
                         return "";
                 }
+
+                if(Selection != null)
+                {
+                    desc += string.Format(", Stored selection ({0})", Selection.SelectedProperties.Count);
+                }
+
+                return desc;
             }
         }
 

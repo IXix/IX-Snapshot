@@ -469,6 +469,8 @@ namespace Snapshot
             }
 
             OnPropertyChanged("HasData");
+            OnPropertyChanged("Size");
+            OnPropertyChanged("StoredCount");
         }
 
         // Dummy bool is to avoid having a separate CMidiAction subclass just for this method
@@ -686,6 +688,8 @@ namespace Snapshot
                 p.OnPropertyStateChanged();
             }
             OnPropertyChanged("HasData");
+            OnPropertyChanged("Size");
+            OnPropertyChanged("StoredCount");
         }
 
         public void Clear(bool confirm)
@@ -710,6 +714,8 @@ namespace Snapshot
                     p.OnPropertyStateChanged();
                 }
                 OnPropertyChanged("HasData");
+                OnPropertyChanged("Size");
+                OnPropertyChanged("StoredCount");
             }
         }
 

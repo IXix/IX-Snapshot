@@ -1,7 +1,6 @@
 Test *everything*
 
 Info tab
-	Update grid on capture etc.
 	Make name and notes editable
 	Add MIDI info
 

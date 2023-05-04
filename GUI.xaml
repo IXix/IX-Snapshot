@@ -997,9 +997,10 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <DataGrid ItemsSource="{Binding Source={StaticResource cvsSlots}}" AutoGenerateColumns="False" CanUserAddRows="False" >
+                <DataGrid ItemsSource="{Binding Source={StaticResource cvsSlots}}" AutoGenerateColumns="False" CanUserAddRows="False" IsSynchronizedWithCurrentItem="True">
                     <DataGrid.RowStyle>
                         <Style TargetType="{x:Type DataGridRow}">
+                            <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick" />
                             <Style.Triggers>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
@@ -1073,7 +1074,7 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <CheckBox Grid.Row="1" x:Name="chkHideRows" IsChecked="True" Content="Hide empty slots" />
+                <CheckBox Grid.Row="1" x:Name="chkHideRows" Content="Hide empty slots" />
             </Grid>
         </TabItem>
     </TabControl>

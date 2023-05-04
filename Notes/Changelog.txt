@@ -1,3 +1,7 @@
+2023.05.04
+	Info grid updates on capture etc.
+	Added basic selection info to midi binding description
+
 2023.05.03
 	Added checkbox to hide empty slots in datagrid
 

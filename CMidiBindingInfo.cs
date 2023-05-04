@@ -20,9 +20,6 @@ namespace Snapshot
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // FIXME:
-        // These should return a formatted string representing the MIDI
-        // or empty string if no binding exists
         internal Dictionary<string, string> m_info;
 
         private string GetInfo(string key)

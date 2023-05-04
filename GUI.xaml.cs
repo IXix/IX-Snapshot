@@ -85,6 +85,13 @@ namespace Snapshot
         {
             Owner.VM.Window = Window.GetWindow(this);
         }
+
+        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGridRow row = sender as DataGridRow;
+            CMachineSnapshot slot = row.DataContext as CMachineSnapshot;
+            Owner.Slot = slot.Index;
+        }
     }
 
     public class ItemTemplateSelector : DataTemplateSelector
