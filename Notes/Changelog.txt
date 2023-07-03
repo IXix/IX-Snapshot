@@ -1,3 +1,6 @@
+2023.07.03
+	Fixed slot properties not updating in info datagrid
+
 2023.05.04
 	Info grid updates on capture etc.
 	Added basic selection info to midi binding description

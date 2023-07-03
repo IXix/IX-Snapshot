@@ -17,7 +17,7 @@ namespace Snapshot
             m_selection = new CPropertySelection(owner, true);
             Index = index;
             Name = string.Format("Slot {0}", Index);
-            Notes = "";
+            m_notes = "";
             AttributeValues = new Dictionary<CAttributeState, int>();
             ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>();
             DataValues = new Dictionary<CDataState, byte[]>();
@@ -249,7 +249,19 @@ namespace Snapshot
         public int DeletedCount => StoredProperties.Count(x => x.Active == false);
 
         // So you can remember what the this snapshot has in it and why, because you're getting old.
-        public string Notes { get; internal set; }
+        private string m_notes;
+        public string Notes
+        {
+            get { return m_notes; }
+            internal set
+            {
+                if(value != m_notes)
+                {
+                    m_notes = value;
+                    OnPropertyChanged("Notes");
+                }
+            }
+        }
 
         public void CopyFrom(CMachineSnapshot src)
         {
@@ -410,6 +422,7 @@ namespace Snapshot
             p.OnPropertyStateChanged();
 
             OnPropertyChanged("HasData");
+            OnPropertyChanged("Size");
         }
 
         public void Capture(HashSet<CPropertyBase> targets, bool clearExisting)

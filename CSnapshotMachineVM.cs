@@ -287,6 +287,11 @@ namespace Snapshot
                     break;
 
                 default:
+                    //"CanPurge"
+                    //"DeletedCount"
+                    //"Name"
+                    //"Notes"
+                    //"SelectedCount"
                     break;
             }
         }
@@ -635,6 +640,7 @@ namespace Snapshot
                             Selection.Remove(p._property);
                         }
                     }
+                    CurrentSlot.OnPropertyChanged("SelectedCount");
                     break;
 
                 case "IsCheckedM":
