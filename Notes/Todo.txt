@@ -1,18 +1,17 @@
 Test *everything*
 
+Would make sense for slot specific Capture Missing to have the "Clear non-selected" option
+	Not as simple as it sounds. Would need significant changes.
+
+Mapping dialog titlebar shows "SomeAction" rather then "Some Action"
+	Uses the command string from the xaml, which has to match the method name, so no spaces.
+	Probaly easy to split the string at capitals.
+
 Info tab
 	Make name and notes editable
+		Think we need to implement IEditableObject for CMachineState to get that working
+			https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.ieditableobject?view=net-7.0
 	Add MIDI info
-
-Update docs
-	Selection memory for slot specific actions
-	Changes to "Selection follows slot" behaviour
-	Options for slot specific actions
-	MIDI tab
-	MIDI binding buttons
-	MIDI mapping dialog
-	MIDI conflict warning
-	Info tab
 
 CPropertyBase has two lots of property changed style code, a bit sucky and confusing.
 	Consolidate into a single INotifyPropertyChanged style system so it's like everything else
