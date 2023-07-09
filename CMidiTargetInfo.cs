@@ -97,8 +97,7 @@ namespace Snapshot
 
         public override bool Equals(object obj)
         {
-            CMidiTargetInfo that = obj as CMidiTargetInfo;
-            if (that != null)
+            if (obj is CMidiTargetInfo that)
             {
                 return index == that.index && command == that.command;
             }

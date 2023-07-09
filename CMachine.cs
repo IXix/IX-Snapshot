@@ -30,7 +30,7 @@ namespace Snapshot
         internal Stopwatch timer;
         internal double workTimeStamp;
 
-        private Thread WorkThread;
+        private readonly Thread WorkThread;
         private int workFlag = 0;
 
         public static readonly string[] NoteNames = new string[128];
@@ -919,7 +919,7 @@ namespace Snapshot
             _mappingDialog = new CMappingDialog(this, info);
             bool? result = _mappingDialog.ShowDialog();
 
-            bool removePrev = false;
+            bool removePrev;
 
             // Add/update mapping if necessary
             if (result == true)

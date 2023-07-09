@@ -115,8 +115,6 @@ namespace Snapshot
 
             InitializeComponent();
 
-            string targetName = info.index < 0 ? _owner.Name : _owner.Slots[info.index].Name;
-
             Title = info.Description;
         }
 
@@ -157,7 +155,7 @@ namespace Snapshot
             }
         }
 
-        private void btnOkay_Click(object sender, RoutedEventArgs e)
+        private void BtnOkay_Click(object sender, RoutedEventArgs e)
         {
             // Check for conflicting mappings
             List<CMidiTargetInfo> conflicts = _owner.FindDuplicateMappings(_info.settings);
@@ -195,12 +193,12 @@ namespace Snapshot
             DialogResult = true;
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        private void BtnCancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
         }
 
-        private void btnLearn_Click(object sender, RoutedEventArgs e)
+        private void BtnLearn_Click(object sender, RoutedEventArgs e)
         {
             Learning = !Learning;
         }

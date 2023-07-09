@@ -19,7 +19,7 @@ namespace Snapshot
         private readonly int shape;
         private double phase = 0;
 
-        private double duration = 0;
+        private readonly double duration = 0;
         private double elapsedTime = 0;
 
         public bool Finished { get; private set; }

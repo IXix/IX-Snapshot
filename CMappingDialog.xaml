@@ -11,7 +11,7 @@
             ResizeMode="NoResize"
             ShowInTaskbar="False"
             WindowStartupLocation="CenterOwner" 
-            FocusManager.FocusedElement="{Binding ElementName=btnLearn}"
+            FocusManager.FocusedElement="{Binding ElementName=BtnLearn}"
             mc:Ignorable="d" Margin="5" WindowStyle="ToolWindow" Topmost="True"
         >
     <Window.Resources>
@@ -170,7 +170,7 @@
                 </GroupBox>
             </StackPanel>
 
-            <Button Name="btnLearn" Width="200" Click="btnLearn_Click" Height="30">
+            <Button Name="BtnLearn" Width="200" Click="BtnLearn_Click" Height="30">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource sButtonDefault}">
                         <Setter Property="FontWeight" Value="Normal" />
@@ -187,8 +187,8 @@
             </Button>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" >
-            <Button Name="btnOkay" IsDefault="True" Width="100" Height="30" Click="btnOkay_Click">OK</Button>
-            <Button Name="btnCancel" IsCancel="True" Width="100" Click="btnCancel_Click" >Cancel</Button>
+            <Button Name="BtnOkay" IsDefault="True" Width="100" Height="30" Click="BtnOkay_Click">OK</Button>
+            <Button Name="BtnCancel" IsCancel="True" Width="100" Click="BtnCancel_Click" >Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>
