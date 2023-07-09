@@ -580,6 +580,7 @@
                             <Button Grid.Column="1" x:Name="btnClear" ToolTip="{StaticResource str_ttClear}">
                                 <Button.InputBindings>
                                     <MouseBinding Command="{Binding CmdClear}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdClearAll}" CommandParameter="ClearAll" Gesture="Ctrl+alt+LeftClick" />
                                     <MouseBinding Command="{Binding CmdMap}" CommandParameter="Clear" Gesture="RightClick" />
                                     <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="Clear" Gesture="Ctrl+RightClick" />
                                 </Button.InputBindings>
@@ -632,6 +633,7 @@
                             <Button Grid.Column="1" x:Name="btnClearSelected" ToolTip="{StaticResource str_ttClearSelected}">
                                 <Button.InputBindings>
                                     <MouseBinding Command="{Binding CmdClearSelected}" MouseAction="LeftClick" />
+                                    <MouseBinding Command="{Binding CmdClearSelectedAll}" CommandParameter="ClearSelectedAll" Gesture="Ctrl+alt+LeftClick" />
                                     <MouseBinding Command="{Binding CmdMap}" CommandParameter="ClearSelected" Gesture="RightClick" />
                                     <MouseBinding Command="{Binding CmdMapSpecific}" CommandParameter="ClearSelected" Gesture="Ctrl+RightClick" />
                                 </Button.InputBindings>
