@@ -1,3 +1,9 @@
+2024.04.20
+	Machine name is now stored as part of Data
+		Previously when resoring machine data for VST, the machine name was replace by the default VST name.
+		If name not present, current machine name is preserved during restore
+	Machine 1.5, File 5
+
 2023.07.03
 	Fixed slot properties not updating in info datagrid
 

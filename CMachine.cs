@@ -22,7 +22,7 @@ namespace Snapshot
         public IMachineGUI CreateGUI(IMachineGUIHost host) { return new GUI(); }
     }
 
-    [MachineDecl(Name = "IX Snapshot 1.4", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
+    [MachineDecl(Name = "IX Snapshot 1.5", ShortName = "Snapshot", Author = "IX", MaxTracks = 0, InputCount = 0, OutputCount = 0)]
     public class CMachine : IBuzzMachine, INotifyPropertyChanged
     {
         private readonly IBuzzMachineHost host;
@@ -429,7 +429,7 @@ namespace Snapshot
             {
             }
 
-            public static Byte currentVersion = 4;
+            public static Byte currentVersion = 5;
             public Byte version = currentVersion; // Current file version
             public byte[] data;
         }

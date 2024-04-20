@@ -20,7 +20,7 @@ namespace Snapshot
             m_notes = "";
             AttributeValues = new Dictionary<CAttributeState, int>();
             ParameterValues = new Dictionary<CParameterState, Tuple<int, int>>();
-            DataValues = new Dictionary<CDataState, byte[]>();
+            DataValues = new Dictionary<CDataState, Tuple<string, byte[]>>();
             StoredProperties = new HashSet<CPropertyBase>();
             MidiInfo = new CMidiBindingInfo();
         }
@@ -34,7 +34,7 @@ namespace Snapshot
         private readonly CMachine m_owner;
         internal Dictionary<CAttributeState, int /*value*/> AttributeValues;
         internal Dictionary<CParameterState, Tuple<int /*track*/, int /*value*/>> ParameterValues;
-        internal Dictionary<CDataState, byte[] /*value*/> DataValues;
+        internal Dictionary<CDataState, Tuple<string /*name*/, byte[] /*data*/>> DataValues;
         public HashSet<CPropertyBase> StoredProperties { get; internal set; }
 
         public int Index { get; private set; }
@@ -184,7 +184,7 @@ namespace Snapshot
                     break;
 
                 case "CDataState":
-                    value = DataValues[p as CDataState].Length.ToString();
+                    value = DataValues[p as CDataState].Item2.Length.ToString();
                     break;
 
                 default:
@@ -211,7 +211,7 @@ namespace Snapshot
             switch(p.GetType().Name)
             {
                 case "CDataState":
-                    return DataValues[(p as CDataState)].Length;
+                    return DataValues[(p as CDataState)].Item2.Length;
 
                 default:
                     return sizeof(int);
@@ -225,9 +225,10 @@ namespace Snapshot
                 int size = 0;
                 size += AttributeValues.Count * sizeof(int);
                 size += ParameterValues.Count * sizeof(int);
-                foreach (KeyValuePair<CDataState, byte[]> s in DataValues)
+                foreach (KeyValuePair<CDataState, Tuple<string, byte[]>> s in DataValues)
                 {
-                    size += s.Value.Length;
+                    size += System.Text.Encoding.Unicode.GetByteCount(s.Value.Item1);
+                    size += s.Value.Item2.Length;
                 }
                 return size;
             }
@@ -400,7 +401,7 @@ namespace Snapshot
                 case "CDataState":
                     {
                         CDataState key = p as CDataState;
-                        DataValues[key] = key.Machine.Data;
+                        DataValues[key] = new Tuple<string, byte[]>(key.Machine.Name ,key.Machine.Data);
                     }
                     break;
 
@@ -459,7 +460,7 @@ namespace Snapshot
                     case "CDataState":
                         {
                             CDataState key = p as CDataState;
-                            DataValues[key] = key.Machine.Data;
+                            DataValues[key] = new Tuple<string, byte[]>(key.Machine.Name, key.Machine.Data);
                         }
                         break;
 
@@ -527,9 +528,15 @@ namespace Snapshot
                     case "CDataState":
                         {
                             CDataState key = p as CDataState;
-                            byte[] value = DataValues[key];
+                            string name = DataValues[key].Item1;
+                            byte[] value = DataValues[key].Item2;
                             _ = Application.Current.Dispatcher.BeginInvoke(
-                                (Action)(() => { key.Machine.Data = value; }
+                                (Action)(() => {
+                                    if (name.Length == 0)
+                                        name = key.Machine.Name;
+                                    key.Machine.Data = value;
+                                    key.Machine.Name = name;
+                                    }
                                 ),
                                 DispatcherPriority.Send
                                 );
@@ -565,9 +572,14 @@ namespace Snapshot
                 {
                     lock (m_owner.changeLock)
                     {
-                        foreach (KeyValuePair<CDataState, byte[]> v in DataValues.Where(x => x.Key.Active))
+                        foreach (KeyValuePair<CDataState, Tuple<string, byte[]>> v in DataValues.Where(x => x.Key.Active))
                         {
-                            v.Key.Machine.Data = v.Value;
+                            string name = v.Value.Item1;
+                            if (name.Length == 0)
+                                name = v.Key.Machine.Name;
+                            
+                            v.Key.Machine.Data = v.Value.Item2;
+                            v.Key.Machine.Name = name;
                         }
                     }
                 }),
@@ -762,8 +774,15 @@ namespace Snapshot
                 switch (t.FullName)
                 {
                     case "Snapshot.CDataState":
-                        Int32 l = r.ReadInt32();
-                        DataValues[p as Snapshot.CDataState] = r.ReadBytes(l);
+                        Int32 l = r.ReadInt32(); // size of data
+                        byte[] d = r.ReadBytes(l);
+
+                        // File version 5 added machine name
+                        string n = "";
+                        if(m_owner.LoadVersion >= 5)
+                            n = r.ReadString(); // machine name
+
+                        DataValues[p as Snapshot.CDataState] = new Tuple<string, byte[]>(n, d);
                         break;
 
                     case "Snapshot.CAttributeState":
@@ -791,9 +810,10 @@ namespace Snapshot
                 switch (t.FullName)
                 {
                     case "Snapshot.CDataState":
-                        byte[] data = DataValues[p as Snapshot.CDataState];
-                        w.Write(data.Length);
-                        w.Write(data);
+                        Tuple<string, byte[]> item = DataValues[p as Snapshot.CDataState];
+                        w.Write(item.Item2.Length);
+                        w.Write(item.Item2);
+                        w.Write(item.Item1);
                         break;
 
                     case "Snapshot.CAttributeState":
