@@ -1,5 +1,6 @@
 2024.07.14
 	Added locks to various snapshot capture/restore things to hopefully avoid crashes
+	Implemented sorting machine lists by name
 
 2024.04.20
 	Machine name is now stored as part of Data

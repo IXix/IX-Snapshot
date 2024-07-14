@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:Snapshot" d:DataContext="{d:DesignInstance Type=local:CSnapshotMachineVM}"
              xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              xmlns:bgInterfaces="clr-namespace:BuzzGUI.Interfaces;assembly=BuzzGUI.Interfaces"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="500" d:DesignWidth="500" Height="500" Loaded="Main_Loaded">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -32,6 +33,33 @@
                     <scm:SortDescription PropertyName="Description"/>
                     <scm:SortDescription PropertyName="EventDetails" />
                 </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+
+            <CollectionViewSource x:Key="cvsStates" Source="{Binding States, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="DisplayName" />
+                </CollectionViewSource.SortDescriptions>
+                <CollectionViewSource.LiveSortingProperties>
+                    <system:String>DisplayName</system:String>
+                </CollectionViewSource.LiveSortingProperties>
+            </CollectionViewSource>
+
+            <CollectionViewSource x:Key="cvsStatesA" Source="{Binding StatesA, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="DisplayName" />
+                </CollectionViewSource.SortDescriptions>
+                <CollectionViewSource.LiveSortingProperties>
+                    <system:String>DisplayName</system:String>
+                </CollectionViewSource.LiveSortingProperties>
+            </CollectionViewSource>
+
+            <CollectionViewSource x:Key="cvsStatesB" Source="{Binding StatesB, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True">
+                <CollectionViewSource.SortDescriptions>
+                    <scm:SortDescription PropertyName="DisplayName" />
+                </CollectionViewSource.SortDescriptions>
+                <CollectionViewSource.LiveSortingProperties>
+                    <system:String>DisplayName</system:String>
+                </CollectionViewSource.LiveSortingProperties>
             </CollectionViewSource>
 
             <CollectionViewSource x:Key="cvsSlots" Source="{Binding Slots}">
@@ -285,7 +313,7 @@
                         <!-- Treeview content templates defined in resources -->
                         <TreeView x:Name="MachineList" Grid.Row="0"
                                   ItemContainerStyle="{StaticResource tvis_item}"
-                                  ItemsSource="{Binding States, UpdateSourceTrigger=PropertyChanged}"
+                                  ItemsSource="{Binding Source={StaticResource cvsStates}}"
                                   ItemTemplateSelector="{StaticResource tvi_template_selector}" />
 
                         <Grid Grid.Row="1">
@@ -822,13 +850,13 @@
                 <!-- Treeview content templates defined in resources -->
                 <TreeView x:Name="ListA" Grid.Row="1" Grid.Column="0"
                           ItemContainerStyle="{StaticResource tvis_item}"
-                          ItemsSource="{Binding StatesA, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding Source={StaticResource cvsStatesA}}"
                           ItemTemplateSelector="{StaticResource tvi_template_selector}" />
 
                 <!-- Treeview content templates defined in resources -->
                 <TreeView x:Name="ListB" Grid.Row="1" Grid.Column="2"
                           ItemContainerStyle="{StaticResource tvis_item}"
-                          ItemsSource="{Binding StatesB, UpdateSourceTrigger=PropertyChanged}"
+                          ItemsSource="{Binding Source={StaticResource cvsStatesB}}"
                           ItemTemplateSelector="{StaticResource tvi_template_selector}" />
 
                 <Grid Grid.Row="2">

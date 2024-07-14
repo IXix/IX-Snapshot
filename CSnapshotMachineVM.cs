@@ -620,6 +620,7 @@ namespace Snapshot
                     break;
 
                 case "DisplayName":
+                    NotifyPropertyChanged("States"); // FIXME: Why doesn't this cause re-sort of tree items?
                     break;
 
                 case "DisplayValue":
