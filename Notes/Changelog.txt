@@ -1,3 +1,6 @@
+2024.07.14
+	Added locks to various snapshot capture/restore things to hopefully avoid crashes
+
 2024.04.20
 	Machine name is now stored as part of Data
 		Previously when resoring machine data for VST, the machine name was replace by the default VST name.

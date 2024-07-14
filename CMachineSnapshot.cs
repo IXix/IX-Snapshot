@@ -13,6 +13,7 @@ namespace Snapshot
     {
         public CMachineSnapshot(CMachine owner, int index)
         {
+            m_dataLock = new object();
             m_owner = owner;
             m_selection = new CPropertySelection(owner, true);
             Index = index;
@@ -36,6 +37,8 @@ namespace Snapshot
         internal Dictionary<CParameterState, Tuple<int /*track*/, int /*value*/>> ParameterValues;
         internal Dictionary<CDataState, Tuple<string /*name*/, byte[] /*data*/>> DataValues;
         public HashSet<CPropertyBase> StoredProperties { get; internal set; }
+
+        private object m_dataLock;
 
         public int Index { get; private set; }
 
@@ -376,21 +379,24 @@ namespace Snapshot
 
         public void Capture(CPropertyBase p, bool clearExisting)
         {
-            if (clearExisting)
+            lock (m_dataLock)
             {
-                Clear(false);
-            }
 
-            switch (p.GetType().Name)
-            {
-                case "CAttributeState":
+                if (clearExisting)
+                {
+                    Clear(false);
+                }
+
+                switch (p.GetType().Name)
+                {
+                    case "CAttributeState":
                     {
                         CAttributeState key = p as CAttributeState;
                         AttributeValues[key] = key.Attribute.Value;
                     }
                     break;
 
-                case "CParameterState":
+                    case "CParameterState":
                     {
                         CParameterState key = p as CParameterState;
                         int track = key.Track ?? -1;
@@ -398,58 +404,62 @@ namespace Snapshot
                     }
                     break;
 
-                case "CDataState":
+                    case "CDataState":
                     {
                         CDataState key = p as CDataState;
-                        DataValues[key] = new Tuple<string, byte[]>(key.Machine.Name ,key.Machine.Data);
+                        DataValues[key] = new Tuple<string, byte[]>(key.Machine.Name, key.Machine.Data);
                     }
                     break;
 
-                case "CPropertyStateGroup":
-                    return;
+                    case "CPropertyStateGroup":
+                        return;
 
-                case "CTrackPropertyStateGroup":
-                    return;
+                    case "CTrackPropertyStateGroup":
+                        return;
 
-                case "CMachineState":
-                    return;
+                    case "CMachineState":
+                        return;
 
-                default:
-                    throw new Exception("Unknown property type.");
+                    default:
+                        throw new Exception("Unknown property type.");
+                }
+
+                _ = StoredProperties.Add(p);
+
+
+                p.OnPropertyStateChanged();
+
+                OnPropertyChanged("HasData");
+                OnPropertyChanged("Size");
             }
-
-            _ = StoredProperties.Add(p);
-
-            p.OnPropertyStateChanged();
-
-            OnPropertyChanged("HasData");
-            OnPropertyChanged("Size");
         }
 
         public void Capture(HashSet<CPropertyBase> targets, bool clearExisting)
         {
-            if(clearExisting)
+            lock (m_dataLock)
             {
-                Clear(false);
-            }
-
-            if(targets == null)
-            {
-                targets = m_owner.Selection;
-            }
-
-            foreach (IPropertyState p in targets)
-            {
-                switch (p.GetType().Name)
+                if (clearExisting)
                 {
-                    case "CAttributeState":
+                    Clear(false);
+                }
+
+                if (targets == null)
+                {
+                    targets = m_owner.Selection;
+                }
+
+                foreach (IPropertyState p in targets)
+                {
+                    switch (p.GetType().Name)
+                    {
+                        case "CAttributeState":
                         {
                             CAttributeState key = p as CAttributeState;
                             AttributeValues[key] = key.Attribute.Value;
                         }
                         break;
 
-                    case "CParameterState":
+                        case "CParameterState":
                         {
                             CParameterState key = p as CParameterState;
                             int track = key.Track ?? -1;
@@ -457,34 +467,35 @@ namespace Snapshot
                         }
                         break;
 
-                    case "CDataState":
+                        case "CDataState":
                         {
                             CDataState key = p as CDataState;
                             DataValues[key] = new Tuple<string, byte[]>(key.Machine.Name, key.Machine.Data);
                         }
                         break;
 
-                    case "CPropertyStateGroup":
-                        break;
+                        case "CPropertyStateGroup":
+                            break;
 
-                    case "CTrackPropertyStateGroup":
-                        break;
+                        case "CTrackPropertyStateGroup":
+                            break;
 
-                    default:
-                        throw new Exception("Unknown property type.");
+                        default:
+                            throw new Exception("Unknown property type.");
+                    }
                 }
+
+                StoredProperties.UnionWith(targets);
+
+                foreach (CPropertyBase p in targets)
+                {
+                    p.OnPropertyStateChanged();
+                }
+
+                OnPropertyChanged("HasData");
+                OnPropertyChanged("Size");
+                OnPropertyChanged("StoredCount");
             }
-
-            StoredProperties.UnionWith(targets);
-
-            foreach(CPropertyBase p in targets)
-            {
-                p.OnPropertyStateChanged();
-            }
-
-            OnPropertyChanged("HasData");
-            OnPropertyChanged("Size");
-            OnPropertyChanged("StoredCount");
         }
 
         // Dummy bool is to avoid having a separate CMidiAction subclass just for this method
@@ -501,13 +512,15 @@ namespace Snapshot
 
         public void Restore(HashSet<CPropertyBase> properties)
         {
-            foreach (IPropertyState p in properties)
+            lock (m_dataLock)
             {
-                if (!StoredProperties.Contains(p) || !p.Active) return;
-
-                switch (p.GetType().Name)
+                foreach (IPropertyState p in properties)
                 {
-                    case "CAttributeState":
+                    if (!StoredProperties.Contains(p) || !p.Active) return;
+
+                    switch (p.GetType().Name)
+                    {
+                        case "CAttributeState":
                         {
                             CAttributeState key = p as CAttributeState;
                             int value = AttributeValues[key];
@@ -515,7 +528,7 @@ namespace Snapshot
                         }
                         break;
 
-                    case "CParameterState":
+                        case "CParameterState":
                         {
                             CParameterState key = p as CParameterState;
                             Tuple<int, int> t = ParameterValues[key];
@@ -525,26 +538,31 @@ namespace Snapshot
                         }
                         break;
 
-                    case "CDataState":
+                        case "CDataState":
                         {
                             CDataState key = p as CDataState;
                             string name = DataValues[key].Item1;
                             byte[] value = DataValues[key].Item2;
                             _ = Application.Current.Dispatcher.BeginInvoke(
-                                (Action)(() => {
-                                    if (name.Length == 0)
-                                        name = key.Machine.Name;
-                                    key.Machine.Data = value;
-                                    key.Machine.Name = name;
+                                (Action)(() =>
+                                {
+                                    lock(m_dataLock)
+                                    {
+                                        if (name.Length == 0)
+                                            name = key.Machine.Name;
+                                        key.Machine.Data = value;
+                                        key.Machine.Name = name;
                                     }
+                                }
                                 ),
                                 DispatcherPriority.Send
                                 );
                         }
                         break;
 
-                    default:
-                        throw new Exception("Unknown property type.");
+                        default:
+                            throw new Exception("Unknown property type.");
+                    }
                 }
             }
         }
@@ -572,14 +590,17 @@ namespace Snapshot
                 {
                     lock (m_owner.changeLock)
                     {
-                        foreach (KeyValuePair<CDataState, Tuple<string, byte[]>> v in DataValues.Where(x => x.Key.Active))
+                        lock (m_dataLock)
                         {
-                            string name = v.Value.Item1;
-                            if (name.Length == 0)
-                                name = v.Key.Machine.Name;
-                            
-                            v.Key.Machine.Data = v.Value.Item2;
-                            v.Key.Machine.Name = name;
+                            foreach (KeyValuePair<CDataState, Tuple<string, byte[]>> v in DataValues.Where(x => x.Key.Active))
+                            {
+                                string name = v.Value.Item1;
+                                if (name.Length == 0)
+                                    name = v.Key.Machine.Name;
+
+                                v.Key.Machine.Data = v.Value.Item2;
+                                v.Key.Machine.Name = name;
+                            }
                         }
                     }
                 }),
@@ -635,37 +656,40 @@ namespace Snapshot
         {
             if (!StoredProperties.Contains(p)) return;
 
-            switch (p.GetType().Name)
+            lock (m_dataLock)
             {
-                case "CAttributeState":
+                switch (p.GetType().Name)
+                {
+                    case "CAttributeState":
                     {
                         CAttributeState key = p as CAttributeState;
                         _ = AttributeValues.Remove(key);
                     }
                     break;
 
-                case "CParameterState":
+                    case "CParameterState":
                     {
                         CParameterState key = p as CParameterState;
                         _ = ParameterValues.Remove(key);
                     }
                     break;
 
-                case "CDataState":
+                    case "CDataState":
                     {
                         CDataState key = p as CDataState;
                         _ = DataValues.Remove(key);
                     }
                     break;
 
-                default:
-                    throw new Exception("Unknown property type.");
+                    default:
+                        throw new Exception("Unknown property type.");
+                }
+
+                _ = StoredProperties.Remove(p);
+
+                p.OnPropertyStateChanged();
+                OnPropertyChanged("HasData");
             }
-
-            _ = StoredProperties.Remove(p);
-
-            p.OnPropertyStateChanged();
-            OnPropertyChanged("HasData");
         }
 
 
@@ -676,45 +700,48 @@ namespace Snapshot
                 targets = m_owner.Selection;
             }
 
-            foreach (IPropertyState p in targets)
+            lock (m_dataLock)
             {
-                switch (p.GetType().Name)
+                foreach (IPropertyState p in targets)
                 {
-                    case "CAttributeState":
+                    switch (p.GetType().Name)
+                    {
+                        case "CAttributeState":
                         {
                             CAttributeState key = p as CAttributeState;
                             _ = AttributeValues.Remove(key);
                         }
                         break;
 
-                    case "CParameterState":
+                        case "CParameterState":
                         {
                             CParameterState key = p as CParameterState;
                             _ = ParameterValues.Remove(key);
                         }
                         break;
 
-                    case "CDataState":
+                        case "CDataState":
                         {
                             CDataState key = p as CDataState;
                             _ = DataValues.Remove(key);
                         }
                         break;
 
-                    default:
-                        throw new Exception("Unknown property type.");
+                        default:
+                            throw new Exception("Unknown property type.");
+                    }
                 }
-            }
 
-            StoredProperties = StoredProperties.Except(targets).ToHashSet();
+                StoredProperties = StoredProperties.Except(targets).ToHashSet();
 
-            foreach (CPropertyBase p in targets)
-            {
-                p.OnPropertyStateChanged();
+                foreach (CPropertyBase p in targets)
+                {
+                    p.OnPropertyStateChanged();
+                }
+                OnPropertyChanged("HasData");
+                OnPropertyChanged("Size");
+                OnPropertyChanged("StoredCount");
             }
-            OnPropertyChanged("HasData");
-            OnPropertyChanged("Size");
-            OnPropertyChanged("StoredCount");
         }
 
         public void Clear(bool confirm)
@@ -727,20 +754,22 @@ namespace Snapshot
 
             if (proceed)
             {
-                HashSet<CPropertyBase> removed = new HashSet<CPropertyBase>(StoredProperties);
-
-                AttributeValues.Clear();
-                ParameterValues.Clear();
-                DataValues.Clear();
-                StoredProperties.Clear();
-
-                foreach (CPropertyBase p in removed)
+                lock (m_dataLock)
                 {
-                    p.OnPropertyStateChanged();
+                    HashSet<CPropertyBase> removed = new HashSet<CPropertyBase>(StoredProperties);
+
+                    AttributeValues.Clear();
+                    ParameterValues.Clear();
+                    DataValues.Clear();
+                    StoredProperties.Clear();
+                    foreach (CPropertyBase p in removed)
+                    {
+                        p.OnPropertyStateChanged();
+                    }
+                    OnPropertyChanged("HasData");
+                    OnPropertyChanged("Size");
+                    OnPropertyChanged("StoredCount");
                 }
-                OnPropertyChanged("HasData");
-                OnPropertyChanged("Size");
-                OnPropertyChanged("StoredCount");
             }
         }
 
