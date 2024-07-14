@@ -1,5 +1,21 @@
 Test *everything*
 
+Look into compressing the snapshot data.
+	Always compress on save
+	Optionally compress in memory
+		Should we only compress the inactive slots? Need to know what impact compression has on capture/restore time.
+		If compressing memory, would just load the compressed data as is. If not, would decompress on load.
+
+Ignore properties
+	Add property context menu to ignore selected/unselected properties
+		Would need to add another treeview to show currently ignored properties
+	Add method to always ignore certain properties of a given machine
+		Store the list as an xml file on disk
+		Ideally Would have UI to manage which properties are always ignored
+	Ignored properties could probably be removed from the machine state object rather than having an "ignore me" flag.
+		That would be faster.
+		We'd need to save the list of ignored properties to avoid adding them to the machine state on load and to allow unignore.
+
 Would make sense for slot specific Capture Missing to have the "Clear non-selected" option
 	Not as simple as it sounds. Would need significant changes.
 
