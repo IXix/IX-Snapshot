@@ -2,9 +2,10 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
-    <StartProgram>C:\Program Files\Jeskola\Buzz\buzz_x64.exe</StartProgram>
+    <StartProgram>C:\Program Files %28x86%29\Jeskola\Buzz\buzz.exe</StartProgram>
     <StartArguments>/nocr</StartArguments>
     <StartWorkingDirectory>C:\Program Files\Jeskola\Buzz\</StartWorkingDirectory>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <PropertyGroup>
     <ReferencePath>C:\Program Files\Jeskola\Buzz\</ReferencePath>
