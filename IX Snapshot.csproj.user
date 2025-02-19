@@ -10,4 +10,10 @@
   <PropertyGroup>
     <ReferencePath>C:\Program Files\Jeskola\Buzz\</ReferencePath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files %28x86%29\Jeskola\Buzz\buzz.exe</StartProgram>
+    <StartArguments>/nocr</StartArguments>
+    <StartWorkingDirectory>C:\Program Files %28x86%29\Jeskola\Buzz\</StartWorkingDirectory>
+  </PropertyGroup>
 </Project>

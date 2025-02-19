@@ -33,6 +33,8 @@ namespace Snapshot
         private readonly Thread WorkThread;
         private int workFlag = 0;
 
+        private static ManualResetEvent processChanges = new ManualResetEvent(false);
+
         public static readonly string[] NoteNames = new string[128];
 
         private IMachine ThisMachine { get; set; }
@@ -358,7 +360,8 @@ namespace Snapshot
 
             WorkThread = new Thread(SendChanges)
             {
-                Priority = ThreadPriority.Highest
+                Name = "Snapshot:WorkThread",
+                Priority = ThreadPriority.Normal // ThreadPriority.Highest
             };
             WorkThread.Start();
 
@@ -495,6 +498,9 @@ namespace Snapshot
                     break;
                 }
 
+                // Wait for flag
+                processChanges.WaitOne();
+
                 double totalsecs = timer.Elapsed.TotalSeconds;
                 double seconds = totalsecs - workTimeStamp;
                 workTimeStamp = totalsecs;
@@ -525,6 +531,8 @@ namespace Snapshot
 
                 Cleanup(null);
 
+                processChanges.Reset();
+
                 Interlocked.Exchange(ref workFlag, 0);
             }
         }
@@ -539,12 +547,17 @@ namespace Snapshot
             }
         }
 
-        /*
+        
         public bool Work(Sample[] output, int n, WorkModes mode)
         {
+            if(host.SubTickInfo.PosInSubTick == 0)
+            {
+                processChanges.Set();
+            }
+
             return false;
         }
-        */
+        
 
         internal void ClearPendingChanges()
         {

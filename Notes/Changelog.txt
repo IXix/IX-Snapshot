@@ -1,3 +1,7 @@
+2025.02.19
+	Attempted to reduce CPU usage by synchronising the worker thread with subticks.
+		Seems to have worked but may not be the best solution so will try other things too.
+
 2024.07.14
 	Added locks to various snapshot capture/restore things to hopefully avoid crashes
 	Implemented sorting machine lists by name
