@@ -547,15 +547,13 @@ namespace Snapshot
             }
         }
 
-        
-        public bool Work(Sample[] output, int n, WorkModes mode)
+        //public bool Work(Sample[] output, int n, WorkModes mode)
+        public void Work()
         {
-            if(host.SubTickInfo.PosInSubTick == 0)
-            {
-                processChanges.Set();
-            }
+            if (host.SubTickInfo.PosInSubTick != 0)
+                return;
 
-            return false;
+            processChanges.Set();
         }
         
 
